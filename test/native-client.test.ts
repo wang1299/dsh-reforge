@@ -70,7 +70,8 @@ test('shipped client registers the official settings, main and conversation slot
   module.apply({ connection: {}, slots: { inject: (_slot: string, fn: () => unknown) => fn(), register: (options: Record<string, unknown>) => { entries.push(options); return () => undefined; } },
     layout: { panelInfo: { getSnapshot: () => ({ activePanelId: 'dsh-reforge' }) }, selectPanel: (id: unknown) => navigation.push(id) },
     effect: (fn: () => () => void) => disposers.push(fn()) });
-  assert.deepEqual(entries.map(e => e.name), ['main', 'settings.plugins.tab', 'plugins.bundle.config', 'conversation.session.header.actions']);
+  assert.deepEqual(entries.map(e => e.name), ['main', 'settings.plugins.tab', 'plugins.bundle.config', 'conversation.view']);
+  assert.equal(entries.find(e => e.name === 'conversation.view')?.label, '经验');
   assert.equal(entries.find(e => e.name === 'plugins.bundle.config')?.key, 'dsh-reforge');
   disposers.forEach(fn => fn()); assert.deepEqual(navigation, [null]);
 });

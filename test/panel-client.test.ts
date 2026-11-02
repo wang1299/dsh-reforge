@@ -51,6 +51,32 @@ function browser() {
   return { get, current, posts, run, control, click, clickRecordCandidate, descendants, offline: () => { offline = true; }, unknownWrites: () => { postStatus = 0; } };
 }
 
+test('workbench separates all reference records and counts unconfirmed results from the latest feedback', async () => {
+  const b = browser();
+  for (let i = 0; i < 6; i++) b.current.applications.push({ ...b.current.applications[0]!, id: 'additional-' + i });
+  b.current.feedback.push(
+    { id: 'old', applicationId: 'application-one', outcome: 'accepted', note: 'Earlier owner report', createdAt: '2026-10-20T01:00:00Z' },
+    { id: 'new', applicationId: 'application-one', outcome: 'unknown', note: 'Latest result is uncertain', createdAt: '2026-10-20T02:00:00Z' },
+  );
+  await b.run('refresh()');
+  assert.ok(b.get('nav-uses')); assert.ok(b.get('nav-learning'));
+  await b.run("showView('uses')");
+  assert.equal(b.get('home').hidden, true); assert.equal(b.get('uses').hidden, false);
+  assert.equal(b.get('use-history').children.length, 7);
+  assert.match(b.get('use-summary').textContent, /7.*结果.*未确认/);
+  assert.equal(b.posts.length, 0);
+});
+
+test('workbench navigation preserves an unsaved revision across reference and learning views', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
+  const strategy = b.control('处理策略'); strategy.value = 'Keep my current draft';
+  b.get('detail').listeners.get('input')!();
+  await b.run("showView('uses')"); await b.run("showView('learning')");
+  assert.equal(b.get('detail').hidden, false); assert.equal(b.control('处理策略'), strategy);
+  assert.equal(strategy.value, 'Keep my current draft'); assert.match(b.get('message').textContent, /尚未保存/);
+  assert.equal(b.posts.length, 0);
+});
+
 test('learning home renders untrusted titles as text and keeps technical editors off the default screen', async () => {
   const b = browser(); await b.run('refresh()');
   assert.equal(b.get('home').hidden, false); assert.equal(b.get('library').hidden, true); assert.equal(b.get('detail').hidden, true); assert.equal(b.get('records').open, false);
