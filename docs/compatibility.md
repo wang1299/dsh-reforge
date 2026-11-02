@@ -1,5 +1,7 @@
 # DSH 兼容性
 
+T040 / 开发候选 alpha.2：新增独立适配层与 `0.2.0-rc.2` / `0.2.1-rc.5` 目标矩阵，固定第二 SDK 图；当前目标声明不是旧公开包的新能力。实际结果、后续加版本流程及未完成的 Desktop/模型范围见 [矩阵指南](dsh-version-matrix.md) 与 [Issue #93](https://github.com/wang1299/dsh-reforge/issues/93)。以下旧阶段固定版本按历史记录理解。
+
 目标：`@deepseek-ai/dsh@0.2.0-rc.2`。本机实际安装 Cordis4.0.5、dsh-agent/session/tools/system-prompt0.2.0-rc.2，lockfile固定依赖和完整性摘要。
 
 T033：公开身份 dsh-reforge@0.1.0-alpha.1；固定 DSH 0.2.0-rc.2。旧本地预览的patch行ID、evolve工具、内部RPC、数据目录与配置别名保留，SQLite当前v9；迁移见[安装指南](installation.md)，实际结果见[T033验收](development/T033-acceptance.md)。下面各Txxx为历史阶段记录。

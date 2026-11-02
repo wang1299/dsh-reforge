@@ -2,9 +2,18 @@
 
 包名 `dsh-reforge`，品牌 DSH-Reforge。首个实验性版本 `0.1.0-alpha.1` 已发布至 npm `alpha` 并通过公开安装；发行附件与最终结果见 [npm](https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.1)、[Release](https://github.com/wang1299/dsh-reforge/releases/tag/v0.1.0-alpha.1) 和 [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75)。源码、本机 tgz 与远端公开结果分别核验。
 
+## 版本选择
+
+| 安装包 | 宿主范围 | 状态 |
+|---|---|---|
+| npm `0.1.0-alpha.1` | 仅 DSH `0.2.0-rc.2` | 原公开版本，不改写 |
+| 源码 `0.1.0-alpha.2` 候选 | 目标 `0.2.0-rc.2` / `0.2.1-rc.5`，以本轮矩阵实际验收为准 | 未公开发布；使用经审计的本地 tgz 验证 |
+
+若在 `0.2.1-rc.5` 中搜索到 alpha.1，安装器拒绝是正确的兼容边界，重试或关闭离线保护不能解决。不要强装、扩大版本例外或直接降级原数据库。后续兼容策略见[矩阵指南](dsh-version-matrix.md)。
+
 ## 1. 准备环境和配置
 
-固定 DSH `0.2.0-rc.2`、Node.js ≥24.10。需要运行来源验证时，准备 Git、Python ≥3.10、pytest（CI 9.1.1），以及你信任的 Python 仓库。其他 DSH 版本暂未验证；不要用版本例外绕过本项目的兼容声明。
+公开 alpha.1 固定 DSH `0.2.0-rc.2`；开发候选按上表选择精确宿主。Node.js ≥24.10。需要运行来源验证时，准备 Git、Python ≥3.10、pytest（CI 9.1.1），以及你信任的 Python 仓库。矩阵之外的 DSH 版本暂未验证；不要用版本例外绕过本项目的兼容声明。
 
 创建一个不会提交到 Git 的本机 JSON 文件，例如只读体验：
 

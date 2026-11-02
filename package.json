@@ -1,14 +1,30 @@
 {
   "name": "dsh-reforge",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Evidence-based experience learning for DeepSeek Harness",
   "type": "module",
   "license": "MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/wang1299/dsh-reforge.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wang1299/dsh-reforge.git"
+  },
   "homepage": "https://github.com/wang1299/dsh-reforge#readme",
-  "bugs": { "url": "https://github.com/wang1299/dsh-reforge/issues" },
-  "keywords": ["deepseek-harness", "dsh-plugin", "agent-memory", "experience-learning", "bug-fix", "verification"],
-  "publishConfig": { "registry": "https://registry.npmjs.org/", "access": "public", "tag": "alpha" },
+  "bugs": {
+    "url": "https://github.com/wang1299/dsh-reforge/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "agent-memory",
+    "experience-learning",
+    "bug-fix",
+    "verification"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public",
+    "tag": "alpha"
+  },
   "engines": {
     "node": ">=24.10.0"
   },
@@ -59,16 +75,18 @@
     "codex-retry": "tsc && node dist/scripts/codex-retry.js",
     "paired-evaluation": "tsc && node dist/scripts/paired-evaluation.js",
     "retrieval-benchmark": "tsc && node dist/scripts/retrieval-benchmark.js",
-    "feedback-evaluation": "tsc && node dist/scripts/feedback-evaluation.js"
+    "feedback-evaluation": "tsc && node dist/scripts/feedback-evaluation.js",
+    "compat:matrix": "npm run build && node scripts/dsh-matrix.mjs"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.5",
-    "@deepseek-ai/dsh-agent": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-client-connection": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-llm": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-session": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-system-prompt": "0.2.0-rc.2",
-    "@deepseek-ai/dsh-tools": "0.2.0-rc.2"
+    "@deepseek-ai/dsh-agent": "0.2.0-rc.2 || 0.2.1-rc.5",
+    "@deepseek-ai/dsh-client-connection": "0.2.0-rc.2 || 0.2.1-rc.5",
+    "@deepseek-ai/dsh-llm": "0.2.0-rc.2 || 0.2.1-rc.5",
+    "@deepseek-ai/dsh-session": "0.2.0-rc.2 || 0.2.1-rc.5",
+    "@deepseek-ai/dsh-system-prompt": "0.2.0-rc.2 || 0.2.1-rc.5",
+    "@deepseek-ai/dsh-tools": "0.2.0-rc.2 || 0.2.1-rc.5",
+    "@deepseek-ai/dsh-app-boot": "0.2.0-rc.2 || 0.2.1-rc.5"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/dsh-llm": {

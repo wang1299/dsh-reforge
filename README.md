@@ -27,6 +27,9 @@ DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-veri
 
 **实验性 alpha：`dsh-reforge@0.1.0-alpha.1`。** 已于 2026-10-23 发布至 npm `alpha`，公开下载与安装检查通过。[GitHub Release](https://github.com/wang1299/dsh-reforge/releases/tag/v0.1.0-alpha.1) 的制品与摘要已核验，完整结果见 [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75)。源码仓库现统一为 `wang1299/dsh-reforge`，原仓库地址由 GitHub 跳转。本项目由社区独立开发，不代表 DeepSeek 官方审核、推荐或安全认证。
 
+
+T040 / 开发候选：当前源码准备 `0.1.0-alpha.2`，目标验证 DSH `0.2.0-rc.2` 和 `0.2.1-rc.5`。版本支持清单、适配层、矩阵与实际验收见 [兼容性指南](docs/dsh-version-matrix.md) / [Issue #93](https://github.com/wang1299/dsh-reforge/issues/93)。该候选尚未发布；上面的公开 alpha.1 仍只支持旧宿主，市场收录不代表它能安装到新版 DSH。
+
 ## 能做什么
 
 - **自动记录**：首次由仓库所有者开启后，正常对话中的直接用户请求形成执行片段；保存有限摘要与受限 Python 代码快照。
