@@ -18,16 +18,17 @@ const channel = '/api'; const mainId = 'dsh-reforge' as MainPanelId;
 interface Info { repositoryId: string; repositoryName: string; version: number }
 type Face = { connection: ConnectionHandle; layout: ILayout };
 
-function NativeView({ connection, layout, inSettings = false }: Face & { inSettings?: boolean }) {
+function NativeView({ connection, layout, inSettings = false, sessionId }: Face & { inSettings?: boolean; sessionId?: string }) {
   const frame = useRef<HTMLIFrameElement>(null); const [info, setInfo] = useState<Info | null>(null); const [error, setError] = useState('');
   useEffect(() => {
     const abort = new AbortController(); let live = true;
-    void connection.rpc.call(channel, 'dsh-reforge-info', {}, abort.signal).then(result => {
+    setInfo(null); setError('');
+    void connection.rpc.call(channel, 'dsh-reforge-info', sessionId ? { sessionId } : {}, abort.signal).then(result => {
       if (!live) return;
       if (result.ok) setInfo(result.value as Info); else setError(result.error.message);
     }).catch(() => { if (live) setError('暂时无法连接 DSH 插件，请关闭后重新打开。'); });
     return () => { live = false; abort.abort(); };
-  }, [connection]);
+  }, [connection, sessionId]);
   useEffect(() => {
     if (!info || !frame.current) return;
     const target = frame.current; const session = crypto.randomUUID(); const nonce = crypto.randomUUID().replaceAll('-', '');
@@ -58,8 +59,11 @@ function NativeView({ connection, layout, inSettings = false }: Face & { inSetti
   return h('section', { style: { width: '100%', height: '100%', minHeight: 400, display: 'flex', flexDirection: 'column' } },
     h('header', { style: { padding: '8px 12px', display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', font: 'inherit', color: 'var(--dsw-alias-label-secondary)' } },
       !inSettings && h('button', { type: 'button', style: { font: 'inherit', padding: '6px 10px', borderRadius: 8, border: '1px solid var(--dsw-alias-border-l3)', color: 'var(--dsw-alias-label-primary)', background: 'var(--dsw-alias-bg-layer-2)', cursor: 'pointer' }, onClick: () => layout.selectPanel(null) }, '← 返回对话'),
-      h('span', null, info ? '绑定仓库：' + info.repositoryName : '正在连接 DSH-Reforge')),
-    error ? h('p', { role: 'alert' }, error) : h('iframe', { ref: frame, title: 'DSH-Reforge 经验与学习动态', sandbox: 'allow-scripts', style: { border: 0, width: '100%', flex: 1, minHeight: '70vh', background: 'transparent', padding: '0 12px' } }));
+      h('span', null, info ? '绑定仓库：' + info.repositoryName : error ? '当前对话未连接经验仓库' : '正在连接 DSH-Reforge')),
+    error ? h('div', { role: 'alert', style: { margin: 16, padding: 16, borderRadius: 10, border: '1px solid var(--dsw-alias-border-l3)', color: 'var(--dsw-alias-label-secondary)', lineHeight: 1.7 } },
+      h('strong', null, error), h('p', null, '请在插件配置对应的工作区打开对话。也可以从“插件 → dsh-reforge”查看已绑定仓库的经验。'))
+      : info ? h('iframe', { ref: frame, title: 'DSH-Reforge 经验与学习动态', sandbox: 'allow-scripts', style: { border: 0, width: '100%', flex: 1, minHeight: '70vh', background: 'transparent', padding: '0 12px' } })
+        : h('p', { role: 'status', style: { padding: 16, color: 'var(--dsw-alias-label-secondary)' } }, '正在核对当前仓库…'));
 }
 
 // Browser and host connection augment the same Cordis symbol in this monorepo.
@@ -71,16 +75,10 @@ export function apply(ctx: Omit<Context, 'connection'> & { connection: Connectio
   ctx.slots.inject('main', () => ctx.slots.register({ name: 'main', key: 'dsh-reforge' }, View));
   ctx.slots.inject('settings.plugins.tab', () => ctx.slots.register({ name: 'settings.plugins.tab', id: 'dsh-reforge', label: 'DSH-Reforge', order: 25 }, SettingsView));
   ctx.slots.inject('plugins.bundle.config', () => ctx.slots.register({ name: 'plugins.bundle.config', key: packageName }, SettingsView));
-  ctx.slots.inject('conversation.session.header.actions', () => ctx.slots.register({ name: 'conversation.session.header.actions', id: 'dsh-reforge', order: 25 }, function Entry(props) {
-    const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
-    const open = async () => {
-      setBusy(true); setError('');
-      try {
-        const result = await face.connection.rpc.call(channel, 'dsh-reforge-info', { sessionId: props.sessionId });
-        if (result.ok) face.layout.selectPanel(mainId); else setError(result.error.message);
-      } catch { setError('暂时无法连接 DSH 插件。'); } finally { setBusy(false); }
-    };
-    return h('span', null, h('button', { type: 'button', disabled: busy, onClick: () => { void open(); }, title: '查看当前配置仓库的经验与学习动态' }, '经验'), error && h('span', { role: 'status' }, error));
+  ctx.slots.inject('conversation.view', () => ctx.slots.register({ name: 'conversation.view', id: 'dsh-reforge', label: '经验', order: 25 }, function ExperienceView(props) {
+    // A new keyed scope discards the old iframe before another Session is checked.
+    if (!props.sessionId) return h('p', { role: 'status' }, '请先选择插件配置工作区中的对话。');
+    return h(NativeView, { ...face, inSettings: true, sessionId: props.sessionId, key: props.sessionId });
   }));
   ctx.effect(() => () => { if (ctx.layout.panelInfo.getSnapshot().activePanelId === mainId) ctx.layout.selectPanel(null); }, 'dsh-reforge:native-navigation');
 }

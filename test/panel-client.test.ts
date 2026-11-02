@@ -19,7 +19,7 @@ function browser() {
     setAttribute(name: string, value: string) { this.attributes.set(name, value); }
     getAttribute(name: string) { return this.attributes.get(name) ?? null; }
     addEventListener(name: string, callback: () => void) { this.listeners.set(name, callback); }
-    closest() { return null; }
+    closest(_selector?: string): Element | null { return null; }
     focus() { document.activeElement = this; }
     scrollIntoView() { /* no layout in this port */ }
   }
@@ -50,6 +50,71 @@ function browser() {
   const clickRecordCandidate = async () => { const button = descendants(get('evidence-jobs')).find(e => e.tag === 'button' && e.textContent === '查看候选经验'); assert.ok(button); await button.onclick!(); };
   return { get, current, posts, run, control, click, clickRecordCandidate, descendants, offline: () => { offline = true; }, unknownWrites: () => { postStatus = 0; } };
 }
+
+test('workbench separates all reference records and counts unconfirmed results from the latest feedback', async () => {
+  const b = browser();
+  for (let i = 0; i < 6; i++) b.current.applications.push({ ...b.current.applications[0]!, id: 'additional-' + i });
+  b.current.feedback.push(
+    { id: 'old', applicationId: 'application-one', outcome: 'accepted', note: 'Earlier owner report', createdAt: '2026-10-20T01:00:00Z' },
+    { id: 'new', applicationId: 'application-one', outcome: 'unknown', note: 'Latest result is uncertain', createdAt: '2026-10-20T02:00:00Z' },
+  );
+  await b.run('refresh()');
+  assert.ok(b.get('nav-uses')); assert.ok(b.get('nav-learning'));
+  await b.run("showView('uses')");
+  assert.equal(b.get('home').hidden, true); assert.equal(b.get('uses').hidden, false);
+  assert.equal(b.get('use-history').children.length, 7);
+  assert.match(b.get('use-summary').textContent, /7.*结果.*未确认/);
+  assert.equal(b.posts.length, 0);
+});
+
+test('workbench source-check metric and its drill-down exclude a status without matching proof', async () => {
+  const b = browser(); b.current.experiences[0]!.status = 'source_verified'; await b.run('refresh()');
+  const stat = b.descendants(b.get('stats')).find(e => e.attributes.get('aria-label') === '来源检查通过：0');
+  assert.ok(stat); await stat.onclick!();
+  assert.equal(b.get('library').hidden, false);
+  assert.equal(b.get('library-list').children.some(e => e.tag === 'article'), false);
+  assert.equal(b.current.experiences[0]!.status, 'source_verified'); assert.equal(b.posts.length, 0);
+});
+
+test('workbench builds a reference snapshot once, including hundreds of application versions and latest outcomes', async () => {
+  const b = browser();
+  for (let i = 0; i < 600; i++) {
+    const application = { ...b.current.applications[0]!, id: 'reference-' + i, revision: i % 2 + 1 };
+    b.current.applications.push(application);
+    b.current.feedback.push({ id: 'feedback-' + i, applicationId: application.id, outcome: 'accepted', note: 'Synthetic owner report', createdAt: '2026-10-20T01:00:00Z' });
+  }
+  await b.run('refresh()'); await b.run("showView('uses')");
+  assert.equal(b.get('use-history').children.length, 601);
+  assert.match(b.get('use-summary').textContent, /601.*1 条结果尚未确认/);
+  await b.run("const firstReferences=referenceItems();if(firstReferences!==referenceItems())throw Error('Snapshot was unnecessarily rebuilt');");
+  b.current.feedback.push({ id: 'new-unknown', applicationId: 'reference-0', outcome: 'unknown', note: 'Uncertain latest report', createdAt: '2026-10-20T02:00:00Z' });
+  await b.run('refresh()'); assert.match(b.get('use-summary').textContent, /2 条结果尚未确认/);
+  assert.equal(b.posts.length, 0);
+});
+
+test('workbench restores focus to a reference action after a changed polling snapshot', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("showView('uses')");
+  const first = b.descendants(b.get('use-history')).find(e => e.tag === 'button')!;
+  let observedSelector = '';
+  first.closest = (selector?: string) => { observedSelector = selector ?? ''; return b.get('use-history'); };
+  // The DOM port resolves the newly rebuilt action rather than retaining the old node.
+  Object.assign(b.get('use-history'), { querySelector: () => b.descendants(b.get('use-history')).find(e => e.tag === 'button') });
+  first.focus(); b.current.experiences[0]!.revision = 2; await b.run('refresh()');
+  assert.match(observedSelector, /\.use-history/);
+  const replacement = b.descendants(b.get('use-history')).find(e => e.tag === 'button')!;
+  assert.notEqual(first, replacement);
+  await b.run("if(document.activeElement?.getAttribute('data-focus-key')!=='application-one')throw Error('Reference focus was lost');");
+});
+
+test('workbench navigation preserves an unsaved revision across reference and learning views', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
+  const strategy = b.control('处理策略'); strategy.value = 'Keep my current draft';
+  b.get('detail').listeners.get('input')!();
+  await b.run("showView('uses')"); await b.run("showView('learning')");
+  assert.equal(b.get('detail').hidden, false); assert.equal(b.control('处理策略'), strategy);
+  assert.equal(strategy.value, 'Keep my current draft'); assert.match(b.get('message').textContent, /尚未保存/);
+  assert.equal(b.posts.length, 0);
+});
 
 test('learning home renders untrusted titles as text and keeps technical editors off the default screen', async () => {
   const b = browser(); await b.run('refresh()');
@@ -105,9 +170,9 @@ test('progress alerts navigate out of library or details while preserving an uns
   await b.run('refresh()');
   const follow = async () => { const control = b.descendants(b.get('attention')).find(e => e.tag === 'button' && e.textContent === '查看处理进度'); assert.ok(control); await control.onclick!(); };
   await b.run("showView('library')"); await follow();
-  assert.equal(b.get('home').hidden, false); assert.equal(b.get('learning-area').open, true);
+  assert.equal(b.get('home').hidden, true); assert.equal(b.get('learning').hidden, false); assert.equal(b.get('learning-area').open, true);
   await b.run("openExperience('experience-one')"); await follow();
-  assert.equal(b.get('home').hidden, false); assert.equal(b.get('detail').hidden, true);
+  assert.equal(b.get('learning').hidden, false); assert.equal(b.get('detail').hidden, true);
   await b.run("openExperience('experience-one')");
   const strategy = b.control('处理策略'); strategy.value = '不能丢失的草稿'; b.get('detail').listeners.get('input')!();
   await follow(); assert.equal(b.get('detail').hidden, false); assert.equal(b.control('处理策略'), strategy);

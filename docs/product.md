@@ -1,5 +1,7 @@
 # DSH-Reforge 产品需求 v0.2
 
+T041（2026-11-02）：经验工作台按用户问题组织为概览、经验库、参考记录和学习进度。概览只统计已有经验、实际通过来源检查的记录、候选与提供参考次数；结果未确认单独可见。当前配置、提炼已占额与下一步有明确入口，不虚构收益或金额。DSH 的“经验”采用与对话/轨迹并列的原生标签，会话切换重新核对仓库归属。设计见 [ADR040](decisions/040-experience-workbench.md)。
+
 T040（2026-11-02）：宿主兼容需求 COMP01：经验核心不依赖 DSH SDK；COMP02：每个支持版本都必须经过类型/契约与同包安装的 Windows/Linux 矩阵；COMP03：未知版本保持拒绝；COMP04：升级不改变旧经验、预算、unknown 与授权。设计见 [ADR039](decisions/039-dsh-version-adapters.md)，候选未发布。
 
 T033（2026-10-23）：产品更名为 DSH-Reforge，包/CLI 为 `dsh-reforge@0.1.0-alpha.1`。发行候选与兼容身份见 [ADR035](decisions/035-reforge-first-release.md)，安装见 [指南](installation.md)，公开结果见 [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75)。SQLite 当前 v9；下文早期版本及阶段状态按历史快照理解。来源验证和未来收益仍分开。
