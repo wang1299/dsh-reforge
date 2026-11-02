@@ -67,6 +67,15 @@ test('workbench separates all reference records and counts unconfirmed results f
   assert.equal(b.posts.length, 0);
 });
 
+test('workbench source-check metric and its drill-down exclude a status without matching proof', async () => {
+  const b = browser(); b.current.experiences[0]!.status = 'source_verified'; await b.run('refresh()');
+  const stat = b.descendants(b.get('stats')).find(e => e.attributes.get('aria-label') === '来源检查通过：0');
+  assert.ok(stat); await stat.onclick!();
+  assert.equal(b.get('library').hidden, false);
+  assert.equal(b.get('library-list').children.some(e => e.tag === 'article'), false);
+  assert.equal(b.current.experiences[0]!.status, 'source_verified'); assert.equal(b.posts.length, 0);
+});
+
 test('workbench navigation preserves an unsaved revision across reference and learning views', async () => {
   const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
   const strategy = b.control('处理策略'); strategy.value = 'Keep my current draft';
@@ -131,9 +140,9 @@ test('progress alerts navigate out of library or details while preserving an uns
   await b.run('refresh()');
   const follow = async () => { const control = b.descendants(b.get('attention')).find(e => e.tag === 'button' && e.textContent === '查看处理进度'); assert.ok(control); await control.onclick!(); };
   await b.run("showView('library')"); await follow();
-  assert.equal(b.get('home').hidden, false); assert.equal(b.get('learning-area').open, true);
+  assert.equal(b.get('home').hidden, true); assert.equal(b.get('learning').hidden, false); assert.equal(b.get('learning-area').open, true);
   await b.run("openExperience('experience-one')"); await follow();
-  assert.equal(b.get('home').hidden, false); assert.equal(b.get('detail').hidden, true);
+  assert.equal(b.get('learning').hidden, false); assert.equal(b.get('detail').hidden, true);
   await b.run("openExperience('experience-one')");
   const strategy = b.control('处理策略'); strategy.value = '不能丢失的草稿'; b.get('detail').listeners.get('input')!();
   await follow(); assert.equal(b.get('detail').hidden, false); assert.equal(b.control('处理策略'), strategy);

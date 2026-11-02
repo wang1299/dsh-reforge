@@ -76,6 +76,31 @@ test('shipped client registers the official settings, main and conversation slot
   disposers.forEach(fn => fn()); assert.deepEqual(navigation, [null]);
 });
 
+test('conversation views remount by actual session and discard a late scoped response after disposal', async () => {
+  interface View { type: (props: Record<string, unknown>) => unknown; props: Record<string, unknown> }
+  let exported: { apply: (ctx: unknown) => void } | undefined;
+  let conversation: (props: Record<string, unknown>) => View;
+  const effects: (() => void | (() => void))[] = []; const updates: unknown[] = [];
+  const calls: { payload: unknown; signal: AbortSignal }[] = [];
+  let settle: (value: unknown) => void = () => undefined;
+  const react = { createElement: (type: unknown, props: unknown) => ({ type, props }), useRef: () => ({ current: null }),
+    useState: (value: unknown) => [value, (next: unknown) => updates.push(next)], useEffect: (fn: typeof effects[number]) => effects.push(fn) };
+  const text = await readFile('dist/src/client.js', 'utf8');
+  new Script(text).runInContext(createContext({ AbortController, window: { __ModuleLoader__: { load: (entry: { factory: (require: () => unknown) => typeof exported }) => { exported = entry.factory(() => react); } } } }));
+  exported!.apply({ connection: { rpc: { call: (_channel: string, _endpoint: string, payload: unknown, signal: AbortSignal) => {
+    calls.push({ payload, signal }); return new Promise(resolve => { settle = resolve; });
+  } } }, layout: {}, slots: { inject: (_name: string, fn: () => void) => fn(), register: (options: { name: string }, view: typeof conversation) => { if (options.name === 'conversation.view') conversation = view; } }, effect: () => undefined });
+  const first = conversation!({ sessionId: 'session-a' }); const second = conversation!({ sessionId: 'session-b' });
+  assert.equal(first.props.key, 'session-a'); assert.equal(second.props.key, 'session-b');
+  first.type(first.props); const dispose = effects[0]!(); assert.equal(typeof dispose, 'function');
+  assert.equal((calls[0]!.payload as { sessionId: string }).sessionId, 'session-a');
+  if (typeof dispose === 'function') dispose(); assert.equal(calls[0]!.signal.aborted, true);
+  settle({ ok: true, value: { repositoryId: 'old-repository' } }); await Promise.resolve();
+  assert.equal(updates.some(value => typeof value === 'object' && value !== null), false);
+  effects.length = 0; second.type(second.props); effects[0]!();
+  assert.equal((calls[1]!.payload as { sessionId: string }).sessionId, 'session-b');
+});
+
 test('a working-day of native polling never exhausts writes, and duplicate writes are not replayed', async () => {
   let exported: { apply: (ctx: unknown) => void } | undefined; let main: () => { type: (props: unknown) => unknown; props: unknown };
   let listener: (event: unknown) => void = () => undefined; let forwarded = 0;
