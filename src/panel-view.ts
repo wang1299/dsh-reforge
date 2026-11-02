@@ -38,6 +38,8 @@ const $=id=>document.getElementById(id);
 const presentExperience=${experiencePresentation.toString()};
 const views=['home','library','uses','learning'];
 const viewNames={home:'概览',library:'经验库',uses:'参考记录',learning:'学习进度'};
+let presentationState=null,referenceState=null,referenceSnapshot=[];const presentations=new Map();
+function storyOf(e){if(presentationState!==state){presentations.clear();presentationState=state;}if(!presentations.has(e.id))presentations.set(e.id,presentExperience(state,e));return presentations.get(e.id);}
 const labels={candidate:'待检查',source_verified:'来源已验证',disabled:'已停用'};
 function node(tag,text,cls){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;}
 function button(text,callback,cls){const el=node('button',text,cls||'quiet');el.type='button';el.onclick=callback;return el;}
@@ -45,7 +47,7 @@ function fold(title){const el=node('details',undefined,'fold');el.append(node('s
 function message(text){$('message').textContent=text;}
 function taskName(id){return state.tasks.find(t=>t.id===id)?.summary||'来源任务已不可用';}
 function stamp(value){const d=new Date(value);return Number.isNaN(d.getTime())?'时间未知':new Intl.DateTimeFormat('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(d);}
-function pill(e){const checked=e.status==='source_verified';const valid=checked&&presentExperience(state,e).proof.sourceVerified;return node('span',checked?(valid?'当时的修复检查通过':'来源记录待核对'):(labels[e.status]||'状态待核对'),'pill '+(checked&&!valid?'candidate':e.status));}
+function pill(e){const checked=e.status==='source_verified';const valid=checked&&storyOf(e).proof.sourceVerified;return node('span',checked?(valid?'当时的修复检查通过':'来源记录待核对'):(labels[e.status]||'状态待核对'),'pill '+(checked&&!valid?'candidate':e.status));}
 function snapshotDetail(){const e=state.experiences.find(e=>e.id===selected);return JSON.stringify({experience:e,applications:state.applications.filter(a=>a.experienceId===selected),feedback:state.feedback,tasks:state.tasks,evidence:state.evidence,provenance:state.provenance?.[selected],proof:e?.verificationId?state.verifications[e.verificationId]:null});}
 async function api(path,method='GET',data){if(nativeBridge)return nativeRequest(path,method,data);const res=await fetch(path,{method,headers:{Authorization:'Bearer '+token,...(data?{'Content-Type':'application/json'}:{})},body:data?JSON.stringify(data):undefined});const result=await res.json();if(!res.ok)throw new Error(result.error||'暂时无法读取本地记录');return result;}
 async function action(path,data){if(writing){message('正在保存，请稍候。');return;}writing=true;try{await api(path,'POST',data);const editsDetail=path!=='/api/cleanup';if(editsDetail)dirty=false;await refresh();if(selected&&editsDetail)renderDetail();message('已保存。');}catch(error){message('保存未完成：'+error.message+'。当前编辑已保留，请核对后再操作。');}finally{writing=false;}}
@@ -55,15 +57,15 @@ function renderNavigation(){for(const view of views){$(view).hidden=selected!==n
 function openExperience(id){if(dirty){message('有尚未保存的编辑。请先保存，或选择“放弃未保存编辑”。');return;}selected=id;renderNavigation();renderDetail();$('detail-heading')?.focus();}
 function methodOriginal(e){const original=fold('查看处理方法原文');original.className+=' story-original';original.append(node('p',e.title,'original-title'),node('p',e.strategy,'strategy'));return original;}
 function reminderBlock(story){const block=node('div',undefined,'story-reminder'+(story.reminder?'':' unavailable'));block.append(node('p',story.reminderLabel,'story-label'),node('p',story.reminder||'这条记录还没有中文概述。处理方法以原始语言保存，可展开原文阅读。','story-reminder-text'));if(story.reminderSource==='correction')block.append(node('p','来自当时保存的纠正，完整方法可展开阅读。','story-caption'));return block;}
-function experienceCard(e){const story=presentExperience(state,e);const card=node('article',undefined,'experience-card');const line=node('div',undefined,'card-top');line.append(pill(e),node('span',stamp(e.createdAt),'date'));card.append(line,node('p','当时的任务','story-label'),node('h3',story.problem),reminderBlock(story),methodOriginal(e));const foot=node('div',undefined,'card-foot');const open=button('查看这次经验 →',()=>openExperience(e.id));open.setAttribute('data-focus-key',e.id);foot.append(node('span',story.usage.count?'曾提供 '+story.usage.count+' 次参考':'还没有后续参考记录','muted'),open);card.append(foot);return card;}
+function experienceCard(e){const story=storyOf(e);const card=node('article',undefined,'experience-card');const line=node('div',undefined,'card-top');line.append(pill(e),node('span',stamp(e.createdAt),'date'));card.append(line,node('p','当时的任务','story-label'),node('h3',story.problem),reminderBlock(story),methodOriginal(e));const foot=node('div',undefined,'card-foot');const open=button('查看这次经验 →',()=>openExperience(e.id));open.setAttribute('data-focus-key',e.id);foot.append(node('span',story.usage.count?'曾提供 '+story.usage.count+' 次参考':'还没有后续参考记录','muted'),open);card.append(foot);return card;}
 function renderLists(){
  const fingerprint=JSON.stringify({experiences:state.experiences,tasks:state.tasks,applications:state.applications,feedback:state.feedback,evidence:state.evidence,provenance:state.provenance,proofs:state.verifications,jobs:state.learningJobs,extractions:state.extractionJobs,bundles:state.evidenceBundles,automaticEnabled:state.automaticEnabled,automaticSegments:state.automaticSegments,learning:state.learning,search:$('search').value,filter:$('filter').value});if(fingerprint===listsSnapshot)return;listsSnapshot=fingerprint;
- const focused=document.activeElement;const focusContainer=focused?.closest('.cards,.activity,.attention,.learning-tasks,.stats')?.id;const focusKey=focused?.getAttribute('data-focus-key');
+ const focused=document.activeElement;const focusContainer=focused?.closest('.cards,.activity,.attention,.learning-tasks,.stats,.use-history')?.id;const focusKey=focused?.getAttribute('data-focus-key');
  const experiences=[...state.experiences].sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
  renderOverview(experiences);
  const recent=$('recent');recent.replaceChildren();for(const e of experiences.slice(0,3))recent.append(experienceCard(e));
  if(!experiences.length){const empty=node('div',undefined,'empty');empty.append(node('div','↗','empty-mark'),node('h3','下一次修正，从这里留下经验。'),node('p','在 DSH 中完成一次修复后，这里会显示已保存的经验和处理进展。'),node('p',state.automaticEnabled?'自动学习已开启。照常开发，插件会检查修复证据并整理经验。':'自动学习可在本机配置中开启；当前沿用显式任务记录。','muted'));recent.append(empty);}
- const search=$('search').value.toLocaleLowerCase();const filter=$('filter').value;const items=experiences.filter(e=>(filter==='all'||(filter==='source_verified'?presentExperience(state,e).proof.sourceVerified:e.status===filter))&&[e.title,e.strategy,taskName(e.sourceTaskId)].join(' ').toLocaleLowerCase().includes(search));
+ const search=$('search').value.toLocaleLowerCase();const filter=$('filter').value;const items=experiences.filter(e=>(filter==='all'||(filter==='source_verified'?storyOf(e).proof.sourceVerified:e.status===filter))&&[e.title,e.strategy,taskName(e.sourceTaskId)].join(' ').toLocaleLowerCase().includes(search));
  $('library-list').replaceChildren();for(const e of items)$('library-list').append(experienceCard(e));$('library-count').textContent=items.length+' 条经验';if(!items.length)$('library-list').append(node('p',experiences.length?'没有匹配的经验，试试其他关键词或状态。':'经验会在完成修复并保存后出现在这里。','empty'));
  renderLearning();renderActivity();renderAttention();
  if(focusContainer&&focusKey)$(focusContainer)?.querySelector('[data-focus-key="'+focusKey+'"]')?.focus({preventScroll:true});
@@ -84,10 +86,14 @@ function renderLearning(){
  if(!learning.tasks.length)list.append(node('p',learning.automatic?'还没有新的修复进度。完成一次可验证的修复后，进度会出现在这里。':'暂无新的自动学习进度；已有经验和参考记录仍可查看。','empty small'));
 }
 function referenceItems(){
- return state.applications.slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt)||a.id.localeCompare(b.id)).map(use=>{const e=state.experiences.find(e=>e.id===use.experienceId);const story=e?presentExperience(state,e):null;const feedback=state.feedback.filter(f=>f.applicationId===use.id).map((f,i)=>({f,i})).sort((a,b)=>a.f.createdAt.localeCompare(b.f.createdAt)||a.i-b.i).at(-1)?.f;return {use,e,story,usage:story?.usage.items.find(item=>item.id===use.id),unknown:!feedback||feedback.outcome==='unknown'};});
+ if(referenceState===state)return referenceSnapshot;
+ const latest=new Map();for(const feedback of state.feedback){const previous=latest.get(feedback.applicationId);if(!previous||feedback.createdAt>=previous.createdAt)latest.set(feedback.applicationId,feedback);}
+ const experiences=new Map(state.experiences.map(e=>[e.id,e]));const stories=new Map();const usage=new Map();for(const e of state.experiences){const story=storyOf(e);stories.set(e.id,story);for(const item of story.usage.items)usage.set(item.id,item);}
+ referenceSnapshot=state.applications.slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt)||a.id.localeCompare(b.id)).map(use=>{const feedback=latest.get(use.id);return {use,e:experiences.get(use.experienceId),story:stories.get(use.experienceId),usage:usage.get(use.id),unknown:!feedback||feedback.outcome==='unknown'};});
+ referenceState=state;return referenceSnapshot;
 }
 function renderOverview(experiences){
- const uses=referenceItems();const unconfirmed=uses.filter(item=>item.unknown).length;const verified=experiences.filter(e=>presentExperience(state,e).proof.sourceVerified).length;const pending=experiences.filter(e=>e.status==='candidate').length;
+ const uses=referenceItems();const unconfirmed=uses.filter(item=>item.unknown).length;const verified=experiences.filter(e=>storyOf(e).proof.sourceVerified).length;const pending=experiences.filter(e=>e.status==='candidate').length;
  $('stats').replaceChildren();for(const [label,value,view,filter,note] of [['已保存经验',experiences.length,'library','all','包含待检查与已停用记录'],['来源检查通过',verified,'library','source_verified','说明当时修复，后续仍需验收'],['等待检查',pending,'library','candidate','来源验证前不用于新任务'],['提供参考',uses.length,'uses',null,unconfirmed+' 条结果未确认']]){const stat=button('',()=>navigate(view,filter),'stat');stat.setAttribute('aria-label',label+'：'+value);stat.setAttribute('data-focus-key','stat-'+label);stat.append(node('span',label),node('strong',String(value)),node('small',note));$('stats').append(stat);}
  const mode=$('mode-status');mode.replaceChildren();const learning=state.learning;mode.append(node('p','当前配置','status-label'),node('h2',(learning?.automatic??state.automaticEnabled)?'自动学习已开启':'自动学习未开启'),node('p',(learning?.automatic??state.automaticEnabled)?'新修复按已有执行、共享与提炼授权处理。':'已有经验仍可查看；新的修复不会自动形成经验。','muted'));
  const quota=learning?.quota;mode.append(node('p',quota?quota.consistent?'提炼已占用 '+quota.used+' / '+quota.limit+' 次，剩余 '+quota.remaining+' 次。':'提炼授权待核对。':'尚未配置模型提炼授权。','muted'));const unknown=(state.extractionJobs||[]).filter(j=>j.state==='unknown').length;if(unknown)mode.append(node('p',unknown+' 条提炼结果未知，旧占额保留，不会自动重跑。','muted'));mode.append(button('查看配置与处理进度 →',()=>showView('learning')));
@@ -113,7 +119,7 @@ function renderAttention(){
 function renderDetail(){
  const e=state.experiences.find(e=>e.id===selected);const root=$('detail');root.replaceChildren();dirty=false;detailSnapshot=snapshotDetail();
  if(!e){selected=null;renderNavigation();message('这条经验已不可用，请重新选择。');return;}
- const story=presentExperience(state,e);
+ const story=storyOf(e);
  const tools=node('div',undefined,'detail-tools');tools.append(button('← 返回'+viewNames[activeView],()=>showView(activeView)));
  const discard=button('放弃未保存编辑',()=>{dirty=false;renderDetail();message('已放弃未保存编辑。');},'quiet danger');discard.id='discard-edit';discard.hidden=true;tools.append(discard);root.append(tools);
  const header=node('header',undefined,'story-detail-header');const heading=node('h1',story.problem);heading.id='detail-heading';heading.tabIndex=-1;header.append(pill(e),heading,node('p',stamp(e.createdAt)+' 留下的修复记录','muted'));root.append(header);

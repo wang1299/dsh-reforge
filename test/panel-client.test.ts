@@ -19,7 +19,7 @@ function browser() {
     setAttribute(name: string, value: string) { this.attributes.set(name, value); }
     getAttribute(name: string) { return this.attributes.get(name) ?? null; }
     addEventListener(name: string, callback: () => void) { this.listeners.set(name, callback); }
-    closest() { return null; }
+    closest(_selector?: string): Element | null { return null; }
     focus() { document.activeElement = this; }
     scrollIntoView() { /* no layout in this port */ }
   }
@@ -74,6 +74,36 @@ test('workbench source-check metric and its drill-down exclude a status without 
   assert.equal(b.get('library').hidden, false);
   assert.equal(b.get('library-list').children.some(e => e.tag === 'article'), false);
   assert.equal(b.current.experiences[0]!.status, 'source_verified'); assert.equal(b.posts.length, 0);
+});
+
+test('workbench builds a reference snapshot once, including hundreds of application versions and latest outcomes', async () => {
+  const b = browser();
+  for (let i = 0; i < 600; i++) {
+    const application = { ...b.current.applications[0]!, id: 'reference-' + i, revision: i % 2 + 1 };
+    b.current.applications.push(application);
+    b.current.feedback.push({ id: 'feedback-' + i, applicationId: application.id, outcome: 'accepted', note: 'Synthetic owner report', createdAt: '2026-10-20T01:00:00Z' });
+  }
+  await b.run('refresh()'); await b.run("showView('uses')");
+  assert.equal(b.get('use-history').children.length, 601);
+  assert.match(b.get('use-summary').textContent, /601.*1 条结果尚未确认/);
+  await b.run("const firstReferences=referenceItems();if(firstReferences!==referenceItems())throw Error('Snapshot was unnecessarily rebuilt');");
+  b.current.feedback.push({ id: 'new-unknown', applicationId: 'reference-0', outcome: 'unknown', note: 'Uncertain latest report', createdAt: '2026-10-20T02:00:00Z' });
+  await b.run('refresh()'); assert.match(b.get('use-summary').textContent, /2 条结果尚未确认/);
+  assert.equal(b.posts.length, 0);
+});
+
+test('workbench restores focus to a reference action after a changed polling snapshot', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("showView('uses')");
+  const first = b.descendants(b.get('use-history')).find(e => e.tag === 'button')!;
+  let observedSelector = '';
+  first.closest = (selector?: string) => { observedSelector = selector ?? ''; return b.get('use-history'); };
+  // The DOM port resolves the newly rebuilt action rather than retaining the old node.
+  Object.assign(b.get('use-history'), { querySelector: () => b.descendants(b.get('use-history')).find(e => e.tag === 'button') });
+  first.focus(); b.current.experiences[0]!.revision = 2; await b.run('refresh()');
+  assert.match(observedSelector, /\.use-history/);
+  const replacement = b.descendants(b.get('use-history')).find(e => e.tag === 'button')!;
+  assert.notEqual(first, replacement);
+  await b.run("if(document.activeElement?.getAttribute('data-focus-key')!=='application-one')throw Error('Reference focus was lost');");
 });
 
 test('workbench navigation preserves an unsaved revision across reference and learning views', async () => {
