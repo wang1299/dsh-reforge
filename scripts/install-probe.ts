@@ -14,10 +14,11 @@ import { fixture } from '../test/fixture.js';
 import { installedLearning } from './installed-learning.js';
 import { installedScenarios } from './installed-learning-report.js';
 import { rehearseAutomatic } from './automatic-rehearsal.js';
+import { assertSupportedDshVersion } from '../src/dsh-adapter-policy.js';
 import { packageName } from '../src/identity.js';
 
 // Explicit, optional package verification. Uses synthetic data and never opens an owner's DSH profile.
-const archive = resolve(process.argv[2] ?? '.probe-work/dsh-reforge-0.1.0-alpha.1.tgz');
+const archive = resolve(process.argv[2] ?? '.probe-work/dsh-reforge-0.1.0-alpha.2.tgz');
 const archiveDigest = createHash('sha256').update(await readFile(archive)).digest('hex');
 const learning = process.argv.includes('--learning');
 const workRoot = resolve('.probe-work'); await mkdir(workRoot, { recursive: true });
@@ -27,7 +28,7 @@ const anchor = join(host, 'package.json');
 await writeFile(anchor, JSON.stringify({ name: 'evolve-install-probe-host', version: '0.0.0', type: 'module' }));
 const profile = join(work, 'profile');
 initProfile(profile, []);
-assert.equal(getDshRuntimeVersion(), '0.2.0-rc.2');
+assertSupportedDshVersion(getDshRuntimeVersion());
 const result = await runPluginCommand({ profile: 'evolve-install-probe', dir: profile, home: work, installAnchor: anchor, cwd: work },
   ['add', archive, '--ignore-scripts', '--reporter=append-only', `--store-dir=${join(work, 'store')}`],
   { execution: 'service', outputBytes: 8000, idleTimeoutMs: 45000, signal: AbortSignal.timeout(120000) });

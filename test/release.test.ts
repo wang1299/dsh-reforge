@@ -59,8 +59,8 @@ test('release annotation and registry bind owner, source, version and exact arti
   assert.throws(() => validateRegistry({ ...metadata, dist: { ...metadata.dist, integrity: 'different' } }, tag));
   assert.throws(() => validateRegistry({ ...metadata, dist: { ...metadata.dist, tarball: 'https://example.invalid/package.tgz' } }, tag));
   const frozen = { commit: firstPublishedArtifact.sourceCommit, integrity: firstPublishedArtifact.integrity, shasum: firstPublishedArtifact.shasum };
-  const historical = { ...metadata, repository: { url: 'git+https://github.com/' + firstPublishedArtifact.repository + '.git' },
-    dist: { ...metadata.dist, integrity: frozen.integrity, shasum: frozen.shasum } };
+  const historical = { ...metadata, version: firstPublishedArtifact.version, repository: { url: 'git+https://github.com/' + firstPublishedArtifact.repository + '.git' },
+    dist: { ...metadata.dist, integrity: frozen.integrity, shasum: frozen.shasum, tarball: release.registry + "/" + release.name + "/-/" + release.name + "-" + firstPublishedArtifact.version + ".tgz" } };
   assert.ok(validateRegistry(historical, frozen));
   assert.throws(() => validateRegistry(historical, { ...frozen, commit: 'a'.repeat(40) }));
   assert.throws(() => validateRegistry(historical, { ...frozen, integrity: tag.integrity }));
@@ -68,6 +68,7 @@ test('release annotation and registry bind owner, source, version and exact arti
 });
 
 test('release checkout restores the remote annotation after a SHA fetch replaces its local tag reference', async () => {
+  const historicalTag = 'v' + firstPublishedArtifact.version;
   const work = resolve(await workDir('release-checkout-'));
   const origin = join(work, 'origin.git'), source = join(work, 'source'), checkout = join(work, 'checkout');
   const git = (cwd: string, ...args: string[]): string => execFileSync('git', args, { cwd, encoding: 'utf8', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] }).trim();
@@ -76,24 +77,24 @@ test('release checkout restores the remote annotation after a SHA fetch replaces
   await writeFile(join(source, 'synthetic.txt'), 'Synthetic release checkout only\n');
   git(source, 'add', 'synthetic.txt'); git(source, 'commit', '-m', 'Synthetic release source');
   const commit = git(source, 'rev-parse', 'HEAD');
-  const annotation = 'DSH-Reforge ' + release.tag + '\n\npackage: dsh-reforge\nversion: ' + release.version + '\nsource-commit: ' + commit
+  const annotation = 'DSH-Reforge ' + historicalTag + '\n\npackage: dsh-reforge\nversion: ' + firstPublishedArtifact.version + '\nsource-commit: ' + commit
     + '\nnpm-integrity: sha512-' + 'A'.repeat(86) + '==\nnpm-shasum: ' + 'b'.repeat(40) + '\nnpm-publisher: wang129\n';
-  git(source, 'tag', '-a', release.tag, '-m', annotation); const tagObject = git(source, 'rev-parse', release.tag);
-  git(source, 'remote', 'add', 'origin', origin); git(source, 'push', 'origin', 'main', 'refs/tags/' + release.tag);
+  git(source, 'tag', '-a', historicalTag, '-m', annotation); const tagObject = git(source, 'rev-parse', historicalTag);
+  git(source, 'remote', 'add', 'origin', origin); git(source, 'push', 'origin', 'main', 'refs/tags/' + historicalTag);
   git(work, 'init', checkout); git(checkout, 'remote', 'add', 'origin', origin);
-  git(checkout, 'fetch', '--no-tags', 'origin', '+refs/tags/' + release.tag + ':refs/tags/' + release.tag);
+  git(checkout, 'fetch', '--no-tags', 'origin', '+refs/tags/' + historicalTag + ':refs/tags/' + historicalTag);
   git(checkout, 'checkout', '--detach', commit);
   // This is the second fetch recorded in the failed hosted checkout, using a
   // peeled commit as the source and the annotated tag's ref as the destination.
-  git(checkout, 'fetch', '--no-tags', 'origin', '+' + commit + ':refs/tags/' + release.tag);
-  assert.equal(git(checkout, 'cat-file', '-t', 'refs/tags/' + release.tag), 'commit');
+  git(checkout, 'fetch', '--no-tags', 'origin', '+' + commit + ':refs/tags/' + historicalTag);
+  assert.equal(git(checkout, 'cat-file', '-t', 'refs/tags/' + historicalTag), 'commit');
   const workflow = await readFile('.github/workflows/release.yml', 'utf8');
   const command = workflow.match(/- name: Restore annotated release tag\s+run: (git fetch --no-tags origin \+refs\/tags\/[^\s:]+:refs\/tags\/[^\s]+)\r?\n/);
   assert.ok(command, 'Workflow must restore the remote annotated tag before release validation');
   git(checkout, ...command[1]!.split(' ').slice(1));
-  assert.equal(git(checkout, 'cat-file', '-t', 'refs/tags/' + release.tag), 'tag');
-  assert.equal(git(checkout, 'rev-parse', 'refs/tags/' + release.tag), tagObject);
+  assert.equal(git(checkout, 'cat-file', '-t', 'refs/tags/' + historicalTag), 'tag');
+  assert.equal(git(checkout, 'rev-parse', 'refs/tags/' + historicalTag), tagObject);
   assert.equal(git(checkout, 'rev-parse', 'HEAD'), commit);
-  assert.equal(parseReleaseTag(git(checkout, 'for-each-ref', '--format=%(contents)', 'refs/tags/' + release.tag)).commit, commit);
-  assert.equal(git(checkout, 'ls-remote', 'origin', 'refs/tags/' + release.tag).split(/\s+/)[0], tagObject);
+  assert.equal(parseReleaseTag(git(checkout, 'for-each-ref', '--format=%(contents)', 'refs/tags/' + historicalTag), firstPublishedArtifact.version).commit, commit);
+  assert.equal(git(checkout, 'ls-remote', 'origin', 'refs/tags/' + historicalTag).split(/\s+/)[0], tagObject);
 });

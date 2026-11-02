@@ -4,13 +4,16 @@ import { Store } from '../src/store.js';
 import { EvolveService } from '../src/service.js';
 import { nativeHandler } from '../src/native-rpc.js';
 import { fixture } from './fixture.js';
-import { OperatorPeer } from '@deepseek-ai/dsh-client-connection';
+import { HostConnectionService } from '@deepseek-ai/dsh-client-connection';
+import { browserOwner } from '../src/dsh-adapter-rpc.js';
 import { Context } from '@deepseek-ai/cordis';
 
 test('native RPC shares experience state while fencing peers, repository, schema and stale revisions', async () => {
   const f = await fixture(); const store = new Store(':memory:');
   const service = new EvolveService(store, f.repo, { trusted: false, python: 'python', acceptanceDir: f.acceptance, regressionPath: 'tests', timeoutMs: 10000 });
-  const owner = new Context(); const peer = new OperatorPeer(owner); let active = true;
+  const owner = new Context();
+  const connection = new HostConnectionService(owner, [], {} as ConstructorParameters<typeof HostConnectionService>[2]);
+  const peer = browserOwner(connection); let active = true;
   const handler = nativeHandler(service, peer, () => active, () => false);
   const signal = new AbortController().signal;
   const call = (endpoint: string, payload: unknown) => handler(endpoint, payload, signal, peer);

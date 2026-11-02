@@ -4,7 +4,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { list } from 'tar';
 import { firstPublishedArtifact } from '../src/legacy.js';
 
-export const release = { name: 'dsh-reforge', version: '0.1.0-alpha.1', tag: 'v0.1.0-alpha.1',
+export const release = { name: 'dsh-reforge', version: '0.1.0-alpha.2', tag: 'v0.1.0-alpha.2',
   repository: 'wang1299/dsh-reforge', publisher: 'wang129', registry: 'https://registry.npmjs.org' } as const;
 const required = ['package.json', 'README.md', 'LICENSE', 'CHANGELOG.md', 'docs/installation.md', 'cordis.patch.yml',
   'dist/src/cli.js', 'dist/src/dsh.js', 'dist/src/client.js', 'dist/src/service.js'];
@@ -48,23 +48,24 @@ export async function auditArchive(file: string, historicalFirstRelease = false)
   assert.ok(manifest); const metadata = JSON.parse(manifest.toString('utf8')) as RecordValue;
   if (historicalFirstRelease) {
     assert.equal(createHash('sha256').update(buffer).digest('hex'), firstPublishedArtifact.sha256, 'Historical exception requires the exact frozen first artifact');
+    assert.equal(metadata.version, firstPublishedArtifact.version);
     assert.deepEqual(metadata.repository, { type: 'git', url: 'git+https://github.com/' + firstPublishedArtifact.repository + '.git' });
-    validateManifest({ ...metadata, repository: { type: 'git', url: 'git+https://github.com/' + release.repository + '.git' } });
+    validateManifest({ ...metadata, version: release.version, repository: { type: 'git', url: 'git+https://github.com/' + release.repository + '.git' } });
   } else validateManifest(metadata);
   return { files: [...files].sort(), sha256: createHash('sha256').update(buffer).digest('hex'),
     integrity: 'sha512-' + createHash('sha512').update(buffer).digest('base64'), shasum: createHash('sha1').update(buffer).digest('hex'), bytes: buffer.length };
 }
 
-export function parseReleaseTag(message: string): { commit: string; integrity: string; shasum: string } {
+export function parseReleaseTag(message: string, expectedVersion: string = release.version): { commit: string; integrity: string; shasum: string } {
   const lines = message.trim().split(/\r?\n/);
-  assert.equal(lines.shift(), 'DSH-Reforge ' + release.tag); assert.equal(lines.shift(), '');
+  assert.equal(lines.shift(), 'DSH-Reforge v' + expectedVersion); assert.equal(lines.shift(), '');
   const fields: Record<string, string> = {};
   for (const line of lines) {
     const match = /^([a-z-]+): (\S+)$/.exec(line); assert.ok(match, 'Malformed release annotation');
     assert.ok(!Object.hasOwn(fields, match[1]!), 'Duplicate tag field'); fields[match[1]!] = match[2]!;
   }
   assert.deepEqual(Object.keys(fields).sort(), ['package', 'version', 'source-commit', 'npm-integrity', 'npm-shasum', 'npm-publisher'].sort());
-  assert.equal(fields.package, release.name); assert.equal(fields.version, release.version); assert.equal(fields['npm-publisher'], release.publisher);
+  assert.equal(fields.package, release.name); assert.equal(fields.version, expectedVersion); assert.equal(fields['npm-publisher'], release.publisher);
   assert.match(fields['source-commit']!, /^[a-f0-9]{40}$/); assert.match(fields['npm-shasum']!, /^[a-f0-9]{40}$/);
   assert.match(fields['npm-integrity']!, /^sha512-[A-Za-z0-9+/]{86}==$/);
   return { commit: fields['source-commit']!, integrity: fields['npm-integrity']!, shasum: fields['npm-shasum']! };
@@ -72,14 +73,15 @@ export function parseReleaseTag(message: string): { commit: string; integrity: s
 
 export function validateRegistry(metadata: unknown, tag: ReturnType<typeof parseReleaseTag>): string {
   const p = metadata as RecordValue; const dist = p.dist as RecordValue;
-  assert.equal(p.name, release.name); assert.equal(p.version, release.version);
+  assert.equal(p.name, release.name);
   const historical = tag.commit === firstPublishedArtifact.sourceCommit;
+  assert.equal(p.version, historical ? firstPublishedArtifact.version : release.version);
   if (historical) {
     assert.equal(tag.integrity, firstPublishedArtifact.integrity); assert.equal(tag.shasum, firstPublishedArtifact.shasum);
   }
   assert.equal((p.repository as RecordValue).url, 'git+https://github.com/' + (historical ? firstPublishedArtifact.repository : release.repository) + '.git');
   assert.equal((p._npmUser as RecordValue).name, release.publisher);
   assert.equal(dist.integrity, tag.integrity); assert.equal(dist.shasum, tag.shasum);
-  const tarball = release.registry + '/' + release.name + '/-/' + release.name + '-' + release.version + '.tgz';
+  const tarball = release.registry + '/' + release.name + '/-/' + release.name + '-' + (historical ? firstPublishedArtifact.version : release.version) + '.tgz';
   assert.equal(dist.tarball, tarball); return tarball;
 }

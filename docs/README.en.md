@@ -25,6 +25,9 @@
 
 **Experimental alpha: `dsh-reforge@0.1.0-alpha.1`.** Published on October 23, 2026. Public npm download and installation were checked; the [GitHub Release](https://github.com/wang1299/dsh-reforge/releases/tag/v0.1.0-alpha.1) assets and digests were verified. See [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75) for the results. The source repository is now `wang1299/dsh-reforge`; GitHub redirects its former address. This independent community project is not officially reviewed, endorsed, or security certified by DeepSeek.
 
+
+Development candidate: the source prepares `0.1.0-alpha.2` for a tested matrix of DSH `0.2.0-rc.2` and `0.2.1-rc.5`. See the [version matrix (Chinese)](dsh-version-matrix.md) and [Issue #93](https://github.com/wang1299/dsh-reforge/issues/93) for acceptance results. This candidate is not published. The public alpha.1 still targets the older host; a marketplace listing does not establish compatibility with a newer DSH.
+
 ## What it does
 
 - **Records bounded evidence:** once the repository owner enables learning, direct user requests create execution segments with short summaries and limited Python code snapshots.

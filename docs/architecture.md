@@ -1,5 +1,7 @@
 # DSH-Reforge 架构总纲 v0.2
 
+T040 增量：稳定入口 `dsh.ts` / `dsh-extraction.ts` / `native-client.ts` / `native-rpc.ts` 代理到 `dsh-adapter-*`；所有官方 SDK import 只允许出现在适配模块中。核心模型、Store、Service、验证与面板投影不依赖 SDK。支持策略由 `dsh-adapter-policy.ts` 集中定义，精确宿主差异在适配边界内消化，独立矩阵指南见 [版本兼容](dsh-version-matrix.md)。
+
 T033（2026-10-23）：产品更名为 DSH-Reforge，包/CLI 为 `dsh-reforge@0.1.0-alpha.1`。发行候选与兼容身份见 [ADR035](decisions/035-reforge-first-release.md)，安装见 [指南](installation.md)，公开结果见 [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75)。SQLite 当前 v9；下文早期版本及阶段状态按历史快照理解。来源验证和未来收益仍分开。
 
 ## 1. 范围、权威与版本
