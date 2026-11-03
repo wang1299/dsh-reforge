@@ -40,6 +40,16 @@ T040 / 开发候选：当前源码准备 `0.1.0-alpha.2`，目标验证 DSH `0.2
 
 来源验证说明当时的修复通过检查，**不证明经验能改善未来任务**。已有小规模对照没有观察到验收成功率改善，不能宣传普遍有效；结果与失败见 [评价记录](https://github.com/wang1299/dsh-reforge/blob/main/docs/development/T008c-acceptance.md)。
 
+## 演示视频：保存失败，也不丢输入
+
+[![DSH-Reforge 首次任务演示：保存失败，也不丢输入](https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task-demo-1080p.mp4)
+
+[查看 / 下载 MP4（2 分 02 秒，1080p）](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task-demo-1080p.mp4) · [中文字幕](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task.zh-CN.srt) · [案例与验收说明](https://github.com/wang1299/dsh-reforge/blob/main/docs/demos/first-task.md)
+
+从客户表单丢失输入开始，演示明确纠正、实际补丁、独立验收和经验入库：原始版本 2 项验收失败，修复版本 2/2 通过，回归测试 3/3 通过。
+
+**本片为合成数据的本地显式记录案例**，展示源码 alpha.2 的独立工作台；修复由 Codex 准备，示例页面应用补丁。没有录制 DSH 模型自主编码或自动提炼，没有付费模型调用，也没有评价后续任务收益。公开 npm alpha.1 的版本范围不变。
+
 ## 安装与打开
 
 需要 **Node.js ≥24.10、DSH 0.2.0-rc.2**。修复验证还需要 Git、Python ≥3.10 和 pytest；CI 固定 pytest 9.1.1。只承诺该 DSH 版本，不适用于 DeepSeek 官方聊天网页。

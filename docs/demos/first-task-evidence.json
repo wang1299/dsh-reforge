@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "recordedOn": "2026-11-03",
+  "sourceCommit": "dd8a0fd17290062f4a5da5763b1b0f323ea8d39a",
+  "kind": "synthetic-first-task-explicit-recording",
+  "workflow": {
+    "recording": "continuous browser framebuffer capture, edited with caption and narration holds",
+    "sourceCaptureFps": "approximately 4–6",
+    "repair": "Codex-prepared patch applied and committed by the demo page",
+    "experienceRecording": "real EvolveService methods with correction citations and verify()",
+    "viewer": "real standalone workbench",
+    "dshAutonomousCodingRecorded": false,
+    "automaticCaptureRecorded": false,
+    "automaticExtraction": false,
+    "fullDshHostEndToEndRecorded": false
+  },
+  "video": {
+    "durationSeconds": 122.178,
+    "width": 1920,
+    "height": 1080,
+    "encodedFps": 30,
+    "audio": "offline synthetic Chinese narration",
+    "decodeCheck": "passed"
+  },
+  "assets": [
+    {
+      "path": "../assets/demos/first-task-demo-1080p.mp4",
+      "bytes": 5188093,
+      "sha256": "296de4b317ec80f862d5a28c9471d0a265025b1dc85f0535043bc3cf56b952f0"
+    },
+    {
+      "path": "../assets/demos/first-task-poster.jpg",
+      "bytes": 99357,
+      "sha256": "52bc589730c8d70480b03b9d53cea67d055867054925294471a648b9d5c0aefb"
+    },
+    {
+      "path": "../assets/demos/first-task.zh-CN.srt",
+      "bytes": 2110,
+      "sha256": "34e669d06d871aadfa964b87dc4779809af7938fbf4321edadc0361c4ed0896c"
+    },
+    {
+      "path": "../assets/demos/first-task.en.srt",
+      "bytes": 2111,
+      "sha256": "1588bd47a81e97cb89816255bcbe7aa83b0e4b689a9e400c24dbdc4e83d9711d"
+    }
+  ],
+  "acceptance": {
+    "original": {
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "fixed": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "regression": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "browser": {
+    "saveRequests": 3,
+    "successfulSaves": 1,
+    "doubleClickAddedRequests": 1,
+    "failureRetainedAllInputs": true,
+    "successClearedInputs": true
+  },
+  "experience": {
+    "sourceVerified": 1,
+    "applications": 0,
+    "feedback": 0
+  },
+  "paidModelCalls": 0,
+  "futureTaskBenefit": "not_evaluated",
+  "privateDataIncluded": false
+}

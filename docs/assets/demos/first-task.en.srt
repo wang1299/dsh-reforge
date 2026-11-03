@@ -1,0 +1,95 @@
+1
+00:00:00,500 --> 00:00:03,510
+Keep user input, even when saving fails.
+
+2
+00:00:03,670 --> 00:00:07,934
+How can a real repair leave experience backed by evidence?
+
+3
+00:00:08,814 --> 00:00:12,638
+The user fills in customer details and clicks Save.
+
+4
+00:00:12,798 --> 00:00:17,228
+The service fails, and all the input disappears.
+
+5
+00:00:20,714 --> 00:00:24,640
+The explicit correction: preserve every input on failure.
+
+6
+00:00:24,800 --> 00:00:29,244
+Clear the form only after saving succeeds.
+
+7
+00:00:30,124 --> 00:00:34,181
+The cause: the draft is cleared before the save.
+
+8
+00:00:34,341 --> 00:00:38,883
+Move that operation until after success is confirmed.
+
+9
+00:00:41,524 --> 00:00:44,121
+Simulate the same failure again.
+
+10
+00:00:44,281 --> 00:00:49,510
+The name, phone, and note remain intact for a manual retry.
+
+11
+00:00:53,724 --> 00:00:56,645
+Restore the service and double-click Save.
+
+12
+00:00:56,805 --> 00:01:01,639
+Only one request is added. The form clears after success.
+
+13
+00:01:02,519 --> 00:01:07,604
+The real verifier replays the original and fixed versions.
+
+14
+00:01:07,764 --> 00:01:12,814
+Both original acceptance checks fail; both fixed checks pass.
+
+15
+00:01:12,974 --> 00:01:17,030
+All three regression tests also pass.
+
+16
+00:01:17,910 --> 00:01:21,213
+Open the real plugin's standalone workbench.
+
+17
+00:01:21,373 --> 00:01:25,704
+This repair has left one source-verified experience.
+
+18
+00:01:26,584 --> 00:01:31,242
+Find the original problem and explicit correction in the library.
+
+19
+00:01:33,084 --> 00:01:36,997
+Open the details to review the reminder from this repair.
+
+20
+00:01:37,157 --> 00:01:41,690
+The source repair passed. Later tasks still need their own checks.
+
+21
+00:01:42,570 --> 00:01:48,104
+Expand the evidence to inspect original, fixed, and regression results.
+
+22
+00:01:48,264 --> 00:01:52,228
+This experience has not yet been offered to a later task.
+
+23
+00:01:53,108 --> 00:01:56,985
+This video shows a first repair with local explicit recording.
+
+24
+00:01:57,145 --> 00:02:01,798
+No paid model calls were made. Future benefit was not evaluated.
