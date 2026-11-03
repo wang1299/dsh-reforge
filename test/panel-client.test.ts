@@ -90,6 +90,16 @@ test('manual refresh exposes its pending state and keeps an edited detail intact
   assert.equal(b.control('处理策略'), strategy); assert.match(b.get('message').textContent, /未保存编辑/); assert.equal(b.posts.length, 0);
 });
 
+test('an earlier manual refresh cannot replace a pending save notice with a success notice', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
+  b.control('处理策略').value = 'Submitted while a read was pending'; b.get('detail').listeners.get('input')!();
+  const releaseRead = b.holdReads(); const refresh = b.get('refresh').onclick!();
+  const releaseWrite = b.holdWrites(); b.acknowledgeWrites(); const save = b.click('保存为待验证版本');
+  releaseRead(); await refresh;
+  assert.match(b.get('message').textContent, /正在保存/); assert.equal(b.get('message').getAttribute('data-tone'), 'busy');
+  releaseWrite(); await save; assert.match(b.get('message').textContent, /已保存/); assert.equal(b.posts.length, 1);
+});
+
 test('workbench separates all reference records and counts unconfirmed results from the latest feedback', async () => {
   const b = browser();
   for (let i = 0; i < 6; i++) b.current.applications.push({ ...b.current.applications[0]!, id: 'additional-' + i });
