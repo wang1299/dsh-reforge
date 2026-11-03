@@ -38,6 +38,16 @@ Development candidate: the source prepares `0.1.0-alpha.2` for a tested matrix o
 
 Source verification establishes that a repair passed its checks at that time. **It does not prove that the experience improves future tasks.** Earlier small controlled comparisons did not show an improvement in acceptance success rates; see the [evaluation record (Chinese)](development/T008c-acceptance.md).
 
+## Demo: keep user input when saving fails
+
+[![DSH-Reforge first-task demo: keep user input when saving fails](https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)
+
+[Download demo MP4 (2:02, 1080p)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4) · [English subtitles](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task.en.srt) · [Case and acceptance notes](https://github.com/wang1299/dsh-reforge/blob/main/docs/demos/first-task.en.md)
+
+The video follows a customer form that loses input after a failed save: explicit correction, a real patch, independent acceptance, and a stored experience. Both original acceptance checks fail; the fixed version passes 2/2 checks and 3/3 regression tests. The video has Chinese narration and burned-in Chinese captions; English subtitles are provided as a separate file.
+
+**This is a synthetic, local explicit-recording case**, using the alpha.2 source candidate's standalone workbench. Codex prepared the patch, which the demo page applies. It does not record DSH autonomous coding or automatic extraction, makes no paid model calls, and does not evaluate future-task benefit. The public npm alpha.1 compatibility scope is unchanged.
+
 ## Install and open
 
 Requires **Node.js ≥24.10 and DSH 0.2.0-rc.2**. Repair verification also requires Git, Python ≥3.10, and pytest; CI pins pytest 9.1.1. Compatibility is limited to that DSH version. The plugin does not run in the DeepSeek chat website.
