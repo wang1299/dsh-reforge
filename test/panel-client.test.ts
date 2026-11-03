@@ -172,6 +172,19 @@ test('the overview metrics stay on home and cannot reappear over the library dur
   await b.run("showView('home')"); assert.equal(b.get('overview').hidden, false);
 });
 
+test('page context follows navigation and detail, while a blocked draft navigation preserves its heading and refresh action', async () => {
+  const b = browser(); await b.run('refresh()');
+  assert.equal(b.get('view-title').textContent, '经验概览');
+  await b.run("showView('library')"); assert.equal(b.get('view-title').textContent, '经验库');
+  await b.run("openExperience('experience-one')"); assert.equal(b.get('view-title').hidden, true);
+  assert.equal(b.get('refresh').hidden, false); assert.equal(b.get('detail-heading').textContent, '转账失败时恢复余额');
+  b.control('处理策略').value = 'Keep the same detail'; b.get('detail').listeners.get('input')!();
+  await b.run("showView('learning')"); assert.equal(b.get('view-title').hidden, true);
+  assert.equal(b.get('detail-heading').textContent, '转账失败时恢复余额');
+  await b.click('放弃未保存编辑'); await b.run("showView('uses')");
+  assert.equal(b.get('view-title').hidden, false); assert.equal(b.get('view-title').textContent, '参考记录'); assert.equal(b.posts.length, 0);
+});
+
 test('an empty workbench routes to setup and recording without implying that experience already exists', async () => {
   const b = browser(); b.current.experiences.length = 0; b.current.applications.length = 0;
   await b.run('refresh()'); assert.match(b.get('overview-next').textContent, /先留下第一条经验/);

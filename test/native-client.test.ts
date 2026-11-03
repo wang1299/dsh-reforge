@@ -37,8 +37,8 @@ test('native child uses correlated messages without fetch, token exchange or unk
 
 test('native theme accepts only its parent and bounded appearance, and changes no form state', () => {
   const html = renderPanel('theme-nonce', { channel: 'theme-channel', parentOrigin: 'http://host' });
-  assert.match(html, /--evolve-background/); assert.match(html, /\.hero>div:first-child\{display:none\}/);
-  assert.ok(!renderPanel('standalone').includes('.hero>div:first-child{display:none}'));
+  assert.match(html, /--evolve-background/); assert.match(html, /<body class="native">/);
+  assert.match(renderPanel('standalone'), /<body class="standalone">/);
   const script = html.match(/<script nonce="[^"]+">([\s\S]*?)<\/script>/)![1]!;
   const prefix = script.slice(0, script.indexOf('let state='));
   const values = new Map<string, string>(); const style = { setProperty: (key: string, value: string) => values.set(key, value), colorScheme: '' };
