@@ -16,7 +16,9 @@ import { Script } from 'node:vm';
 
 function renderEvidence(html: string, state: unknown): string {
   const script = html.match(/<script nonce="[^"]+">([\s\S]*?)<\/script>/)![1]!;
-  const render = script.slice(script.indexOf('function renderEvidenceJobs()'), script.indexOf('async function refresh()'));
+  const start = script.indexOf('function renderEvidenceJobs()'); const end = script.indexOf('async function refresh(');
+  assert.ok(start >= 0 && end > start, 'The evidence renderer must be isolated from client startup');
+  const render = script.slice(start, end);
   class Element {
     children: Element[] = [];
     constructor(readonly tag: string, readonly text = '') {}
