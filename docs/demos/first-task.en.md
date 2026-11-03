@@ -1,10 +1,10 @@
 # First-task demo: keep user input when saving fails
 
-[中文](first-task.md) · [View / download video](../assets/demos/first-task-demo-1080p.mp4) · [English subtitles](../assets/demos/first-task.en.srt) · [Chinese subtitles](../assets/demos/first-task.zh-CN.srt)
+[中文](first-task.md) · [Download video](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4) · [English subtitles](../assets/demos/first-task.en.srt) · [Chinese subtitles](../assets/demos/first-task.zh-CN.srt)
 
-[![Keep user input when saving fails](../assets/demos/first-task-poster.jpg)](../assets/demos/first-task-demo-1080p.mp4)
+[![Keep user input when saving fails](../assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)
 
-The 2:02 video is 1920×1080 at 30 fps, with synthetic Chinese narration, burned-in Chinese captions, and chapter labels. Follow the poster to the GitHub video file page to view or download the MP4. The separate English SRT can be loaded in a compatible player. Browser frames were captured at approximately 4–6 fps and converted to 30 fps; some waits were cut and still sections are held for reading and narration.
+The 2:02 video is 1920×1080 at 30 fps, with synthetic Chinese narration, burned-in Chinese captions, and chapter labels. Follow the poster to download the MP4 and play it locally. The GitHub file page does not provide inline playback for this video. The separate English SRT can be loaded in a compatible player. Browser frames were captured at approximately 4–6 fps and converted to 30 fps; some waits were cut and still sections are held for reading and narration.
 
 ## The problem
 

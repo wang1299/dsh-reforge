@@ -42,9 +42,9 @@ T040 / 开发候选：当前源码准备 `0.1.0-alpha.2`，目标验证 DSH `0.2
 
 ## 演示视频：保存失败，也不丢输入
 
-[![DSH-Reforge 首次任务演示：保存失败，也不丢输入](https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task-demo-1080p.mp4)
+[![DSH-Reforge 首次任务演示：保存失败，也不丢输入](https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)
 
-[查看 / 下载 MP4（2 分 02 秒，1080p）](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task-demo-1080p.mp4) · [中文字幕](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task.zh-CN.srt) · [案例与验收说明](https://github.com/wang1299/dsh-reforge/blob/main/docs/demos/first-task.md)
+[下载演示 MP4（2 分 02 秒，1080p）](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4) · [中文字幕](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task.zh-CN.srt) · [案例与验收说明](https://github.com/wang1299/dsh-reforge/blob/main/docs/demos/first-task.md)
 
 从客户表单丢失输入开始，演示明确纠正、实际补丁、独立验收和经验入库：原始版本 2 项验收失败，修复版本 2/2 通过，回归测试 3/3 通过。
 

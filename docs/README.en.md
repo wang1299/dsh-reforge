@@ -40,9 +40,9 @@ Source verification establishes that a repair passed its checks at that time. **
 
 ## Demo: keep user input when saving fails
 
-[![DSH-Reforge first-task demo: keep user input when saving fails](https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task-demo-1080p.mp4)
+[![DSH-Reforge first-task demo: keep user input when saving fails](https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)
 
-[View / download MP4 (2:02, 1080p)](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task-demo-1080p.mp4) · [English subtitles](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task.en.srt) · [Case and acceptance notes](https://github.com/wang1299/dsh-reforge/blob/main/docs/demos/first-task.en.md)
+[Download demo MP4 (2:02, 1080p)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4) · [English subtitles](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task.en.srt) · [Case and acceptance notes](https://github.com/wang1299/dsh-reforge/blob/main/docs/demos/first-task.en.md)
 
 The video follows a customer form that loses input after a failed save: explicit correction, a real patch, independent acceptance, and a stored experience. Both original acceptance checks fail; the fixed version passes 2/2 checks and 3/3 regression tests. The video has Chinese narration and burned-in Chinese captions; English subtitles are provided as a separate file.
 

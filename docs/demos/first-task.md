@@ -1,10 +1,10 @@
 # 第一次任务演示：保存失败，也不丢输入
 
-[English](first-task.en.md) · [查看 / 下载视频](../assets/demos/first-task-demo-1080p.mp4) · [中文字幕](../assets/demos/first-task.zh-CN.srt) · [英文字幕](../assets/demos/first-task.en.srt)
+[English](first-task.en.md) · [下载视频](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4) · [中文字幕](../assets/demos/first-task.zh-CN.srt) · [英文字幕](../assets/demos/first-task.en.srt)
 
-[![保存失败，也不丢输入](../assets/demos/first-task-poster.jpg)](../assets/demos/first-task-demo-1080p.mp4)
+[![保存失败，也不丢输入](../assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)
 
-视频长 2 分 02 秒，1920×1080、30 fps，含中文合成旁白、烧录中文字幕和章节。点击封面进入 GitHub 视频文件页，查看或下载 MP4；独立字幕可用于支持外部 SRT 的播放器。录屏源帧约 4–6 fps，成片转为 30 fps，部分等待已剪去，静止画面为阅读及旁白适当停留。
+视频长 2 分 02 秒，1920×1080、30 fps，含中文合成旁白、烧录中文字幕和章节。点击封面直接下载 MP4 后播放。GitHub 文件页不内嵌播放本片；独立字幕可用于支持外部 SRT 的播放器。录屏源帧约 4–6 fps，成片转为 30 fps，部分等待已剪去，静止画面为阅读及旁白适当停留。
 
 ## 这次解决什么问题
 
