@@ -8,14 +8,18 @@ import { renderPanel } from '../src/panel-view.js';
 // Layout, native controls and accessibility are separately checked in a browser.
 function browser() {
   class Element {
-    id = ''; value = ''; hidden = false; open = false; className = ''; textContent = ''; type = '';
+    id = ''; value = ''; hidden = false; open = false; disabled = false; className = ''; type = '';
+    private ownText = '';
+    get textContent(): string { return this.ownText + this.children.map(child => child.textContent).join(''); }
+    set textContent(value: string) { this.ownText = value; this.children = []; }
     children: Element[] = []; attributes = new Map<string, string>(); listeners = new Map<string, () => void>();
     onclick?: () => Promise<void> | void; onchange?: () => void; oninput?: () => void;
     classList = { toggle: (_name: string, _value: boolean) => undefined };
     constructor(readonly tag: string) { elements.push(this); }
     set innerHTML(_value: string) { throw new Error('Untrusted HTML insertion is forbidden'); }
     append(...children: Element[]) { if (this.tag === 'select' && this.children.length === 0 && children[0]?.tag === 'option') this.value = children[0].value; this.children.push(...children); }
-    replaceChildren(...children: Element[]) { this.children = children; }
+    replaceChildren(...children: Element[]) { this.ownText = ''; this.children = children; }
+    querySelectorAll(selector: string): Element[] { const tags = selector.split(','); return this.children.flatMap(child => [child, ...child.querySelectorAll(selector)]).filter(child => tags.includes(child.tag)); }
     setAttribute(name: string, value: string) { this.attributes.set(name, value); }
     getAttribute(name: string) { return this.attributes.get(name) ?? null; }
     addEventListener(name: string, callback: () => void) { this.listeners.set(name, callback); }
@@ -28,17 +32,18 @@ function browser() {
   for (const match of markup.matchAll(/id="([^"]+)"/g)) { const element = new Element('static'); element.id = match[1]!; }
   const get = (id: string) => elements.findLast(e => e.id === id)!;
   get('filter').value = 'all'; get('records').open = false;
-  const document: { activeElement: Element | null; hidden: boolean; getElementById: typeof get; createElement: (tag: string) => Element; addEventListener: () => void } = {
-    activeElement: null, hidden: false, getElementById: get, createElement: tag => new Element(tag), addEventListener: () => undefined,
+  const document = {
+    activeElement: null as Element | null, hidden: false, getElementById: get, createElement: (tag: string) => new Element(tag), createElementNS: (_ns: string, tag: string) => new Element(tag), addEventListener: () => undefined,
   };
   const exp = { id: 'experience-one', revision: 1, status: 'candidate', title: '<img src=x onerror=alert(1)>', strategy: 'Restore the prior state', observedFacts: ['A correction was recorded'], inferences: [], recommendations: [], scope: { repoId: 'repo', requiredFiles: { 'ledger.py': 'a'.repeat(64) } }, sourceTaskId: 'source', verificationId: null, createdAt: '2026-10-20T00:00:00Z' };
   const current = { experiences: [exp], tasks: [{ id: 'source', summary: '转账失败时恢复余额' }, { id: 'target', summary: '库存异常后数量不正确' }], applications: [{ id: 'application-one', taskId: 'target', experienceId: exp.id, revision: 1, createdAt: exp.createdAt }], feedback: [] as { id: string; applicationId: string; outcome: string; note: string; createdAt: string }[], evidence: [{ id: 'source-evidence', taskId: 'source', repoId: 'repo', kind: 'correction', note: 'restore balance', digest: 'd' }], verifications: {}, histories: { [exp.id]: [exp] }, provenance: { [exp.id]: { 1: { complete: false, facts: [{ factIndex: 0, factDigest: 'f' }], citations: [] } } }, learningJobs: [{ id: 'job-one', state: 'succeeded', input: { taskId: 'source', baseCommit: 'a'.repeat(40), fixCommit: 'b'.repeat(40), sources: [], observations: [] } }], evidenceBundles: [], extractionJobs: [{ id: 'extraction-one', evidenceJobId: 'job-one', state: 'candidate', reason: 'extracted', candidateId: exp.id, policy: { provider: 'offline', model: 'fixture' } }], extractionGrants: [] };
   const posts: { path: string; body: Record<string, unknown> }[] = [];
-  let offline = false; let postStatus = 409;
+  let offline = false; let postStatus = 409; let postHold: Promise<void> | null = null; let readHold: Promise<void> | null = null;
   const context = createContext({ document, URLSearchParams, Intl, Date, JSON, crypto: { randomUUID }, location: { hash: '#token=fixture', pathname: '/' }, history: { replaceState: () => undefined }, setInterval: () => undefined,
     fetch: async (path: string, init: { method: string; body?: string }) => {
       if (offline) throw new Error('Synthetic offline');
-      if (init.method === 'POST') { posts.push({ path, body: JSON.parse(init.body!) as Record<string, unknown> }); if (postStatus === 0) throw new Error('Synthetic interrupted response'); return { ok: postStatus === 200, json: async () => ({ error: 'Experience changed; refresh before editing' }) }; }
+      if (init.method === 'POST') { posts.push({ path, body: JSON.parse(init.body!) as Record<string, unknown> }); if (postHold) await postHold; if (postStatus === 0) throw new Error('Synthetic interrupted response'); return { ok: postStatus === 200, json: async () => ({ error: 'Experience changed; refresh before editing' }) }; }
+      if (readHold) await readHold;
       return { ok: true, json: async () => structuredClone(current) };
     },
   });
@@ -48,8 +53,42 @@ function browser() {
   const control = (label: string) => descendants(get('detail')).find(e => e.attributes.get('aria-label') === label)!;
   const click = async (text: string) => { const control = descendants(get('detail')).find(e => e.tag === 'button' && e.textContent === text); assert.ok(control); await control.onclick!(); };
   const clickRecordCandidate = async () => { const button = descendants(get('evidence-jobs')).find(e => e.tag === 'button' && e.textContent === '查看候选经验'); assert.ok(button); await button.onclick!(); };
-  return { get, current, posts, run, control, click, clickRecordCandidate, descendants, offline: () => { offline = true; }, unknownWrites: () => { postStatus = 0; } };
+  return { get, current, posts, run, control, click, clickRecordCandidate, descendants, offline: () => { offline = true; }, unknownWrites: () => { postStatus = 0; }, acknowledgeWrites: () => { postStatus = 200; },
+    holdWrites: () => { let release!: () => void; postHold = new Promise<void>(done => { release = done; }); return () => { postHold = null; release(); }; },
+    holdReads: () => { let release!: () => void; readHold = new Promise<void>(done => { release = done; }); return () => { readHold = null; release(); }; } };
 }
+
+test('a pending save locks editing, blocks duplicate submissions and keeps the captured view until acknowledged', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
+  const strategy = b.control('处理策略'); strategy.value = 'Keep this submitted draft'; b.get('detail').listeners.get('input')!();
+  const save = b.descendants(b.get('detail')).find(e => e.tag === 'button' && e.textContent === '保存为待验证版本')!;
+  const release = b.holdWrites(); b.acknowledgeWrites(); const request = save.onclick!();
+  assert.equal(save.disabled, true); assert.equal(save.getAttribute('aria-busy'), 'true'); assert.equal(strategy.disabled, true);
+  await b.run("showView('uses');openExperience('experience-one')"); await save.onclick!();
+  assert.equal(b.posts.length, 1); assert.equal(b.get('detail').hidden, false); assert.equal(b.control('处理策略'), strategy);
+  release(); await request;
+  assert.match(b.get('message').textContent, /已保存/); assert.equal(save.getAttribute('aria-busy'), 'false'); assert.equal(strategy.disabled, false);
+});
+
+test('an acknowledged write followed by an offline read preserves the draft and warns that the record must be checked', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
+  const strategy = b.control('处理策略'); strategy.value = 'Do not lose this after a read failure'; b.get('detail').listeners.get('input')!();
+  const release = b.holdWrites(); b.acknowledgeWrites(); const request = b.click('保存为待验证版本');
+  b.offline(); release(); await request;
+  assert.equal(b.control('处理策略'), strategy); assert.equal(strategy.disabled, false); assert.equal(b.get('discard-edit').hidden, false);
+  assert.match(b.get('message').textContent, /请求已返回.*读取.*核对/); assert.doesNotMatch(b.get('message').textContent, /^已保存/);
+  assert.equal(b.posts.length, 1); assert.equal(b.posts[0]!.body.revision, 1);
+});
+
+test('manual refresh exposes its pending state and keeps an edited detail intact', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
+  const strategy = b.control('处理策略'); strategy.value = 'Current unsaved text'; b.get('detail').listeners.get('input')!();
+  const release = b.holdReads(); const request = b.get('refresh').onclick!();
+  assert.equal(b.get('refresh').disabled, true); assert.equal(b.get('refresh').getAttribute('aria-busy'), 'true');
+  release(); await request;
+  assert.equal(b.get('refresh').disabled, false); assert.equal(b.get('refresh').getAttribute('aria-busy'), 'false');
+  assert.equal(b.control('处理策略'), strategy); assert.match(b.get('message').textContent, /未保存编辑/); assert.equal(b.posts.length, 0);
+});
 
 test('workbench separates all reference records and counts unconfirmed results from the latest feedback', async () => {
   const b = browser();
@@ -114,6 +153,21 @@ test('workbench navigation preserves an unsaved revision across reference and le
   assert.equal(b.get('detail').hidden, false); assert.equal(b.control('处理策略'), strategy);
   assert.equal(strategy.value, 'Keep my current draft'); assert.match(b.get('message').textContent, /尚未保存/);
   assert.equal(b.posts.length, 0);
+});
+
+test('the overview metrics stay on home and cannot reappear over the library during polling', async () => {
+  const b = browser(); await b.run('refresh()'); assert.equal(b.get('overview').hidden, false);
+  await b.run("showView('library')"); assert.equal(b.get('overview').hidden, true);
+  await b.run('refresh()'); assert.equal(b.get('overview').hidden, true);
+  await b.run("showView('home')"); assert.equal(b.get('overview').hidden, false);
+});
+
+test('an empty workbench routes to setup and recording without implying that experience already exists', async () => {
+  const b = browser(); b.current.experiences.length = 0; b.current.applications.length = 0;
+  await b.run('refresh()'); assert.match(b.get('overview-next').textContent, /先留下第一条经验/);
+  assert.doesNotMatch(b.get('overview-next').textContent, /查看已经留下的经验/);
+  const route = b.descendants(b.get('overview-next')).find(e => e.tag === 'button')!; await route.onclick!();
+  assert.equal(b.get('learning').hidden, false); assert.equal(b.posts.length, 0);
 });
 
 test('learning home renders untrusted titles as text and keeps technical editors off the default screen', async () => {
