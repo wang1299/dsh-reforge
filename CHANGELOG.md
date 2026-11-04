@@ -1,6 +1,8 @@
 # 更新记录
 
-## 未发布：0.1.0-alpha.2
+## 0.1.0-alpha.2 — 实验性 alpha
+
+公开制品与核验结果见[版本状态](https://github.com/wang1299/dsh-reforge/blob/main/docs/release-status.md)和[发行记录](https://github.com/wang1299/dsh-reforge/issues/113)；本节按版本说明内容，不替代注册表状态。
 
 - 独立真实模型小规模验证：自动修复/采集/提炼/再验/后续参考通过；12项三组均4/4，但两检索均拒选，没有实际使用经验的效果对照。16请求费用保守上界0.037128元，未知占额0；全部有界合成结果公开，旧数据/预算保持。
 - 精确alpha.2发行准备：要求最终main四组合CI、冻结npm制品与annotated tag摘要绑定；GitHub prerelease仅使用注册表真实字节。实际公开核验见版本状态，不把准备代码当作发布完成。
