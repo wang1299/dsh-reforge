@@ -19,6 +19,8 @@
 
 创建一个不会提交到 Git 的本机 JSON 文件，例如只读体验：
 
+当前源码可先用 [`setup` 与 `doctor`](getting-started/quickstart.md#3-只读绑定自己的仓库)生成全关闭配置并检查本机环境，避免第一次手写 JSON；公开 alpha.1 尚无这两个命令。下方保留配置字段示例。doctor 不联系模型、不确认当前运行宿主；这两项需在本机 DSH 核对。
+
 ```json
 {
   "repoRoot": "/absolute/path/to/repository",

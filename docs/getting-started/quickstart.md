@@ -14,6 +14,15 @@
 
 ## 3. 只读绑定自己的仓库
 
+当前源码构建后可生成保守配置，无需先手写 JSON（公开 alpha.1 暂无这些命令）：
+
+```powershell
+node dist/src/cli.js setup --repo 'C:\work\my-python-project' --output 'C:\local-config\reforge.json' --python 'C:\path\to\python.exe'
+node dist/src/cli.js doctor --config 'C:\local-config\reforge.json'
+```
+
+setup 不覆盖已有文件，四项权限全关闭，不生成提炼授权；可另用 `--data-dir` 指定数据目录。doctor 输出可读类别、状态和计数，不显示私人路径/配置，不调用模型或新建数据库。`warning` 中“宿主需 owner 核对”“未联系模型”表示尚未检查，不是连接成功；`error` 时先解决对应问题，勿删库重置。模型登录在本机 DSH 内完成，不把 Key 交给插件。
+
 按[安装指南第 1–2 节](../installation.md#1-准备环境和配置)创建本机配置，先保持所有学习/共享/执行权限关闭。在安装所用的同一 profile 启动 DSH，用本次终端打印的完整认证地址打开插件详情。首次应能看到正确仓库与只读模式；空经验是正常状态。不要把 Key 写进插件配置。
 
 ## 4. 再决定是否开启学习
