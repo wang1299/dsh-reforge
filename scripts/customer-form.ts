@@ -158,6 +158,7 @@ export async function startCustomerForm(pythonInput?: string): Promise<{
         send(200, summary());
       } finally { busy = false; }
     } catch {
+      if (state.stage === 'verifying' && !state.verified) state.stage = 'unknown';
       send(400, { error: 'Operation failed. Refresh state and inspect the retained example; do not repeat unknown operations.' });
     }
   }

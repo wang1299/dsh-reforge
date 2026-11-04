@@ -78,3 +78,17 @@ test('failed customer-form verification retains candidate and renders actual fai
     assert.equal(elements.get('verify')!.disabled, true);
   } finally { await app.close(); }
 });
+
+test('thrown customer-form verification ends in retained unknown state rather than a permanent running indicator', async () => {
+  const app = await startCustomerForm();
+  const post = (path: string) => fetch(app.origin + path, { method: 'POST',
+    headers: { Origin: app.origin, 'Content-Type': 'application/json' }, body: '{}' });
+  try {
+    await post('/api/correct'); await post('/api/fix');
+    await writeFile(join(app.home, 'project', 'form_state.py'), '# synthetic uncommitted drift\n');
+    assert.equal((await post('/api/verify')).status, 400);
+    const state = await (await fetch(app.origin + '/api/state')).json() as { stage: string; candidateId: string | null; verified: boolean };
+    assert.equal(state.stage, 'unknown'); assert.ok(state.candidateId); assert.equal(state.verified, false);
+    assert.equal((await post('/api/verify')).status, 409);
+  } finally { await app.close(); }
+});
