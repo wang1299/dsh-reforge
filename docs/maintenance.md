@@ -46,6 +46,10 @@ node dist/src/cli.js restore --input 'C:\private-backups\reforge-20261104' --out
 
 失败的输出目录会保留不完整现场；缺有效清单的目录不能恢复。原件不自动修改或删除；解决问题后换一个新目录重做。旧完整备份和故障现场应保留到恢复验收结束。
 
+若诊断为 `wal_mode_requires_manual_private_copy_no_database_opened`，说明文件头处于持久 WAL 模式，即使没有 sidecar，只读 SQLite 连接也可能创建辅助文件。本工具会在打开数据库前拒绝；先停机人工复制整个 dataDir 保存现场，再交由熟悉 SQLite 的维护者在副本诊断。不要删除 WAL/SHM、改文件头或直接转换原件的 journal 模式来通过检查。此工具支持核心默认的 DELETE journal 模式。
+
 These commands belong to the current unpublished alpha.2 source; build first. All destination directories must be new with existing parents. `--stopped` is an owner assertion, not reliable detection of every idle host. Active work, any WAL/SHM/journal sidecar, links, file changes or limits (10,000 entries / 512 MiB) cause rejection. Never delete sidecars to bypass checks: privately copy the full failed state and diagnose with compatible software.
+
+Persistent WAL format is also rejected by checking the file header before opening SQLite, even if sidecars are absent: a read-only WAL connection can create auxiliary files. Make a stopped whole-directory private copy for manual diagnosis; never convert or edit the original merely to pass checks. Tooling supports the core's default DELETE journal mode.
 
 The whole data directory, including snapshots, unknowns and consumed grants, is retained. Keep config/profile/keys outside it and back up separate financial ledgers separately. Hash manifests check integrity, not authenticity. Restore validates every file, SQLite v9 and the original repository identity, writes only a new directory, changes no configuration and executes no tasks. Inspect the restored copy using a new all-permissions-disabled config before deciding whether to resume queued work. Failed outputs are retained; retry only into another new directory after diagnosis.

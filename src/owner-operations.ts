@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { constants, existsSync, lstatSync, realpathSync } from 'node:fs';
+import { closeSync, constants, existsSync, lstatSync, openSync, readSync, realpathSync } from 'node:fs';
 import { copyFile, lstat, mkdir, open, readFile, readdir, realpath } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, isAbsolute, join, parse, relative, resolve, sep } from 'node:path';
@@ -69,6 +69,13 @@ function inspectDatabase(data: string, repoId: string, stopped = false): { schem
     const path = file + suffix;
     if (existsSync(path)) fail('database_not_cleanly_stopped');
   }
+  // SQLite read-only opens can create WAL/SHM even after a clean WAL shutdown.
+  // Inspect the persistent format before SQLite sees it; never convert a source journal mode.
+  const header = Buffer.alloc(100); const descriptor = openSync(file, 'r');
+  try { if (readSync(descriptor, header, 0, header.length, 0) !== header.length) fail('invalid_database_header'); }
+  finally { closeSync(descriptor); }
+  if (header.subarray(0, 16).toString('binary') !== 'SQLite format 3\0') fail('invalid_database_header');
+  if (header[18] === 2 || header[19] === 2) fail('wal_mode_requires_manual_private_copy_no_database_opened');
   const db = new DatabaseSync(file, { readOnly: true });
   try {
     db.exec('PRAGMA query_only=ON; PRAGMA busy_timeout=1000;');

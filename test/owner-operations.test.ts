@@ -116,3 +116,16 @@ test('backup refuses a claimed evidence job even after its process stopped, pres
   assert.equal(existsSync(join(root, 'active')), false);
   assert.equal(digest(await readFile(join(data, 'evolve.sqlite'))), before);
 });
+
+test('passive checks reject clean persistent WAL format before SQLite can create auxiliary files', async () => {
+  const root = await work(); const f = await fixture(); const data = join(root, 'data'); const config = join(root, 'config.json');
+  await setupOwner({ repo: f.repo, output: config, dataDir: data });
+  const { service } = createService(loadConfig(config)); service.store.close();
+  const file = join(data, 'evolve.sqlite'); const db = new DatabaseSync(file); db.exec('PRAGMA journal_mode=WAL'); db.close();
+  const before = await readdir(data); assert.deepEqual(before, ['evolve.sqlite']);
+  const hash = digest(await readFile(file));
+  const report = doctorOwner(config);
+  assert.ok(report.checks.some(check => check.detail === 'wal_mode_requires_manual_private_copy_no_database_opened'));
+  await assert.rejects(backupOwner(config, join(root, 'backup'), true), /wal_mode_requires_manual_private_copy/);
+  assert.deepEqual(await readdir(data), before); assert.equal(digest(await readFile(file)), hash);
+});
