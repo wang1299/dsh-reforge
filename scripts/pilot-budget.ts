@@ -20,7 +20,8 @@ const callSchema = z.object({ id: z.string().uuid(), createdAt: z.string().datet
 const ledgerSchema = z.object({ schemaVersion: z.literal(2), policy: z.literal('t049-peak-bound-v2'), cap: z.literal(10_000_000),
   stopped: z.enum(reasons).nullable(), calls: z.array(callSchema).max(32) }).strict();
 const bindingSchema = z.object({ root: z.string().min(1).max(4096), planDigest: z.string().regex(/^[a-f0-9]{64}$/),
-  state: z.enum(['prepared', 'started', 'completed', 'incomplete', 'unknown']) }).strict();
+  state: z.enum(['prepared', 'started', 'completed', 'incomplete', 'unknown']),
+  priorPreparations: z.array(z.object({ root: z.string().min(1).max(4096), planDigest: z.string().regex(/^[a-f0-9]{64}$/) }).strict()).max(32).default([]) }).strict();
 export type PilotAuthorization = Pick<z.infer<typeof bindingSchema>, 'root' | 'planDigest'>;
 
 /** Independent experiment accounting. Never reads or migrates historical product/financial ledgers. */
@@ -81,6 +82,17 @@ export class PilotBudget {
     this.metadata(() => {
       if (this.authorization || this.state.calls.length) throw new Error('Authorization is already bound; never create a new cap');
       this.db.prepare('INSERT INTO pilot_authorization VALUES(1,?)').run(JSON.stringify(binding));
+    });
+  }
+  supersedePrepared(previous: PilotAuthorization, next: PilotAuthorization): void {
+    this.metadata(() => {
+      const binding = this.authorization;
+      if (!binding || binding.state !== 'prepared' || this.state.calls.length || this.state.stopped
+        || binding.root !== previous.root || binding.planDigest !== previous.planDigest
+        || next.root === previous.root) throw new Error('Only an unstarted zero-call preparation can be superseded');
+      const replacement = bindingSchema.parse({ ...next, state: 'prepared', priorPreparations: [
+        ...binding.priorPreparations, { root: binding.root, planDigest: binding.planDigest }] });
+      this.db.prepare('UPDATE pilot_authorization SET body=? WHERE id=1').run(JSON.stringify(replacement));
     });
   }
   beginStudy(input: PilotAuthorization): void {

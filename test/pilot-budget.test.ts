@@ -108,6 +108,24 @@ test('real forwarding refuses a temporary unbound ledger before any reservation 
   } finally { await relay.close(); budget.close(); }
 });
 
+test('zero-call preparation supersession retains old bindings and the same cap, refusing started or charged studies', async () => {
+  const previous = { root: '/owned/old', planDigest: 'a'.repeat(64) };
+  const next = { root: '/owned/new', planDigest: 'b'.repeat(64) };
+  const file = await path(); const first = new PilotBudget(file); first.bindStudy(previous);
+  first.supersedePrepared(previous, next); first.close();
+  const reopened = new PilotBudget(file);
+  assert.deepEqual(reopened.authorization?.priorPreparations, [previous]);
+  assert.equal(reopened.authorization?.root, next.root); assert.equal(reopened.state.cap, 10_000_000); assert.equal(reopened.state.calls.length, 0);
+  reopened.beginStudy(next);
+  assert.throws(() => reopened.supersedePrepared(next, previous), /zero-call/); reopened.close();
+  for (const charged of [true, false]) {
+    const budget = new PilotBudget(await path()); budget.bindStudy(previous);
+    if (charged) budget.hold(budget.reserve(), 'invalid_receipt', 200);
+    assert.throws(() => budget.supersedePrepared(charged ? previous : next, next), /zero-call/);
+    assert.equal(budget.authorization?.root, previous.root); assert.equal(budget.state.cap, 10_000_000); budget.close();
+  }
+});
+
 test('pilot relay validates and freezes before forwarding, settles before delivery and stops permanently on an unknown receipt', async () => {
   const file = await path(); const budget = new PilotBudget(file); let calls = 0; let frozen = true;
   const relay = await startPilotRelay(budget, { beforeForward: async () => { if (!frozen) throw new Error('Synthetic qualification drift'); },

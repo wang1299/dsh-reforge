@@ -9,7 +9,7 @@ import { setTimeout as pause } from 'node:timers/promises';
 import { digest, redact } from '../dist/src/domain.js';
 import { git } from '../dist/src/repository.js';
 import { PilotBudget, pilotPolicy, startPilotRelay } from '../dist/scripts/pilot-budget.js';
-import { offlineRepair, sourcePrompt, laterPrompt, validatePilotCode } from '../dist/scripts/pilot-fixtures.js';
+import { offlineRepair, sourcePrompt, laterPrompt, validatePilotCode, providerHasExperience } from '../dist/scripts/pilot-fixtures.js';
 
 export async function pilotHost(host) {
   const anchor = join(resolve(host), 'package.json'); const require = createRequire(anchor);
@@ -55,7 +55,7 @@ export function offlinePilotTransport() {
     const body = JSON.parse(Buffer.from(options.body).toString('utf8')); const all = JSON.stringify(body);
     let blocks; let stop = 'end_turn';
     if (all.includes('untrusted evidence')) blocks = [{ type: 'text', text: JSON.stringify({ kind: 'candidate',
-      title: 'transaction rollback failure restore balance', strategy: 'Save the original value and restore it before raising on persistence failure.',
+      title: 'transaction rollback failure restore balance', strategy: 'Save state["balance"] before writing.\nRestore the original value before raising on persistence failure.',
       factIds: ['verification:base', 'verification:fixed', 'verification:regression'], inferences: [], recommendations: [] }) }];
     else if (all.includes(laterPrompt)) blocks = [{ type: 'text', text: 'Offline rehearsal: check rollback behavior against independent tests.' }];
     else if (!body.messages.some(message => Array.isArray(message.content) && message.content.some(block => block.type === 'tool_result'))) {
@@ -77,13 +77,18 @@ export async function automaticPilot(input) {
     runtime.load('@deepseek-ai/dsh-tools'), runtime.load('@deepseek-ai/dsh-llm-deepseek'), runtime.load('@deepseek-ai/dsh-credentials-local'),
     runtime.load('@deepseek-ai/dsh-credentials')]);
   const AgentLoop = AgentLoopModule.default; const route = 'reforge-pilot'; const handles = [];
-  const budget = new PilotBudget(input.budgetFile); let phase = 'source'; let strategy = ''; let offered = false;
+  const budget = new PilotBudget(input.budgetFile); let phase = 'source'; let learned; let offered = false;
   const preparedByPhase = { source: 0, learning: 0, later: 0 }; const tools = [];
   const relay = await startPilotRelay(budget, { transport: input.offline ? offlinePilotTransport() : undefined,
     beforeForward: input.validate, authorization: input.authorization,
     inspect(body) {
       assert(++preparedByPhase[phase] <= (phase === 'source' ? 4 : phase === 'later' ? 2 : 1), 'Pilot phase request limit');
-      if (phase === 'later' && strategy) offered ||= JSON.stringify(body).includes(strategy);
+      if (phase === 'later' && learned) {
+        const application = JSON.parse(String(db.prepare('SELECT body FROM applications ORDER BY rowid DESC LIMIT 1').get()?.body));
+        assert.equal(application.experienceId, learned.id); assert.equal(application.revision, learned.revision);
+        offered ||= providerHasExperience(body, { title: learned.title, strategy: learned.strategy,
+          applicableFiles: Object.keys(learned.scope.requiredFiles), applicationId: application.id, revision: learned.revision });
+      }
     } });
   const config = { repoRoot: input.fixture.repo, dataDir: join(input.root, 'data'), python: input.python,
     acceptanceDir: input.fixture.acceptance, regressionPath: 'tests', timeoutMs: 30000,
@@ -152,7 +157,7 @@ export async function automaticPilot(input) {
       assert(!budget.state.stopped, 'Unknown financial receipt'); await pause(50);
     }
     const segment = db.prepare('SELECT state FROM automatic_segments ORDER BY rowid LIMIT 1').get(); assert.equal(segment?.state, 'learned');
-    const experience = JSON.parse(String(db.prepare('SELECT body FROM experiences').get()?.body)); assert.equal(experience.status, 'source_verified'); strategy = experience.strategy;
+    const experience = JSON.parse(String(db.prepare('SELECT body FROM experiences').get()?.body)); assert.equal(experience.status, 'source_verified'); learned = experience;
     const proof = JSON.parse(String(db.prepare('SELECT body FROM verifications WHERE id=?').get(experience.verificationId)?.body)); assert.equal(proof.verified, true);
     report.sourceVerified = true; report.sourceChecks = Object.fromEntries(['base', 'fixed', 'regression'].map(key => [key,
       { tests: proof[key].tests, failures: proof[key].failures, errors: proof[key].errors, skipped: proof[key].skipped, exitCode: proof[key].exitCode }]));

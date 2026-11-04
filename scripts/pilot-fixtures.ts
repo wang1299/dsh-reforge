@@ -11,6 +11,14 @@ export const sourceCode = 'def apply_change(state, fail=False):\n    before = st
 export const offlineRepair = sourceCode.replace('        raise ValueError', '        state["balance"] = before\n        raise ValueError');
 export const sourcePrompt = '纠正：transaction rollback failure must restore the original balance. Fix ledger.py below: if fail=True raises ValueError, state["balance"] must remain its original value; success increments once. Use fixture_write_source to replace this function. Do not call evolve tools, edit tests or change configuration. After the write succeeds, finish your turn.\n\n' + sourceCode;
 export const laterPrompt = 'For a later transaction rollback failure, explain one relevant safety check before changing code. Do not edit files or call tools. Use an offered reference only if it applies.';
+/** Compare decoded provider text, preserving JSON escaping inside the product context. */
+export function providerHasExperience(body: unknown, payload: Record<string, unknown>): boolean {
+  const request = body as { system?: unknown; messages?: { content?: unknown }[] };
+  const text = (value: unknown): string[] => typeof value === 'string' ? [value] : Array.isArray(value)
+    ? value.flatMap(block => block?.type === 'text' && typeof block.text === 'string' ? [block.text] : []) : [];
+  return [...text(request.system), ...(request.messages ?? []).flatMap(message => text(message.content))]
+    .some(value => value.includes(JSON.stringify(payload)));
+}
 export const sourceAcceptance = `import pytest
 from ledger import apply_change
 def test_failed_transaction_restores_original_balance():

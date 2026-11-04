@@ -2,8 +2,18 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { createPilotFixture, offlineRepair, pilotCases, runPilotTests, validatePilotCode } from '../scripts/pilot-fixtures.js';
+import { createPilotFixture, offlineRepair, pilotCases, runPilotTests, validatePilotCode, providerHasExperience } from '../scripts/pilot-fixtures.js';
 import { passes, reproduces } from '../src/verification.js';
+
+test('provider reference proof checks complete decoded context with quoted multiline strategies and exact application revision', () => {
+  const payload = { title: 'rollback', strategy: 'Save state["balance"].\nRestore on failure.', applicableFiles: ['ledger.py'], applicationId: 'synthetic-app', revision: 2 };
+  const content = 'Fallible reference:\n' + JSON.stringify(payload);
+  for (const body of [{ system: content }, { system: [{ type: 'text', text: content }] }, { messages: [{ content: [{ type: 'text', text: content }] }] }]) {
+    assert.equal(providerHasExperience(body, payload), true);
+    for (const changed of [{ revision: 1 }, { applicationId: 'other-app' }, { strategy: 'other strategy' }]) assert.equal(providerHasExperience(body, { ...payload, ...changed }), false);
+  }
+  assert.equal(providerHasExperience({ messages: [{ content: payload.strategy }] }, payload), false);
+});
 
 test('pilot source and held-out cases have real failures, fixed external acceptance and bounded code validation', async () => {
   await mkdir('.probe-work', { recursive: true }); const root = await mkdtemp(resolve('.probe-work/pilot-fixtures-'));

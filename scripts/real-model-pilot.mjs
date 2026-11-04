@@ -57,10 +57,22 @@ export async function validatePilotPlan(run) {
 }
 async function prepare(options, offlineOnly) {
   assert.equal(git(workspace, ['status', '--porcelain']), '', 'Commit all experiment code before freezing a plan');
+  const supersededRoot = options.get('--supersede-prepared');
+  assert(!supersededRoot || !offlineOnly, 'Supersession is only for an existing authorized preparation');
+  let previous;
+  if (supersededRoot) {
+    const old = await readPlan(resolve(supersededRoot));
+    previous = { root: old.root, planDigest: await readFile(join(old.root, 'plan.sha256'), 'utf8') };
+  }
   if (!offlineOnly && existsSync(pilotAuthorizationPath)) {
     const budget = new PilotBudget(pilotAuthorizationPath);
-    try { assert(!budget.authorization && budget.state.calls.length === 0, 'Existing authorization or calls must be preserved'); } finally { budget.close(); }
-  }
+    try {
+      const binding = budget.authorization;
+      assert(budget.state.calls.length === 0 && !budget.state.stopped && (previous
+        ? binding?.state === 'prepared' && binding.root === previous.root && binding.planDigest === previous.planDigest
+        : !binding), 'Existing authorization or calls must be preserved');
+    } finally { budget.close(); }
+  } else assert(!previous, 'No preparation to supersede');
   const host = resolve(required(options, '--host')); const archive = resolve(required(options, '--archive'));
   const python = resolve(required(options, '--python')); const credentialFile = offlineOnly ? null : resolve(required(options, '--credentials'));
   const runtime = await pilotHost(host); const archiveResult = await auditArchive(archive);
@@ -110,7 +122,10 @@ async function prepare(options, offlineOnly) {
   await writeFile(join(root, 'plan.sha256'), digest(text), { flag: 'wx', mode: 0o600 });
   if (!offlineOnly) {
     const budget = new PilotBudget(pilotAuthorizationPath);
-    try { budget.bindStudy({ root, planDigest: digest(text) }); } finally { budget.close(); }
+    try {
+      const next = { root, planDigest: digest(text) };
+      if (previous) budget.supersedePrepared(previous, next); else budget.bindStudy(next);
+    } finally { budget.close(); }
   }
   await validatePilotPlan(root); console.log(JSON.stringify({ prepared: true, offlineOnly, root, planDigest: digest(text), modelHttpRequests: 0 }));
 }
@@ -149,7 +164,7 @@ function required(options, name) { const value = options.get(name); assert(value
 const [command, ...args] = process.argv.slice(2); const options = new Map();
 try {
   assert(resolve(process.cwd()) === resolve(workspace), 'Run from this repository root');
-  const choices = command?.startsWith('prepare') ? ['--host', '--archive', '--python', '--credentials'] : ['--run'];
+  const choices = command?.startsWith('prepare') ? ['--host', '--archive', '--python', '--credentials', '--supersede-prepared'] : ['--run'];
   for (let n = 0; n < args.length; n += 2) {
     assert(choices.includes(args[n]) && !options.has(args[n]) && args[n + 1] && !args[n + 1].startsWith('--'));
     options.set(args[n], args[n + 1]);
