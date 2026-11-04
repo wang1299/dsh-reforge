@@ -1,8 +1,8 @@
 # 路线与实际状态
 
-当前读者入口见[文档导航](index.md)、[版本状态](release-status.md)与[T046 八项补齐](tasks/T046-public-readiness.md)。T040 多版本适配、T041–T044 工作台与 T045 视频已合并；源码 alpha.2 尚未公开发行。以下任务表保留早期阶段与历史分支，不作为当前发行清单。
+当前读者入口见[文档导航](index.md)、[版本状态](release-status.md)与[T046 八项补齐](tasks/T046-public-readiness.md)。2026-11-05，alpha.2 npm和GitHub Release已公开并完成制品核验。以下任务表保留早期阶段与历史分支，不作为当前发行清单。
 
-最新：T047同款可运行工程/中英文导航、T048配置/诊断/备份恢复已合并；[T049真实合成自动闭环](evaluation/t049-20261104/README.md)通过，收益效果未测到（两检索均拒选）。[T050](tasks/T050-alpha2-release.md)准备精确alpha.2发行。公开[外部试用#112](https://github.com/wang1299/dsh-reforge/issues/112)参与仍为0，等待真实反馈；不把维护者或脚本计入人数。
+最新：T047同款可运行工程/中英文导航、T048配置/诊断/备份恢复已合并；[T049真实合成自动闭环](evaluation/t049-20261104/README.md)通过，收益效果未测到（两检索均拒选）。[T050](tasks/T050-alpha2-release.md)已核验精确alpha.2公开制品；可变标签单独记录。下一项为[#114检索覆盖与更有区分度的试验](https://github.com/wang1299/dsh-reforge/issues/114)。公开[外部试用#112](https://github.com/wang1299/dsh-reforge/issues/112)参与仍为0，等待真实反馈；不把维护者或脚本计入人数。
 
 | 任务 | 依赖 | 状态 | 分支 |
 |---|---|---|---|
