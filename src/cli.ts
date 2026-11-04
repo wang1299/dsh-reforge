@@ -5,9 +5,13 @@ import { startPanel } from './panel.js';
 import { readFile } from 'node:fs/promises';
 import { evaluateExperiment } from './evaluation.js';
 import { idSchema } from './domain.js';
+import { ownerCommand, ownerError } from './owner-operations.js';
 
 const [command, flag, configPath] = process.argv.slice(2);
-if (command === 'evaluate' && flag === '--input' && configPath) {
+if (command && ['setup', 'doctor', 'backup', 'restore'].includes(command)) {
+  try { await ownerCommand(command, process.argv.slice(3)); }
+  catch (error) { process.stderr.write(JSON.stringify({ error: ownerError(error), changedAuthorization: false }) + '\n'); process.exitCode = 1; }
+} else if (command === 'evaluate' && flag === '--input' && configPath) {
   const report = evaluateExperiment(JSON.parse(await readFile(resolve(configPath), 'utf8')));
   process.stdout.write(JSON.stringify(report, null, 2) + '\n');
 } else if ((command === 'recover-evidence' || command === 'reauthorize-extraction') && flag === '--config' && configPath) {
@@ -31,5 +35,5 @@ if (command === 'evaluate' && flag === '--input' && configPath) {
   const stop = (): void => { void panel.close().then(() => Promise.all([stopAutomatic(), stopWorker(), stopExtraction()])).then(() => { service.store.close(); process.exitCode = 0; }); };
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
 } else {
-  process.stderr.write('Usage: dsh-reforge panel --config <local-config.json> | evaluate --input <results.json> | <recover-evidence|reauthorize-extraction> --config <local-config.json> --task-id <id> --expected-job <id>\n'); process.exitCode = 1;
+  process.stderr.write('Usage: dsh-reforge panel --config <local-config.json> | setup --repo <root> --output <new-config> [--python <executable>] [--data-dir <dir>] | doctor --config <local-config> | backup --config <local-config> --output <new-directory> --stopped | restore --input <backup> --output <new-data-directory> --repo <root> --stopped | evaluate --input <results.json> | <recover-evidence|reauthorize-extraction> --config <local-config.json> --task-id <id> --expected-job <id>\n'); process.exitCode = 1;
 }

@@ -27,6 +27,29 @@ Keep the failed original. Restore into a new directory, verify hashes and reposi
 
 Stop the host/panel before removing code through the same official profile. Data, external acceptance, snapshots and separate budgets are retained; reinstalling does not add authorization. There is no one-click complete erasure of all linked data. Inspect exact paths and retention requirements before manual deletion; do not remove the entire `.dsh` directory.
 
-当前以上为停机人工流程；配置引导、只读诊断与可校验备份工具由 T048 实现后另记实际验证，不能把本说明当成已经存在的 CLI 命令。
+## 当前源码工具 / Current source tools
 
-These are currently manual stopped-process procedures. T048 tracks validated setup, passive diagnostics and backup tooling; this guide does not claim those CLI commands already exist.
+以下命令属于未发行 alpha.2 源码，先运行 `npm run build`；公开 alpha.1 没有它们。安装到后续公开包后可用 `dsh-reforge` 替换 `node dist/src/cli.js`。
+
+```powershell
+node dist/src/cli.js doctor --config 'C:\local-config\reforge.json'
+# 确认已停止相关 DSH、面板和活动工作后：
+node dist/src/cli.js backup --config 'C:\local-config\reforge.json' --output 'C:\private-backups\reforge-20261104' --stopped
+node dist/src/cli.js restore --input 'C:\private-backups\reforge-20261104' --output 'C:\private-data\reforge-restored' --repo 'C:\work\my-python-project' --stopped
+```
+
+目的父目录需存在，输出目录必须不存在；工具不覆盖或合并。`--stopped` 是 owner 对停机的明确声明，程序不能跨平台检测所有仍连接但空闲的宿主。存在运行中任务、任何 WAL/SHM/journal、符号链接/目录联接、超限数据或文件变化时拒绝；**不要删除这些文件绕过检查**。异常停机先人工复制完整现场，再在兼容程序下诊断。工具最多10,000个条目/512MiB，超限失败而非截断。
+
+备份包含 dataDir 内全部常规文件、空目录与私有快照，不过滤或重置 unknown、grant 和已用次数。不得把配置/profile/Key 放在 dataDir；位于其中的配置文件会被拒绝。数据目录之外的配置、凭据、DSH profile 和独立财务账本需另作私人备份。清单的 SHA256 用于完整性核对，不是安全签名。
+
+恢复核对清单、全部文件、SQLite v9 与原仓库身份后，只写新目录，不改配置、不启动任务。路径不同导致身份不符时拒绝，不支持自动跨仓库迁移。首次检查副本时使用新建的**全关闭权限配置**，保留原授权记录；确认计数、来源、unknown 和已用次数后，再由 owner 决定后续启用。不要直接启动原本开启自动学习的配置，以免接续已排队工作。
+
+失败的输出目录会保留不完整现场；缺有效清单的目录不能恢复。原件不自动修改或删除；解决问题后换一个新目录重做。旧完整备份和故障现场应保留到恢复验收结束。
+
+若诊断为 `wal_mode_requires_manual_private_copy_no_database_opened`，说明文件头处于持久 WAL 模式，即使没有 sidecar，只读 SQLite 连接也可能创建辅助文件。本工具会在打开数据库前拒绝；先停机人工复制整个 dataDir 保存现场，再交由熟悉 SQLite 的维护者在副本诊断。不要删除 WAL/SHM、改文件头或直接转换原件的 journal 模式来通过检查。此工具支持核心默认的 DELETE journal 模式。
+
+These commands belong to the current unpublished alpha.2 source; build first. All destination directories must be new with existing parents. `--stopped` is an owner assertion, not reliable detection of every idle host. Active work, any WAL/SHM/journal sidecar, links, file changes or limits (10,000 entries / 512 MiB) cause rejection. Never delete sidecars to bypass checks: privately copy the full failed state and diagnose with compatible software.
+
+Persistent WAL format is also rejected by checking the file header before opening SQLite, even if sidecars are absent: a read-only WAL connection can create auxiliary files. Make a stopped whole-directory private copy for manual diagnosis; never convert or edit the original merely to pass checks. Tooling supports the core's default DELETE journal mode.
+
+The whole data directory, including snapshots, unknowns and consumed grants, is retained. Keep config/profile/keys outside it and back up separate financial ledgers separately. Hash manifests check integrity, not authenticity. Restore validates every file, SQLite v9 and the original repository identity, writes only a new directory, changes no configuration and executes no tasks. Inspect the restored copy using a new all-permissions-disabled config before deciding whether to resume queued work. Failed outputs are retained; retry only into another new directory after diagnosis.

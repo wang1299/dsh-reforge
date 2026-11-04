@@ -9,3 +9,12 @@
 5. **Verify before drawing conclusions.** Inspect capture, original/fixed/regression checks, extraction and independent review in learning progress. A failure, skip or unknown receipt retains its reason. A later reference record proves a version was offered, not adoption or task improvement. Those require separate acceptance and controlled evaluation.
 
 Start with a small non-private repair. Before upgrading, read [data operations](../maintenance.md); use the [FAQ](../faq.md) when blocked. Report only redacted versions, failed steps and expected versus actual behavior.
+
+With the current built source (these commands are absent from public alpha.1), generate a conservative configuration without editing JSON first:
+
+```sh
+node dist/src/cli.js setup --repo /absolute/project --output /private/config/reforge.json --python /absolute/python
+node dist/src/cli.js doctor --config /private/config/reforge.json
+```
+
+`setup` refuses existing files and enables no permission or extraction grant; optional `--data-dir` selects data storage. `doctor` reports bounded categories/counts without private paths or config values, model calls, migrations or new databases. Host identity and model connection are explicitly untested warnings, not successful connection checks. Fix reported errors without deleting data. Configure credentials locally in DSH.
