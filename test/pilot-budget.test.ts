@@ -1,10 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, rename } from 'node:fs/promises';
+import { mkdir, mkdtemp } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
+import { execFileSync } from 'node:child_process';
+import { readFile, writeFile } from 'node:fs/promises';
 import { PilotBudget, pilotPolicy, pilotUsage, startPilotRelay } from '../scripts/pilot-budget.js';
 
-async function path() { await mkdir('.probe-work', { recursive: true }); return join(await mkdtemp(resolve('.probe-work/pilot-budget-')), 'new-ledger.json'); }
+async function path() { await mkdir('.probe-work', { recursive: true }); return join(await mkdtemp(resolve('.probe-work/pilot-budget-')), 'new-ledger.sqlite'); }
+function stored(file: string): string {
+  const db = new DatabaseSync(file, { readOnly: true });
+  try { return String(db.prepare('SELECT body FROM pilot_ledger WHERE id=1').get()!.body); } finally { db.close(); }
+}
 const event = (value: object) => 'data: ' + JSON.stringify(value) + '\n\n';
 const usage = { input_tokens: 100, output_tokens: 20, cache_read_input_tokens: 50, cache_creation_input_tokens: 0, service_tier: 'standard' };
 const stream = (u: object = usage) => event({ type: 'message_start', message: { usage: { input_tokens: 999999, output_tokens: 1 } } })
@@ -29,6 +36,12 @@ test('pilot accounting reserves the whole model boundary, serializes owners and 
 test('pilot receipt uses only complete final cumulative usage and rejects extra fees and incomplete/unknown protocol', () => {
   assert.deepEqual(pilotUsage(stream()), { input: 150, output: 20 });
   for (const body of [stream().replace(event({ type: 'message_stop' }), ''), stream({ ...usage, service_tier: 'priority' }),
+    stream().slice(0, -1),
+    stream().replace('"input_tokens":999999,"output_tokens":1', '"input_tokens":999999,"output_tokens":1,"service_tier":"priority"'),
+    stream().replace('"input_tokens":999999,"output_tokens":1', '"input_tokens":999999,"output_tokens":1,"server_tool_use":{"web_search_requests":1}'),
+    stream().replace('"input_tokens":999999,"output_tokens":1', '"input_tokens":999999,"output_tokens":1,"unknown_fee":1'),
+    stream().replace('"type":"content_block_stop","index":0', '"type":"content_block_stop","index":0,"usage":{"output_tokens":1}'),
+    event({ type: 'ping', usage: { unknown_fee: 1 } }) + stream(),
     stream({ ...usage, server_tool_use: { tool_search: 1 } }), stream({ ...usage, unexplained_cost: 1 }),
     stream({ ...usage, output_tokens: pilotPolicy.maxOutput + 1 }), stream({ ...usage, cache_creation_input_tokens: 10 }),
     stream() + event({ type: 'message_delta', usage }), stream().replace('"type":"text","text":""', '"type":"server_tool_use","name":"web_search"'),
@@ -48,14 +61,26 @@ test('pilot request count and effective output limits fail closed without increa
 
 test('a failed settlement write retains the original full reservation and prevents further calls', async () => {
   const file = await path(); const budget = new PilotBudget(file); const id = budget.reserve();
-  // Move only this synthetic ledger file, then occupy its exact filename with an empty directory.
-  const retained = file + '.held-copy'; await rename(file, retained); await mkdir(file);
+  const db = new DatabaseSync(file);
+  db.exec("CREATE TRIGGER synthetic_write_failure BEFORE UPDATE ON pilot_ledger BEGIN SELECT RAISE(ABORT,'synthetic failed commit'); END;"); db.close();
   try {
     assert.throws(() => budget.settle(id, { input: 150, output: 20 }));
     assert.equal(budget.spent, pilotPolicy.reservation); assert.equal(budget.state.calls[0]!.usage, null);
     assert.throws(() => budget.reserve());
-    assert.equal(JSON.parse(await readFile(retained, 'utf8')).calls[0].charge, pilotPolicy.reservation);
+    assert.equal(JSON.parse(stored(file)).calls[0].charge, pilotPolicy.reservation);
   } finally { budget.close(); }
+});
+
+test('pilot accounting never migrates an old JSON budget or plugin database and a crashed owner cannot silently start over', async () => {
+  const legacy = await path(); await writeFile(legacy, '{"budgetMicroCny":5000000,"calls":[]}');
+  const before = await readFile(legacy); assert.throws(() => new PilotBudget(legacy)); assert.deepEqual(await readFile(legacy), before);
+  const product = await path(); const db = new DatabaseSync(product); db.exec('PRAGMA user_version=9; CREATE TABLE original_data(value TEXT);'); db.close();
+  const bytes = await readFile(product); assert.throws(() => new PilotBudget(product)); assert.deepEqual(await readFile(product), bytes);
+  const crashed = await path();
+  execFileSync(process.execPath, ['--input-type=module', '-e',
+    'import {PilotBudget} from "./dist/scripts/pilot-budget.js"; new PilotBudget(process.argv[1]).reserve(); process.exit(0);', crashed], { windowsHide: true });
+  assert.equal(JSON.parse(stored(crashed)).calls[0].charge, pilotPolicy.reservation);
+  assert.throws(() => new PilotBudget(crashed), /EEXIST/);
 });
 
 test('pilot relay validates and freezes before forwarding, settles before delivery and stops permanently on an unknown receipt', async () => {
@@ -74,6 +99,6 @@ test('pilot relay validates and freezes before forwarding, settles before delive
     frozen = true; const response = await request(); assert.equal(response.status, 200); await response.text(); assert.equal(budget.spent, 460);
     assert.equal((await request()).status, 502); assert.equal(calls, 2); assert.equal(budget.state.calls[1]!.usage, null);
     assert.equal((await request()).status, 502); assert.equal(calls, 2);
-    const contents = await readFile(file, 'utf8'); assert.ok(!contents.includes('synthetic-not-a-key')); assert.ok(!contents.includes('messages'));
+    const contents = stored(file); assert.ok(!contents.includes('synthetic-not-a-key')); assert.ok(!contents.includes('messages'));
   } finally { await relay.close(); budget.close(); }
 });

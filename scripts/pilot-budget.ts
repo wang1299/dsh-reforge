@@ -1,7 +1,8 @@
-import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
+import { closeSync, existsSync, mkdirSync, openSync, readSync, unlinkSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';
+import { DatabaseSync } from 'node:sqlite';
 import { z } from 'zod';
 
 export const pilotPolicy = Object.freeze({ cap: 10_000_000, reservation: 5_345_728, maxInput: 1_100_000,
@@ -21,28 +22,53 @@ const ledgerSchema = z.object({ schemaVersion: z.literal(1), policy: z.literal('
 export class PilotBudget {
   readonly state: z.infer<typeof ledgerSchema>;
   private readonly lock: number;
+  private readonly db: DatabaseSync;
   private closed = false;
   private poisoned = false;
   private readonly fresh = new Set<string>();
   constructor(readonly path: string) {
-    mkdirSync(dirname(path), { recursive: true }); this.lock = openSync(path + '.lock', 'wx', 0o600);
+    mkdirSync(dirname(path), { recursive: true, mode: 0o700 }); this.lock = openSync(path + '.lock', 'wx', 0o600);
+    let database: DatabaseSync | undefined;
     try {
-      this.state = existsSync(path) ? ledgerSchema.parse(JSON.parse(readFileSync(path, 'utf8')))
+      const fresh = !existsSync(path);
+      if (!fresh) {
+        const header = Buffer.alloc(100); const fd = openSync(path, 'r');
+        try { if (readSync(fd, header, 0, header.length, 0) !== header.length) throw new Error('Invalid pilot database'); }
+        finally { closeSync(fd); }
+        if (header.subarray(0, 16).toString('binary') !== 'SQLite format 3\0' || header.readUInt32BE(60) !== 1
+          || header[18] !== 1 || header[19] !== 1) throw new Error('Not an existing pilot ledger; never migrate historical data');
+      }
+      database = new DatabaseSync(path); this.db = database;
+      this.db.exec('PRAGMA synchronous=EXTRA; PRAGMA busy_timeout=1000;');
+      if (this.db.prepare('PRAGMA journal_mode').get()!.journal_mode !== 'delete'
+        || this.db.prepare('PRAGMA synchronous').get()!.synchronous !== 3
+        || this.db.prepare('PRAGMA quick_check').get()!.quick_check !== 'ok') throw new Error('Pilot durability unavailable');
+      this.db.exec('BEGIN IMMEDIATE');
+      if (fresh) this.db.exec('CREATE TABLE pilot_ledger(id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL); PRAGMA user_version=1;');
+      const row = fresh ? null : this.db.prepare('SELECT body FROM pilot_ledger WHERE id=1').get();
+      if (!fresh && !row) throw new Error('Missing existing pilot state');
+      this.state = row ? ledgerSchema.parse(JSON.parse(String(row.body)))
         : { schemaVersion: 1, policy: 't049-peak-bound-v1', cap: 10_000_000, stopped: null, calls: [] };
       if (this.state.calls.some(call => call.charge !== (call.usage ? call.usage.input * 2 + call.usage.output * 8 : pilotPolicy.reservation))
         || this.spent > pilotPolicy.cap || this.state.calls.some(call => call.usage ? !['complete', 'request_output_exceeded'].includes(call.reason) : call.reason === 'complete')) throw new Error('Invalid pilot accounting');
-      if (!existsSync(path)) this.persist();
-    } catch (error) { closeSync(this.lock); unlinkSync(path + '.lock'); throw error; }
+      if (fresh) this.db.prepare('INSERT INTO pilot_ledger VALUES(1,?)').run(JSON.stringify(this.state));
+      this.db.exec('COMMIT');
+    } catch (error) {
+      try { database?.exec('ROLLBACK'); } catch { /* No active transaction. */ }
+      database?.close(); closeSync(this.lock); unlinkSync(path + '.lock'); throw error;
+    }
   }
   get spent(): number { return this.state.calls.reduce((sum, call) => sum + call.charge, 0); }
   private persist(): void {
     if (this.closed || this.poisoned) throw new Error('Pilot accounting unavailable');
-    const temp = this.path + '.' + randomUUID();
     try {
-      const file = openSync(temp, 'wx', 0o600);
-      try { writeFileSync(file, JSON.stringify(this.state, null, 2)); fsyncSync(file); } finally { closeSync(file); }
-      renameSync(temp, this.path);
-    } catch (error) { this.poisoned = true; throw error; }
+      this.db.exec('BEGIN IMMEDIATE');
+      if (this.db.prepare('UPDATE pilot_ledger SET body=? WHERE id=1').run(JSON.stringify(this.state)).changes !== 1) throw new Error('Missing pilot state');
+      this.db.exec('COMMIT');
+    } catch (error) {
+      try { this.db.exec('ROLLBACK'); } catch { /* Keep the previously committed reservation. */ }
+      this.poisoned = true; throw error;
+    }
   }
   reserve(): string {
     if (this.closed || this.poisoned || this.state.stopped || this.state.calls.some(call => call.usage === null)
@@ -65,27 +91,38 @@ export class PilotBudget {
     if (!call || call.usage || !this.fresh.has(id)) throw new Error('Unknown pilot reservation');
     call.reason = reason; call.httpStatus = httpStatus; this.state.stopped = reason; this.persist();
   }
-  close(): void { if (!this.closed) { this.closed = true; closeSync(this.lock); unlinkSync(this.path + '.lock'); } }
+  close(): void { if (!this.closed) { this.closed = true; this.db.close(); closeSync(this.lock); unlinkSync(this.path + '.lock'); } }
 }
 
 /** Official final cumulative usage is authoritative; raw content is never returned or stored here. */
 export function pilotUsage(stream: string): Usage | null {
   try {
+    stream = stream.replaceAll('\r\n', '\n');
+    if (!stream.endsWith('\n\n')) return null;
+    const feeFields = { service_tier: z.literal('standard').optional(),
+      server_tool_use: z.object({ web_search_requests: z.literal(0).optional(), tool_search: z.literal(0).optional() }).strict().optional() };
     let started = false; let stopped = false; let terminal = false; let final: Usage | null = null;
-    for (const frame of stream.replaceAll('\r\n', '\n').split(/\n\n+/)) {
+    for (const frame of stream.split(/\n\n+/)) {
       const lines = frame.split('\n').filter(line => line.startsWith('data:')).map(line => line.slice(5).trimStart());
       if (!lines.length) continue;
       const event = z.record(z.string(), z.unknown()).parse(JSON.parse(lines.join('\n')));
       if (stopped || event.type === 'error') return null;
+      if (event.type !== 'message_delta' && event.usage !== undefined) return null;
       if (event.type === 'ping') continue;
-      if (event.type === 'message_start') { if (started || terminal) return null; started = true; }
+      if (event.type === 'message_start') {
+        if (started || terminal) return null;
+        const message = z.record(z.string(), z.unknown()).parse(event.message);
+        z.object({ input_tokens: integer.max(pilotPolicy.maxInput), output_tokens: integer.max(pilotPolicy.maxOutput),
+          cache_read_input_tokens: integer.max(pilotPolicy.maxInput).optional(), cache_creation_input_tokens: z.literal(0).optional(), ...feeFields,
+        }).strict().parse(message.usage);
+        started = true;
+      }
       else if (event.type === 'message_delta') {
         if (!started || terminal) return null;
         const delta = z.record(z.string(), z.unknown()).parse(event.delta);
         if (!['end_turn', 'tool_use', 'max_tokens', 'stop_sequence'].includes(String(delta.stop_reason))) return null;
         const usage = z.object({ input_tokens: integer, output_tokens: integer, cache_read_input_tokens: integer,
-          cache_creation_input_tokens: z.literal(0), service_tier: z.literal('standard').optional(),
-          server_tool_use: z.object({ web_search_requests: z.literal(0).optional(), tool_search: z.literal(0).optional() }).strict().optional(),
+          cache_creation_input_tokens: z.literal(0), ...feeFields,
         }).strict().parse(event.usage);
         final = usageSchema.parse({ input: usage.input_tokens + usage.cache_read_input_tokens + usage.cache_creation_input_tokens, output: usage.output_tokens }); terminal = true;
       } else if (event.type === 'message_stop') { if (!started || !terminal || event.usage !== undefined) return null; stopped = true; }
