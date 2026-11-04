@@ -10,11 +10,11 @@
 
 ## 2. 选择能安装的版本
 
-先看[发行状态](../release-status.md)和[精确矩阵](../dsh-version-matrix.md)。目前公开 alpha.1 只支持 DSH 0.2.0-rc.2；0.2.1-rc.5 需要源码 alpha.2 经检查的本地 tgz，尚不能用旧公开包代替。无需重装或降级已有业务环境来跑第一步。
+先看[发行状态](../release-status.md)和[精确矩阵](../dsh-version-matrix.md)。本发行alpha.2支持 DSH 0.2.0-rc.2 / 0.2.1-rc.5；旧alpha.1只支持前者。公开状态未确认时可先跑第一步，勿用旧包代替或降级业务环境。
 
 ## 3. 只读绑定自己的仓库
 
-当前源码构建后可生成保守配置，无需先手写 JSON（公开 alpha.1 暂无这些命令）：
+alpha.2提供 `setup` / `doctor`，无需先手写JSON。下列入口适用于第一步示例所在的已构建源码目录，不要求全局CLI在PATH；旧alpha.1没有这些命令：
 
 ```powershell
 node dist/src/cli.js setup --repo 'C:\work\my-python-project' --output 'C:\local-config\reforge.json' --python 'C:\path\to\python.exe'

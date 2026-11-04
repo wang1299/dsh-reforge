@@ -1,35 +1,35 @@
-name: first prerelease
+name: alpha.2 prerelease
 on:
   push:
-    tags: ['v0.1.0-alpha.1']
+    tags: ['v0.1.0-alpha.2']
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: first-prerelease
+  group: alpha2-prerelease
   cancel-in-progress: false
 jobs:
   release:
-    # The one authorized first release is complete. Its frozen checkout used
-    # the former repository identity. Keep the recovery recipe as history;
-    # a future version needs a new authorization and reviewed release workflow.
-    if: ${{ false }}
+    # ADR044: one exact authorized version, after main CI and registry publication.
+    if: ${{ github.repository == 'wang1299/dsh-reforge' && github.ref == 'refs/tags/v0.1.0-alpha.2' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: read
+      checks: read
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: refs/tags/v0.1.0-alpha.1
+          ref: refs/tags/v0.1.0-alpha.2
           fetch-depth: 0
       - name: Restore annotated release tag
-        run: git fetch --no-tags origin +refs/tags/v0.1.0-alpha.1:refs/tags/v0.1.0-alpha.1
+        run: git fetch --no-tags origin +refs/tags/v0.1.0-alpha.2:refs/tags/v0.1.0-alpha.2
       - uses: actions/setup-node@v4
         with:
           node-version: '24.19.0'
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run build
-      - run: env GITHUB_REF=refs/tags/v0.1.0-alpha.1 node scripts/github-release.mjs
+      - run: node scripts/github-release.mjs
         env:
           GH_TOKEN: ${{ github.token }}

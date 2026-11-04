@@ -2,24 +2,24 @@
 
 首次阅读建议先看[快速开始](getting-started/quickstart.md)与[版本状态](release-status.md)。零模型费用的[完整客户表单案例](../examples/customer-form/README.md)可先体验修复与来源验证；排障见[FAQ](faq.md)，升级、恢复、卸载前看[数据运维](maintenance.md)。本页保留详细配置及历史升级步骤。
 
-包名 `dsh-reforge`，品牌 DSH-Reforge。首个实验性版本 `0.1.0-alpha.1` 已发布至 npm `alpha` 并通过公开安装；发行附件与最终结果见 [npm](https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.1)、[Release](https://github.com/wang1299/dsh-reforge/releases/tag/v0.1.0-alpha.1) 和 [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75)。源码、本机 tgz 与远端公开结果分别核验。
+包名 `dsh-reforge`，品牌 DSH-Reforge。本发行版本 `0.1.0-alpha.2`；公开制品核验见[版本状态](release-status.md)和 [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113)。首发alpha.1保留为历史制品，源码、本机tgz与实际公开结果分别核验。
 
 ## 版本选择
 
 | 安装包 | 宿主范围 | 状态 |
 |---|---|---|
 | npm `0.1.0-alpha.1` | 仅 DSH `0.2.0-rc.2` | 原公开版本，不改写 |
-| 源码 `0.1.0-alpha.2` 候选 | 目标 `0.2.0-rc.2` / `0.2.1-rc.5`，以本轮矩阵实际验收为准 | 未公开发布；使用经审计的本地 tgz 验证 |
+| 本发行 `0.1.0-alpha.2` | 精确 `0.2.0-rc.2` / `0.2.1-rc.5`，双平台矩阵通过 | npm/Release公开核验状态见上方链接 |
 
 若在 `0.2.1-rc.5` 中搜索到 alpha.1，安装器拒绝是正确的兼容边界，重试或关闭离线保护不能解决。不要强装、扩大版本例外或直接降级原数据库。后续兼容策略见[矩阵指南](dsh-version-matrix.md)。
 
 ## 1. 准备环境和配置
 
-公开 alpha.1 固定 DSH `0.2.0-rc.2`；开发候选按上表选择精确宿主。Node.js ≥24.10。需要运行来源验证时，准备 Git、Python ≥3.10、pytest（CI 9.1.1），以及你信任的 Python 仓库。矩阵之外的 DSH 版本暂未验证；不要用版本例外绕过本项目的兼容声明。
+alpha.2按上表选择精确宿主。Node.js ≥24.10。需要运行来源验证时，准备 Git、Python ≥3.10、pytest（CI 9.1.1），以及你信任的 Python 仓库。矩阵之外的 DSH 版本暂未验证；不要用版本例外绕过本项目的兼容声明。
 
 创建一个不会提交到 Git 的本机 JSON 文件，例如只读体验：
 
-当前源码可先用 [`setup` 与 `doctor`](getting-started/quickstart.md#3-只读绑定自己的仓库)生成全关闭配置并检查本机环境，避免第一次手写 JSON；公开 alpha.1 尚无这两个命令。下方保留配置字段示例。doctor 不联系模型、不确认当前运行宿主；这两项需在本机 DSH 核对。
+alpha.2可先用 [`setup` 与 `doctor`](getting-started/quickstart.md#3-只读绑定自己的仓库)生成全关闭配置并检查本机环境，避免第一次手写 JSON；旧alpha.1没有这两个命令。下方保留配置字段示例。doctor 不联系模型、不确认当前运行宿主；这两项需在本机 DSH 核对。
 
 ```json
 {
@@ -42,7 +42,7 @@ $env:DSH_REFORGE_CONFIG = 'D:\my-local-config\reforge.json'
 在已安装固定版本 DSH 的终端执行：
 
 ```sh
-dsh plugin --profile web add dsh-reforge@0.1.0-alpha.1
+dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2
 ```
 
 从源码试装时，可运行 `npm ci --ignore-scripts`、`npm run build`、`npm pack`，将上面的包规格替换为生成 tgz 的绝对路径。本机重建包不能代替已发布版本的完整性证明。不要安装名为 `dsh-evolve` 的 registry 包，它属于其他项目。
@@ -109,28 +109,28 @@ dsh web --profile web
 
    ```sh
    dsh plugin --profile web remove dsh-evolve
-   dsh plugin --profile web add dsh-reforge@0.1.0-alpha.1
+   dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2
    ```
 
 4. 使用原配置和 dataDir 重启。旧环境变量仍可用。检查经验、来源、版本和使用次数保持。
 
-已发布的 `0.1.0-alpha.1` 保留当时的内部 patch 行 ID 和 RPC；当前未重新发布的源码已统一为 `dsh-reforge`，具体升级见下一节。`evolve_` 工具和 SQLite v9 保持兼容。默认数据位置仍为 `~/.dsh/evolve/<repoId>/evolve.sqlite`，无需搬迁。不要同时运行新旧插件，不要从 registry 安装第三方 `dsh-evolve`，也不要通过降级程序直接打开新数据库。恢复程序版本与回滚用户代码是不同操作。
+已发布的 `0.1.0-alpha.1` 保留当时的内部 patch 行 ID 和 RPC；alpha.2已统一为 `dsh-reforge`，具体升级见下一节。`evolve_` 工具和 SQLite v9 保持兼容。默认数据位置仍为 `~/.dsh/evolve/<repoId>/evolve.sqlite`，无需搬迁。不要同时运行新旧插件，不要从 registry 安装第三方 `dsh-evolve`，也不要通过降级程序直接打开新数据库。恢复程序版本与回滚用户代码是不同操作。
 
 ## 6. 从首发包升级到当前源码
 
-本节适用于 T038 后的开发源码，不表示 npm 首发包已经更新。先停止所有旧服务和面板，确认没有后台学习任务；备份 profile、原配置、SQLite 及私有快照。
+本节适用于从alpha.1升级到alpha.2；先核对[公开制品状态](release-status.md)。停止所有旧服务和面板，确认没有后台学习任务；备份 profile、原配置、SQLite 及私有快照。
 
 在原 profile 移除旧插件依赖，再安装经过检查的新 tgz；沿用原配置的绝对路径和同一 dataDir。若 profile 的自定义 patch 曾使用 `id: dsh-evolve` 覆盖配置，只把该行改为 `id: dsh-reforge`，保持整份 config（包括 dataDir、grantId、maxCalls）不变。不要新增第二份行或同时启用新旧 ID；若存在多行，停机核对后再启动。默认数据路径和 SQLite 文件名不变，无需搬迁。
 
 启动新服务时重新打开本机生成的认证入口，刷新网页使客户端和服务端同时更新。当前源码使用新的原生 RPC 路径，旧页面不能跨版本混用。旧消息来源仍可读，旧配置变量仍兼容，用量指纹域保持原字节。
 
-启动前后核对 schema v9、经验、应用、反馈、预算账本、未知费用占额及已使用次数完全一致；若不一致，停机排查，勿重置或重放。项目更名不授予额外次数。当前实际体验环境仍使用冻结首发包，本次仓库更名不自动替换它。
+启动前后核对 schema v9、经验、应用、反馈、预算账本、未知费用占额及已使用次数完全一致；若不一致，停机排查，勿重置或重放。项目更名或升级不授予额外次数；替换安装包需按本节显式进行。
 
-首发 npm 包和 Release 附件的原仓库元数据、SHA256 与注释 tag 是历史事实，不能改写；当前源码包使用新地址。任何后续公开发行需要新版本和单独授权。
+首发 npm 包和 Release 附件的原仓库元数据、SHA256 与注释 tag 是历史事实，不能改写；alpha.2包使用新地址，发行依据ADR044。之后的公开发行仍需新版本和单独授权。
 
 ## 排查
 
-- 找不到入口：确认启动 DSH 的 profile 与安装 profile 相同，版本为0.2.0-rc.2，且安装后已重启。
+- 找不到入口：确认启动 DSH 的 profile 与安装 profile 相同，alpha.2宿主为精确0.2.0-rc.2或0.2.1-rc.5，且安装后已重启。
 - 页面要求认证：重开 `dsh web` 打印的完整地址。
 - 模式关闭/次数不足：按页面原因检查本机配置；Agent和面板不能替你开启共享或增加次数。
 - Windows权限错误：按 DSH 官方诊断流程，仅对明确授权目录修复；本插件不扩大系统权限。

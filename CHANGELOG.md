@@ -1,6 +1,11 @@
 # 更新记录
 
-## 未发布：0.1.0-alpha.2
+## 0.1.0-alpha.2 — 实验性 alpha
+
+公开制品与核验结果见[版本状态](https://github.com/wang1299/dsh-reforge/blob/main/docs/release-status.md)和[发行记录](https://github.com/wang1299/dsh-reforge/issues/113)；本节按版本说明内容，不替代注册表状态。
+
+- 独立真实模型小规模验证：自动修复/采集/提炼/再验/后续参考通过；12项三组均4/4，但两检索均拒选，没有实际使用经验的效果对照。16请求费用保守上界0.037128元，未知占额0；全部有界合成结果公开，旧数据/预算保持。
+- 精确alpha.2发行准备：要求最终main四组合CI、冻结npm制品与annotated tag摘要绑定；GitHub prerelease仅使用注册表真实字节。实际公开核验见版本状态，不把准备代码当作发布完成。
 
 - owner CLI 增加保守 `setup`、被动脱敏 `doctor`、停机整目录 `backup` 与只恢复到新目录的 `restore`；SQLite v9、私有快照、unknown 和已用授权保持，不增加次数或执行任务。
 
@@ -14,7 +19,7 @@
 - GitHub 仓库及当前源码统一为 `wang1299/dsh-reforge`；更新原生页面、通信、profile 行 ID 与公开链接。
 - 清理外部项目对照材料，保留自身需求、架构与验收。
 - 保留旧配置、旧消息、用量指纹、SQLite v9 和首发制品的历史身份；升级见[安装指南](docs/installation.md#6-从首发包升级到当前源码)。
-- 已完成的首发发布 job 停用，避免用冻结的旧仓库控制重新发布；不改变现有 npm 包或 Release。
+- 首发包/Release保持不变；后续alpha.2使用ADR044精确发行工作流，不复用首发tag。
 
 ## 0.1.0-alpha.1 — 2026-10-23 实验性 alpha
 

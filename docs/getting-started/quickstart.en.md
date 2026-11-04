@@ -3,14 +3,14 @@
 [中文](quickstart.md) · [Documentation](../index.en.md) · [Current release](../release-status.md)
 
 1. **Run the no-key example.** Follow the [customer-form project](../../examples/customer-form/README.en.md). Reproduce input loss, apply the supplied patch and verify: two original failures, two fixed passes, three regression passes, one source-verified experience. This needs no DSH or model call and is not an automatic-learning or benefit demonstration.
-2. **Choose a compatible artifact.** Check [release status](../release-status.md) and the [exact matrix](../dsh-version-matrix.md). Public alpha.1 supports only DSH 0.2.0-rc.2. The newer host needs an audited alpha.2 source tarball until that version is published. Do not downgrade your business environment merely to run the standalone example.
+2. **Choose a compatible artifact.** Check [release status](../release-status.md) and the [exact matrix](../dsh-version-matrix.md). This alpha.2 release supports exactly DSH 0.2.0-rc.2 and 0.2.1-rc.5; historical alpha.1 supports only the former. While public publication is unverified, begin with the standalone example; do not substitute alpha.1 or downgrade business data.
 3. **Bind read-only access first.** Follow [installation sections 1–2](../installation.md#1-准备环境和配置). Keep learning, execution and sharing disabled. Use the same profile for install and launch, then open the complete newly printed authentication URL. The plugin should show the configured repository and read-only mode; an empty experience list is expected. Keys belong in DSH, not plugin JSON.
 4. **Authorize learning separately.** For a trusted Python repository, provide independent acceptance tests outside the repository, the exact Python executable and in-project regressions. Read the [authorization guide](../installation.md#3-开启正常对话自动学习). Only the owner can explicitly enable execution, background verification, sharing, automatic learning and a bounded extraction grant for an actually registered model. Do not copy a grant ID or reset usage by renaming it. Extraction call limits are not a currency budget; ordinary DSH dialogue can also incur charges. DSH can converse normally with plugin learning disabled.
 5. **Verify before drawing conclusions.** Inspect capture, original/fixed/regression checks, extraction and independent review in learning progress. A failure, skip or unknown receipt retains its reason. A later reference record proves a version was offered, not adoption or task improvement. Those require separate acceptance and controlled evaluation.
 
 Start with a small non-private repair. Before upgrading, read [data operations](../maintenance.md); use the [FAQ](../faq.md) when blocked. Report only redacted versions, failed steps and expected versus actual behavior.
 
-With the current built source (these commands are absent from public alpha.1), generate a conservative configuration without editing JSON first:
+Alpha.2 provides `setup` and `doctor`; the following entry points work from the built source checkout used for the example (historical alpha.1 lacks these commands). No globally installed CLI is assumed:
 
 ```sh
 node dist/src/cli.js setup --repo /absolute/project --output /private/config/reforge.json --python /absolute/python

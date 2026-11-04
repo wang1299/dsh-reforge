@@ -1,0 +1,746 @@
+{
+  "kind": "public-synthetic-pilot-results-v1",
+  "date": "2026-11-04",
+  "sourceCommit": "2a44f4801aba5b3e59292fa06e74ea45b2ec9f04",
+  "planDigest": "7788271a433920de997b819abe235690eb7dd9adfbefb864642c139b2515a844",
+  "candidateArchiveSha256": "c8a072e4f5ba69c65044d4219a8175d756d9401c19863b7f3e1f7963e6a21ba4",
+  "candidateArchiveIntegrity": "sha512-lvW0zjeeJceXS4VkG0WiKMZcBw7sBq6YP9j59vtyOK+w1mEM/tCieVXubpnvQo1stmTvLl7oCAlcVHqkp9SC3w==",
+  "dsh": "0.2.1-rc.5",
+  "node": "v24.19.0",
+  "python": {
+    "python": [
+      3,
+      10,
+      11
+    ],
+    "pytest": "9.1.1"
+  },
+  "modelAlias": "deepseek-flash",
+  "modelRevisionRecorded": false,
+  "maxTokens": 2048,
+  "automaticRetries": 0,
+  "authorizationCapMicroCny": 10000000,
+  "totalCalls": 16,
+  "totalUpperBoundMicroCny": 37128,
+  "unknownReservedMicroCny": 0,
+  "settledReceipts": [
+    {
+      "ordinal": 1,
+      "usage": {
+        "input": 1935,
+        "output": 87
+      },
+      "upperBoundMicroCny": 4566,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 2,
+      "usage": {
+        "input": 2045,
+        "output": 169
+      },
+      "upperBoundMicroCny": 5442,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 3,
+      "usage": {
+        "input": 761,
+        "output": 178
+      },
+      "upperBoundMicroCny": 2946,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 4,
+      "usage": {
+        "input": 1983,
+        "output": 444
+      },
+      "upperBoundMicroCny": 7518,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 5,
+      "usage": {
+        "input": 143,
+        "output": 109
+      },
+      "upperBoundMicroCny": 1158,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 6,
+      "usage": {
+        "input": 143,
+        "output": 109
+      },
+      "upperBoundMicroCny": 1158,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 7,
+      "usage": {
+        "input": 143,
+        "output": 111
+      },
+      "upperBoundMicroCny": 1174,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 8,
+      "usage": {
+        "input": 209,
+        "output": 149
+      },
+      "upperBoundMicroCny": 1610,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 9,
+      "usage": {
+        "input": 209,
+        "output": 149
+      },
+      "upperBoundMicroCny": 1610,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 10,
+      "usage": {
+        "input": 209,
+        "output": 149
+      },
+      "upperBoundMicroCny": 1610,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 11,
+      "usage": {
+        "input": 143,
+        "output": 109
+      },
+      "upperBoundMicroCny": 1158,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 12,
+      "usage": {
+        "input": 143,
+        "output": 111
+      },
+      "upperBoundMicroCny": 1174,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 13,
+      "usage": {
+        "input": 143,
+        "output": 111
+      },
+      "upperBoundMicroCny": 1174,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 14,
+      "usage": {
+        "input": 209,
+        "output": 149
+      },
+      "upperBoundMicroCny": 1610,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 15,
+      "usage": {
+        "input": 209,
+        "output": 149
+      },
+      "upperBoundMicroCny": 1610,
+      "reason": "complete",
+      "httpStatus": 200
+    },
+    {
+      "ordinal": 16,
+      "usage": {
+        "input": 209,
+        "output": 149
+      },
+      "upperBoundMicroCny": 1610,
+      "reason": "complete",
+      "httpStatus": 200
+    }
+  ],
+  "automatic": {
+    "kind": "real-model-automatic-integration",
+    "passed": true,
+    "stage": "completed",
+    "sourceVerified": true,
+    "offered": true,
+    "laterResponse": true,
+    "extractionUsed": 1,
+    "modelHttpRequests": 4,
+    "tools": [
+      {
+        "name": "fixture_write_source",
+        "isError": false
+      }
+    ],
+    "counts": {
+      "tasks": 2,
+      "experiences": 1,
+      "applications": 1,
+      "feedback": 0
+    },
+    "sourceChecks": {
+      "base": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 1
+      },
+      "fixed": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 0
+      },
+      "regression": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exitCode": 0
+      }
+    },
+    "indexUnchanged": true,
+    "headUnchanged": true,
+    "reason": "completed",
+    "conservativeMicroCny": 20472,
+    "heldCalls": 0,
+    "settledUpperBoundMicroCny": 20472,
+    "unknownReservedMicroCny": 0
+  },
+  "learnedSyntheticReference": {
+    "title": "Validate failure before mutating shared state",
+    "strategy": "In apply_change(state, fail=False), check the failure condition and raise before mutating state; only increment state[\"balance\"] on the success path. This keeps state unchanged when ValueError is raised and increments exactly once on success."
+  },
+  "postRunLexicalDiagnostics": [
+    {
+      "case": "stock",
+      "matches": [
+        {
+          "score": 0,
+          "rawScore": 0,
+          "anchors": 0,
+          "titleAnchors": 0,
+          "reason": "insufficient_anchors"
+        }
+      ]
+    },
+    {
+      "case": "form",
+      "matches": [
+        {
+          "score": 0.40590939150527044,
+          "rawScore": 0.6832449220729795,
+          "anchors": 2,
+          "titleAnchors": 0,
+          "reason": "no_title_anchor"
+        }
+      ]
+    }
+  ],
+  "order": [
+    {
+      "case": "stock",
+      "repeat": 1,
+      "arms": [
+        "none",
+        "plain",
+        "reforge"
+      ]
+    },
+    {
+      "case": "form",
+      "repeat": 1,
+      "arms": [
+        "plain",
+        "reforge",
+        "none"
+      ]
+    },
+    {
+      "case": "stock",
+      "repeat": 2,
+      "arms": [
+        "reforge",
+        "none",
+        "plain"
+      ]
+    },
+    {
+      "case": "form",
+      "repeat": 2,
+      "arms": [
+        "none",
+        "reforge",
+        "plain"
+      ]
+    }
+  ],
+  "arms": {
+    "none": {
+      "planned": 4,
+      "attempted": 4,
+      "completed": 4,
+      "evaluated": 4,
+      "invalidGenerations": 0,
+      "accepted": 4,
+      "offered": 0,
+      "needsRework": 0,
+      "negativePathFailures": 0,
+      "conservativeMicroCny": 5552
+    },
+    "plain": {
+      "planned": 4,
+      "attempted": 4,
+      "completed": 4,
+      "evaluated": 4,
+      "invalidGenerations": 0,
+      "accepted": 4,
+      "offered": 0,
+      "needsRework": 0,
+      "negativePathFailures": 0,
+      "conservativeMicroCny": 5552
+    },
+    "reforge": {
+      "planned": 4,
+      "attempted": 4,
+      "completed": 4,
+      "evaluated": 4,
+      "invalidGenerations": 0,
+      "accepted": 4,
+      "offered": 0,
+      "needsRework": 0,
+      "negativePathFailures": 0,
+      "conservativeMicroCny": 5552
+    }
+  },
+  "trials": [
+    {
+      "id": "stock-r1-none",
+      "case": "stock",
+      "repeat": 1,
+      "arm": "none",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "bffcfd1a031bc84047cd9b7a8cddb9b9720b9107db5a1d05522608b1fa700412",
+      "codeDigest": "e1c4e5564836a0f7ad0211ffd272ff0f9b3682bec41d39abea7c51c84550c668",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1158,
+      "financialKnown": true,
+      "durationMs": 7270,
+      "proposal": "stock-e1c4e5564836.py"
+    },
+    {
+      "id": "stock-r1-plain",
+      "case": "stock",
+      "repeat": 1,
+      "arm": "plain",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "bffcfd1a031bc84047cd9b7a8cddb9b9720b9107db5a1d05522608b1fa700412",
+      "codeDigest": "e1c4e5564836a0f7ad0211ffd272ff0f9b3682bec41d39abea7c51c84550c668",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1158,
+      "financialKnown": true,
+      "durationMs": 7190,
+      "proposal": "stock-e1c4e5564836.py"
+    },
+    {
+      "id": "stock-r1-reforge",
+      "case": "stock",
+      "repeat": 1,
+      "arm": "reforge",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "bffcfd1a031bc84047cd9b7a8cddb9b9720b9107db5a1d05522608b1fa700412",
+      "codeDigest": "e6c5f83f7178b3294c33e05fea084b4e1c47fdbeb29a59a177682121560a91ac",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1174,
+      "financialKnown": true,
+      "durationMs": 7403,
+      "proposal": "stock-e6c5f83f7178.py"
+    },
+    {
+      "id": "form-r1-plain",
+      "case": "form",
+      "repeat": 1,
+      "arm": "plain",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "ca70d09bcaca68753b9b17c2bb24036e84402a600823eaed176fcc4a5dc87773",
+      "codeDigest": "33771e5c8ff46b2604fe4268720d97caeff4968d3f35c27e4e79b32ae324c8d7",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1610,
+      "financialKnown": true,
+      "durationMs": 7843,
+      "proposal": "form-33771e5c8ff4.py"
+    },
+    {
+      "id": "form-r1-reforge",
+      "case": "form",
+      "repeat": 1,
+      "arm": "reforge",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "ca70d09bcaca68753b9b17c2bb24036e84402a600823eaed176fcc4a5dc87773",
+      "codeDigest": "33771e5c8ff46b2604fe4268720d97caeff4968d3f35c27e4e79b32ae324c8d7",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1610,
+      "financialKnown": true,
+      "durationMs": 7144,
+      "proposal": "form-33771e5c8ff4.py"
+    },
+    {
+      "id": "form-r1-none",
+      "case": "form",
+      "repeat": 1,
+      "arm": "none",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "ca70d09bcaca68753b9b17c2bb24036e84402a600823eaed176fcc4a5dc87773",
+      "codeDigest": "33771e5c8ff46b2604fe4268720d97caeff4968d3f35c27e4e79b32ae324c8d7",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1610,
+      "financialKnown": true,
+      "durationMs": 7224,
+      "proposal": "form-33771e5c8ff4.py"
+    },
+    {
+      "id": "stock-r2-reforge",
+      "case": "stock",
+      "repeat": 2,
+      "arm": "reforge",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "bffcfd1a031bc84047cd9b7a8cddb9b9720b9107db5a1d05522608b1fa700412",
+      "codeDigest": "e1c4e5564836a0f7ad0211ffd272ff0f9b3682bec41d39abea7c51c84550c668",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1158,
+      "financialKnown": true,
+      "durationMs": 7078,
+      "proposal": "stock-e1c4e5564836.py"
+    },
+    {
+      "id": "stock-r2-none",
+      "case": "stock",
+      "repeat": 2,
+      "arm": "none",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "bffcfd1a031bc84047cd9b7a8cddb9b9720b9107db5a1d05522608b1fa700412",
+      "codeDigest": "e6c5f83f7178b3294c33e05fea084b4e1c47fdbeb29a59a177682121560a91ac",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1174,
+      "financialKnown": true,
+      "durationMs": 7221,
+      "proposal": "stock-e6c5f83f7178.py"
+    },
+    {
+      "id": "stock-r2-plain",
+      "case": "stock",
+      "repeat": 2,
+      "arm": "plain",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "bffcfd1a031bc84047cd9b7a8cddb9b9720b9107db5a1d05522608b1fa700412",
+      "codeDigest": "e6c5f83f7178b3294c33e05fea084b4e1c47fdbeb29a59a177682121560a91ac",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1174,
+      "financialKnown": true,
+      "durationMs": 7084,
+      "proposal": "stock-e6c5f83f7178.py"
+    },
+    {
+      "id": "form-r2-none",
+      "case": "form",
+      "repeat": 2,
+      "arm": "none",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "ca70d09bcaca68753b9b17c2bb24036e84402a600823eaed176fcc4a5dc87773",
+      "codeDigest": "33771e5c8ff46b2604fe4268720d97caeff4968d3f35c27e4e79b32ae324c8d7",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1610,
+      "financialKnown": true,
+      "durationMs": 7117,
+      "proposal": "form-33771e5c8ff4.py"
+    },
+    {
+      "id": "form-r2-reforge",
+      "case": "form",
+      "repeat": 2,
+      "arm": "reforge",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "ca70d09bcaca68753b9b17c2bb24036e84402a600823eaed176fcc4a5dc87773",
+      "codeDigest": "33771e5c8ff46b2604fe4268720d97caeff4968d3f35c27e4e79b32ae324c8d7",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1610,
+      "financialKnown": true,
+      "durationMs": 7061,
+      "proposal": "form-33771e5c8ff4.py"
+    },
+    {
+      "id": "form-r2-plain",
+      "case": "form",
+      "repeat": 2,
+      "arm": "plain",
+      "plannedCalls": 1,
+      "actualCalls": 1,
+      "offered": false,
+      "experienceRevision": null,
+      "applicationRecorded": false,
+      "requestDigest": "ca70d09bcaca68753b9b17c2bb24036e84402a600823eaed176fcc4a5dc87773",
+      "codeDigest": "33771e5c8ff46b2604fe4268720d97caeff4968d3f35c27e4e79b32ae324c8d7",
+      "accepted": true,
+      "failure": null,
+      "checks": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "negativePathFailures": 0,
+      "needsRework": false,
+      "actualHumanEdits": 0,
+      "automaticRepairRounds": 0,
+      "conservativeMicroCny": 1610,
+      "financialKnown": true,
+      "durationMs": 7420,
+      "proposal": "form-33771e5c8ff4.py"
+    }
+  ],
+  "learningAndReferenceOverheadMicroCny": 20472,
+  "actualHumanEdits": 0,
+  "repairRoundsAllowed": 0,
+  "futureBenefitProven": false,
+  "memoryTreatmentObservedInComparison": false,
+  "conclusion": "Automatic learning path passed. Both retrieval arms abstained on all held-out trials. All arms passed 4/4 without memory context; no effect of using memory was measured.",
+  "limitations": [
+    "two synthetic cases; four trials per arm",
+    "one valid source experience; no stale/distractor corpus",
+    "single generation only; actual rework cost unmeasured",
+    "negative-path failures are an error proxy, not attributed experience misuse",
+    "source-learning overhead shared by plain/reforge corpus; do not duplicate it in actual total",
+    "token charges are peak-price upper bounds, not provider invoices"
+  ]
+}

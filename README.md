@@ -7,8 +7,8 @@
 <p align="center"><strong>修复有据，经验可循。</strong></p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.1"><img src="https://img.shields.io/npm/v/dsh-reforge/alpha?label=npm%20alpha" alt="npm alpha" /></a>
-  <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/compatibility.md"><img src="https://img.shields.io/badge/DSH-0.2.0--rc.2-39424e" alt="DSH 0.2.0-rc.2" /></a>
+  <a href="https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.2"><img src="https://img.shields.io/npm/v/dsh-reforge/alpha?label=npm%20alpha" alt="npm alpha" /></a>
+  <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/dsh-version-matrix.md"><img src="https://img.shields.io/badge/DSH-0.2.0--rc.2%20%7C%200.2.1--rc.5-39424e" alt="DSH 0.2.0-rc.2 / 0.2.1-rc.5" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/actions/workflows/check.yml"><img src="https://github.com/wang1299/dsh-reforge/actions/workflows/check.yml/badge.svg?branch=main" alt="CI" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" /></a>
 </p>
@@ -26,10 +26,10 @@
 
 DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-verified Python bug fixes, with scoped retrieval for later tasks.
 
-**实验性 alpha：`dsh-reforge@0.1.0-alpha.1`。** 已于 2026-10-23 发布至 npm `alpha`，公开下载与安装检查通过。[GitHub Release](https://github.com/wang1299/dsh-reforge/releases/tag/v0.1.0-alpha.1) 的制品与摘要已核验，完整结果见 [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75)。源码仓库现统一为 `wang1299/dsh-reforge`，原仓库地址由 GitHub 跳转。本项目由社区独立开发，不代表 DeepSeek 官方审核、推荐或安全认证。
+**本发行版本：`dsh-reforge@0.1.0-alpha.2`，实验性 alpha。** 包含新版工作台、完整示例、配置检查与备份恢复。公开 npm/Release 是否已完成核验，以[版本状态](docs/release-status.md)与 [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113) 为准。本项目由社区独立开发，不代表 DeepSeek 官方审核、推荐或安全认证。
 
 
-T040 / 开发候选：当前源码准备 `0.1.0-alpha.2`，目标验证 DSH `0.2.0-rc.2` 和 `0.2.1-rc.5`。版本支持清单、适配层、矩阵与实际验收见 [兼容性指南](docs/dsh-version-matrix.md) / [Issue #93](https://github.com/wang1299/dsh-reforge/issues/93)。该候选尚未发布；上面的公开 alpha.1 仍只支持旧宿主，市场收录不代表它能安装到新版 DSH。
+精确兼容 DSH `0.2.0-rc.2` 和 `0.2.1-rc.5`，采用独立适配层与 Windows/Linux 四组合检查；范围见[版本矩阵](docs/dsh-version-matrix.md)。旧公开 alpha.1 仅支持前一个宿主；其他 DSH 版本需另行验证。
 
 ## 能做什么
 
@@ -51,16 +51,16 @@ T040 / 开发候选：当前源码准备 `0.1.0-alpha.2`，目标验证 DSH `0.2
 
 从客户表单丢失输入开始，演示明确纠正、实际补丁、独立验收和经验入库：原始版本 2 项验收失败，修复版本 2/2 通过，回归测试 3/3 通过。
 
-**本片为合成数据的本地显式记录案例**，展示源码 alpha.2 的独立工作台；修复由 Codex 准备，示例页面应用补丁。没有录制 DSH 模型自主编码或自动提炼，没有付费模型调用，也没有评价后续任务收益。公开 npm alpha.1 的版本范围不变。
+**本片为合成数据的本地显式记录案例**，展示 alpha.2 的独立工作台；修复由 Codex 准备，示例页面应用补丁。录像没有模型自主编码、自动提炼或付费调用。另有[真实模型验证报告](docs/evaluation/t049-20261104/README.md)：自动闭环通过；对照题中两检索均拒选，未得到使用经验的收益证据。
 
 ## 安装与打开
 
-需要 **Node.js ≥24.10、DSH 0.2.0-rc.2**。修复验证还需要 Git、Python ≥3.10 和 pytest；CI 固定 pytest 9.1.1。只承诺该 DSH 版本，不适用于 DeepSeek 官方聊天网页。
+需要 **Node.js ≥24.10、DSH 0.2.0-rc.2 或 0.2.1-rc.5**。修复验证还需要 Git、Python ≥3.10 和 pytest；CI 固定 pytest 9.1.1。只支持这两个精确宿主，不适用于 DeepSeek 官方聊天网页。
 
 在自己的 DSH 环境安装准确版本：
 
 ```sh
-dsh plugin --profile web add dsh-reforge@0.1.0-alpha.1
+dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2
 ```
 
 停止原 DSH 进程，再使用同一 profile 启动 Web，打开启动器打印的完整认证地址。**左侧「插件」→「dsh-reforge」→ 详情操作页**即可查看；配置仓库中的已有会话，可从与「对话／轨迹」并列的「经验」标签进入。打开页面不调用模型。
