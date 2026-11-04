@@ -33,10 +33,14 @@ async function credentialReady(runtime, path) {
     assert(credential?.value && credential.source === 'file', 'Configure the managed DeepSeek key locally in DSH');
   } finally { await ctx.fiber.dispose(); }
 }
-export async function validatePilotPlan(run) {
+async function readPlan(run) {
   owned(run); const bytes = await readFile(join(run, 'plan.json')); assert(bytes.length <= 8 * 1024 * 1024);
   assert.equal(digest(bytes), await readFile(join(run, 'plan.sha256'), 'utf8'), 'Plan drift');
   const plan = JSON.parse(bytes); assert.equal(plan.kind, 't049-real-model-pilot-v1'); assert.equal(plan.root, resolve(run));
+  return plan;
+}
+export async function validatePilotPlan(run) {
+  const plan = await readPlan(run);
   assert.equal(plan.sourceCommit, git(workspace, ['rev-parse', 'HEAD']), 'Source changed since qualification');
   assert.equal(plan.nodeVersion, process.version); assert.deepEqual(plan.order, comparisonOrder);
   assert.deepEqual(plan.policy, pilotPolicy);
@@ -82,7 +86,7 @@ async function prepare(options, offlineOnly) {
     plan.acceptance[join(fixture.repo, 'tests')] = await acceptanceDigest(join(fixture.repo, 'tests'));
   }
   const tracked = git(workspace, ['ls-files', '-z']).split('\0').filter(file => /^(src|scripts|test|examples\/customer-form)\//.test(file));
-  const files = [...tracked.map(file => join(workspace, file)), archive, python, process.execPath, join(workspace, 'package.json'), join(workspace, 'package-lock.json'),
+  const files = [...tracked.map(file => join(workspace, file)), archive, python, process.execPath, runtime.anchor, join(host, 'package-lock.json'), join(workspace, 'package.json'), join(workspace, 'package-lock.json'),
     ...runtimeNames.map(name => runtime.require.resolve(name)),
     ...Object.keys(profile.productFiles).map(file => join(profile.packageDir, 'dist/src', file)),
     ...['package.json', 'pnpm-lock.yaml', 'cordis.yml', 'cordis.patch.yml'].map(file => join(profile.profile, file)).filter(file => existsSync(file)),
@@ -153,11 +157,18 @@ try {
   if (command === 'prepare' || command === 'prepare-offline') await prepare(options, command === 'prepare-offline');
   else if (command === 'offline' || command === 'live') await execute(resolve(required(options, '--run')), command === 'offline');
   else if (command === 'status') {
-    const run = resolve(required(options, '--run')); await validatePilotPlan(run);
-    const db = existsSync(pilotAuthorizationPath) ? new DatabaseSync(pilotAuthorizationPath, { readOnly: true }) : null;
+    const run = resolve(required(options, '--run')); const plan = await readPlan(run);
+    const db = plan.authorization !== 'offline-only' && existsSync(pilotAuthorizationPath) ? new DatabaseSync(pilotAuthorizationPath, { readOnly: true }) : null;
     try { const budget = db && JSON.parse(db.prepare('SELECT body FROM pilot_ledger WHERE id=1').get().body);
+      if (db) {
+        const binding = JSON.parse(db.prepare('SELECT body FROM pilot_authorization WHERE id=1').get().body);
+        assert.equal(binding.root, run); assert.equal(binding.planDigest, await readFile(join(run, 'plan.sha256'), 'utf8'));
+      }
       console.log(JSON.stringify({ authorized: !!budget, capMicroCny: budget?.cap ?? 0, calls: budget?.calls.length ?? 0,
-        conservativeMicroCny: budget?.calls.reduce((n, call) => n + call.charge, 0) ?? 0, heldCalls: budget?.calls.filter(call => !call.usage).length ?? 0, stopped: budget?.stopped ?? null })); }
+        conservativeMicroCny: budget?.calls.reduce((n, call) => n + call.charge, 0) ?? 0,
+        settledUpperBoundMicroCny: budget?.calls.filter(call => call.usage).reduce((n, call) => n + call.charge, 0) ?? 0,
+        unknownReservedMicroCny: budget?.calls.filter(call => !call.usage).reduce((n, call) => n + call.charge, 0) ?? 0,
+        heldCalls: budget?.calls.filter(call => !call.usage).length ?? 0, stopped: budget?.stopped ?? null })); }
     finally { db?.close(); }
   } else throw new Error('Use prepare-offline, prepare, offline, live or status with explicit local paths');
 } catch (error) {

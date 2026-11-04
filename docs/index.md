@@ -13,7 +13,7 @@
 | 判断宿主是否兼容 | [当前精确版本矩阵](dsh-version-matrix.md) |
 | 网页打不开、仓库不匹配、没有经验 | [常见问题](faq.md) |
 | 了解保留什么、怎样安全升级与恢复 | [数据运维](maintenance.md) |
-| 理解证据边界和后续收益 | [产品需求](product.md)、[评价记录](development/T008c-acceptance.md) |
+| 理解证据边界和后续收益 | [产品需求](product.md)、[真实模型小规模试验](evaluation/real-model-pilot.md)、[早期评价](development/T008c-acceptance.md) |
 | 参与试用或报告问题 | [外部试用](community/pilot.md)、[问题表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)、[安全报告](../SECURITY.md) |
 | 从一个小贡献开始 | [贡献指南](../CONTRIBUTING.md)、[新人任务](community/newcomers.md) |
 
