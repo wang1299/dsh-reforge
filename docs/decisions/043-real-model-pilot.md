@@ -10,6 +10,8 @@
 
 新增独立、独占锁、原子/fsync账本，调用前先持久化占额。只在HTTP200、完整SSE终止、合法最终usage且没有服务器工具费用时，用最终input+cache_read+cache_creation及output按峰价结算；不把起始usage与最终累计值相加，见[官方计量说明](https://api-docs.deepseek.com/guides/anthropic_api/#streaming-and-token-usage)。服务端不支持的字段/费档、非零服务器工具计数、计量越界、超时、网络错误、消费者取消、断流或持久化失败均保留完整占额并阻止后续付费请求。重启不能重试或退额；离线负例须证明这一点。报告的是保守token费用上界，不冒充服务商账单。
 
+预付费独立评审后的存储决定（实现前追加）：原型“临时JSON fsync后rename”未覆盖Windows目录元数据掉电边界，改为**全新独立SQLite账本**（自身schema1，与插件v9无关），DELETE journal、synchronous=EXTRA，SQLite事务提交占额后才允许网络请求。依赖SQLite的[原子提交](https://www.sqlite.org/atomiccommit.html)和[同步保证](https://www.sqlite.org/pragma.html#pragma_synchronous)，不自行实现跨平台目录刷盘；不读取/迁移旧JSON预算。所有usage位置先核对费用字段/费档，只用完整终止帧的最终累计token结算；SSE帧缺终止空行亦按未知保留。尚未发生本轮任何付费调用。
+
 ## 实际自动闭环
 
 使用新隔离profile，通过官方安装操作安装冻结tgz，所有官方SDK均从同一个固定0.2.1-rc.5宿主图解析。实际Loader执行安装包，真实官方AgentLoop、DeepSeekAdapter、SessionStore、ToolRuntime、SystemPrompt及本机凭据服务协作，不以脚本模型代替真实API。测试专用写入工具只允许对一个新的合成Python函数提交有界代码，AST约束无导入、文件/网络/进程操作；补丁由真实模型生成，不提供预制修复。它是受控组件集成，不冒充完整Desktop UI或通用工具能力。
