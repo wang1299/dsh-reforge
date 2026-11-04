@@ -1,5 +1,7 @@
 # 第一次任务演示：保存失败，也不丢输入
 
+**现在可以亲自复现：** [完整客户表单工程](../../examples/customer-form/README.md)提供同一缺陷、补丁、独立验收与工作台入口。[首次配置与验证](../getting-started/quickstart.md)连接后续安装和授权；不需要 Key 即可运行本例。
+
 [English](first-task.en.md) · [下载视频](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4) · [中文字幕](../assets/demos/first-task.zh-CN.srt) · [英文字幕](../assets/demos/first-task.en.srt)
 
 [![保存失败，也不丢输入](../assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)

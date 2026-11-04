@@ -1,0 +1,26 @@
+name: Trial feedback / 首次试用反馈
+description: Report real onboarding steps, including failures / 记录真实试用及卡点
+title: "[Trial]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Synthetic data only. Do not upload credentials, full configs, databases or logs. 使用合成数据，不上传凭据、配置、数据库或完整日志。"
+  - type: input
+    id: versions
+    attributes:
+      label: Environment and exact versions / 环境及准确版本
+    validations:
+      required: true
+  - type: textarea
+    id: completed
+    attributes:
+      label: Steps completed and observed counts / 已完成步骤及观察计数
+      description: Original failures, fixed passes, regression passes and experience count; failures are useful feedback too.
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: Friction and expectations / 卡点与期望
+    validations:
+      required: true

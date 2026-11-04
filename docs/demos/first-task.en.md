@@ -1,5 +1,7 @@
 # First-task demo: keep user input when saving fails
 
+**Reproduce it yourself:** the [complete customer-form project](../../examples/customer-form/README.en.md) includes the same bug, patch, independent tests and workbench entry. No key is needed. Continue with [first configuration and verification](../getting-started/quickstart.en.md).
+
 [中文](first-task.md) · [Download video](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4) · [English subtitles](../assets/demos/first-task.en.srt) · [Chinese subtitles](../assets/demos/first-task.zh-CN.srt)
 
 [![Keep user input when saving fails](../assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)

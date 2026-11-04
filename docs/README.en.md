@@ -40,6 +40,8 @@ Source verification establishes that a repair passed its checks at that time. **
 
 ## Demo: keep user input when saving fails
 
+**Run the same project:** [examples/customer-form](../examples/customer-form/README.en.md) includes original/fixed code, external acceptance and regressions. Run `npm run example:customer-form` without a key or DSH installation. Continue with the [first-use guide](getting-started/quickstart.en.md), [documentation index](index.en.md), [release status](release-status.md), [FAQ](faq.md) and [external pilot](community/pilot.md).
+
 [![DSH-Reforge first-task demo: keep user input when saving fails](https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)
 
 [Download demo MP4 (2:02, 1080p)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4) · [English subtitles](https://github.com/wang1299/dsh-reforge/blob/main/docs/assets/demos/first-task.en.srt) · [Case and acceptance notes](https://github.com/wang1299/dsh-reforge/blob/main/docs/demos/first-task.en.md)

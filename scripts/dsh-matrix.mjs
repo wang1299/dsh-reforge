@@ -38,7 +38,7 @@ if (!typecheckOnly) {
 }
 const tracked = execFileSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8', windowsHide: true }).split('\0').filter(Boolean);
 const roots = ['package.json', 'package-lock.json', 'tsconfig.json', 'eslint.config.mjs', 'README.md', 'LICENSE', 'CHANGELOG.md', 'cordis.patch.yml'];
-const files = [...new Set(tracked)].filter(p => /^(?:src|test|scripts|docs|compat|\.github)\//.test(p) || roots.includes(p));
+const files = [...new Set(tracked)].filter(p => /^(?:src|test|scripts|docs|examples|compat|\.github)\//.test(p) || roots.includes(p));
 const report = { schemaVersion: 1, phase: typecheckOnly ? 'partial-typecheck' : 'matrix', passed: false,
   sourcePackage: archive ? { sha256: hash(readFileSync(archive)), path: archive } : null, versions: [] };
 

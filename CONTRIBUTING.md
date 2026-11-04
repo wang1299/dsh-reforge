@@ -1,5 +1,7 @@
 # 开发流程
 
+[文档导航](docs/index.md) · [新人任务](docs/community/newcomers.md) · [真实外部试用](docs/community/pilot.md) · [安全报告](SECURITY.md)。问题与功能建议请用 [Issue 表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)，只提供脱敏最小复现。零模型费用的完整入口是 [customer-form](examples/customer-form/README.md)；`npm run demo` 是另一个事务回滚案例。
+
 1. 在 `docs/tasks/` 记录问题、范围、验收、依赖和必要验证。有远端后同步为 Issue。
 2. 从对应依赖分支创建 `codex/` 任务分支，记录比较基线。
 3. 行为变化先保留失败测试／复现，然后做最小完整实现。

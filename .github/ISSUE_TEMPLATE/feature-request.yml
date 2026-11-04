@@ -1,0 +1,17 @@
+name: Feature request / 功能建议
+description: Describe a user problem and testable outcome / 用户问题与可验收结果
+title: "[Feature]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem / 用户问题
+      description: No private conversations or project data.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Expected behavior and acceptance / 期望行为与验收
+    validations:
+      required: true

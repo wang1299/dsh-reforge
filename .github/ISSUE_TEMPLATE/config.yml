@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation / 文档
+    url: https://github.com/wang1299/dsh-reforge/blob/main/docs/index.md
+    about: Start with the runnable example and quickstart.
+  - name: Security / 安全报告
+    url: https://github.com/wang1299/dsh-reforge/blob/main/SECURITY.md
+    about: Read before sharing a suspected vulnerability.
