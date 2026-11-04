@@ -12,6 +12,8 @@
 
 预付费独立评审后的存储决定（实现前追加）：原型“临时JSON fsync后rename”未覆盖Windows目录元数据掉电边界，改为**全新独立SQLite账本**（自身schema1，与插件v9无关），DELETE journal、synchronous=EXTRA，SQLite事务提交占额后才允许网络请求。依赖SQLite的[原子提交](https://www.sqlite.org/atomiccommit.html)和[同步保证](https://www.sqlite.org/pragma.html#pragma_synchronous)，不自行实现跨平台目录刷盘；不读取/迁移旧JSON预算。所有usage位置先核对费用字段/费档，只用完整终止帧的最终累计token结算；SSE帧缺终止空行亦按未知保留。尚未发生本轮任何付费调用。
 
+最终入口评审后的决定（实现前追加）：正式授权改用仓库内**唯一固定位置** `.probe-work/t049-authorized-budget.sqlite`，财政schema2同一事务保存授权run/计划摘要、不可重放的开始状态和费用占额；所有live入口只接受这一账本及已开始的同一计划，不以可丢失的JSON定位/开始标记授予新额度。旧未付费原型schema1不迁移。冻结全部实际执行的dist/src、dist/scripts与宿主运行依赖文件，除源文件摘要外核对编译产物；比较最后一项即使已记12次调用，仍须无unknown占额/停止原因才能计完整。负面任务结果仍保留为有效试验结果，不冒充成功。资格检查使用不刷新index的Git读取；持续固定HEAD及暂存内容，自动闭环另外核对index原始字节。所有改动在首次付费前完成。
+
 ## 实际自动闭环
 
 使用新隔离profile，通过官方安装操作安装冻结tgz，所有官方SDK均从同一个固定0.2.1-rc.5宿主图解析。实际Loader执行安装包，真实官方AgentLoop、DeepSeekAdapter、SessionStore、ToolRuntime、SystemPrompt及本机凭据服务协作，不以脚本模型代替真实API。测试专用写入工具只允许对一个新的合成Python函数提交有界代码，AST约束无导入、文件/网络/进程操作；补丁由真实模型生成，不提供预制修复。它是受控组件集成，不冒充完整Desktop UI或通用工具能力。
