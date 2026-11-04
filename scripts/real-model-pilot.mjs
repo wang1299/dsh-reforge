@@ -89,15 +89,19 @@ async function prepare(options, offlineOnly) {
     ...['pilot-budget', 'pilot-fixtures'].map(file => join(workspace, 'dist/scripts', file + '.js'))];
   for (const file of files) plan.files[file] = digest(await readFile(file));
   const visited = new Set();
+  const runtimeFile = path => /\.(?:js|mjs|cjs|json|node|wasm|dll|bin)$/.test(path);
   async function runtimeFiles(path) {
     const actual = await realpath(path); if (actual !== resolve(path)) plan.links[path] = actual;
     if (visited.has(actual)) return; visited.add(actual); assert(visited.size <= 50000, 'Runtime graph too large');
     const entry = await stat(actual);
     if (entry.isDirectory()) {
-      for (const child of await readdir(actual)) if (!['.cache', '.bin', '.git'].includes(child)) await runtimeFiles(join(actual, child));
-    } else if (/\.(?:js|mjs|cjs|json|node)$/.test(actual)) plan.files[actual] = digest(await readFile(actual));
+      for (const child of await readdir(actual, { withFileTypes: true })) {
+        if (['.cache', '.bin', '.git'].includes(child.name)) continue;
+        if (child.isDirectory() || child.isSymbolicLink() || runtimeFile(child.name)) await runtimeFiles(join(actual, child.name));
+      }
+    } else if (runtimeFile(actual)) plan.files[actual] = digest(await readFile(actual));
   }
-  for (const path of [join(workspace, 'dist/src'), join(workspace, 'dist/scripts'), join(host, 'node_modules'), join(profile.profile, 'node_modules')]) await runtimeFiles(path);
+  for (const path of [join(workspace, 'dist/src'), join(workspace, 'dist/scripts'), join(workspace, 'node_modules'), join(host, 'node_modules'), join(profile.profile, 'node_modules')]) await runtimeFiles(path);
   const text = JSON.stringify(plan, null, 2); await writeFile(join(root, 'plan.json'), text, { flag: 'wx', mode: 0o600 });
   await writeFile(join(root, 'plan.sha256'), digest(text), { flag: 'wx', mode: 0o600 });
   if (!offlineOnly) {
