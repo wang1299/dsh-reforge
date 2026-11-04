@@ -110,7 +110,8 @@ export async function automaticPilot(input) {
           assert(credential?.value, 'Configure credentials locally in DSH');
           return { headers: { Authorization: 'Bearer ' + credential.value } };
         }, resolveUserId: () => input.anonymousId,
-        resolveFiles: () => new providerModule.DeepSeekFileStore(join(input.root, 'unused-image-index.json')),
+        resolveFiles: () => new providerModule.DeepSeekFileStore({ index: new providerModule.DeepSeekUploadIndex(join(input.root, 'unused-image-index.json')),
+          fetch: async () => { throw new Error('Files API disabled in bounded pilot'); } }),
         prepareExtensions: async () => ({ fields: {}, accept: async () => {} }) });
       root.llm.registerAdapter([route], adapter); await root.plugin(AgentLoop, { agents: [], maxParallelToolCalls: 1 }).await();
       root.tools.register(defineTool({ name: 'fixture_write_source', description: 'Replace only the synthetic ledger.py function with your repair. No other files, commands or configuration can be changed.',
