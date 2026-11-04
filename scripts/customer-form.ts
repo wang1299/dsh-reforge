@@ -10,6 +10,7 @@ import { createService } from '../src/config.js';
 import { digest, type Evidence, type Verification } from '../src/domain.js';
 import { startPanel } from '../src/panel.js';
 import { git } from '../src/repository.js';
+import { passes, reproduces } from '../src/verification.js';
 
 const run = promisify(execFile);
 const workspace = fileURLToPath(new URL('../../', import.meta.url));
@@ -64,9 +65,21 @@ export async function startCustomerForm(pythonInput?: string): Promise<{
     const active = handle(request, response).finally(() => pending.delete(active)); pending.add(active);
   });
   function summary() {
+    const checks = state.report ? [
+      ['原始版本 · 外部验收', state.report.base, true],
+      ['修复版本 · 同一验收', state.report.fixed, false],
+      ['仓库内回归测试', state.report.regression, false],
+    ].map(([label, raw, original]) => {
+      const run = raw as Verification['base'];
+      const complete = !run.timedOut && run.exitCode !== null && run.cases.length === run.tests && run.tests > 0;
+      const passed = run.cases.filter(item => item.status === 'passed').length;
+      return { label, text: !complete ? '未完成或超时，结果未知' : original && reproduces(run)
+        ? `${run.failures} 项失败` : `${passed}/${run.tests} 通过；${run.failures} 失败，${run.errors} 错误，${run.skipped} 跳过`,
+      kind: original ? 'fail' : passes(run) && run.skipped === 0 ? 'ok' : 'fail' };
+    }) : [];
     return { ...state, correction: state.correction !== null, baseCommit,
       diff: state.fixed ? git(repo, ['diff', baseCommit, 'HEAD', '--', 'form_state.py']) : '',
-      experienceCount: service.store.experiences().length, modelCalls: 0, automaticExtraction: false };
+      experienceCount: service.store.experiences().length, modelCalls: 0, automaticExtraction: false, checks };
   }
   async function handle(request: IncomingMessage, response: ServerResponse): Promise<void> {
     const send = (code: number, value: unknown): void => {
