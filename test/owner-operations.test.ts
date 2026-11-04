@@ -10,6 +10,7 @@ import { createService, loadConfig } from '../src/config.js';
 import { digest } from '../src/domain.js';
 import { fixture } from './fixture.js';
 import { ExtractionModelFailure } from '../src/extraction-domain.js';
+import { snapshot } from '../src/repository.js';
 
 async function work() { await mkdir('.probe-work', { recursive: true }); return mkdtemp(resolve('.probe-work/owner-ops-')); }
 function tables(path: string): object {
@@ -84,7 +85,7 @@ test('backup refuses active jobs, hot WAL, changed hashes and symlinks without o
   await setupOwner({ repo: f.repo, output: config, dataDir: data });
   const { service } = createService(loadConfig(config)); service.store.close();
   const file = join(data, 'evolve.sqlite'); const db = new DatabaseSync(file);
-  db.prepare('INSERT INTO automatic_locks VALUES(?,1)').run(digest(f.repo));
+  db.prepare('INSERT INTO automatic_locks VALUES(?,1)').run(snapshot(f.repo).scope.repoId);
   db.exec("PRAGMA user_version=10"); db.close();
   await assert.rejects(backupOwner(config, join(root, 'future'), true), /unsupported_database_schema/);
   const v9 = new DatabaseSync(file); v9.exec('PRAGMA user_version=9'); v9.close();
