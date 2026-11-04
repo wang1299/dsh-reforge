@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { create } from 'tar';
-import { auditArchive, parseReleaseTag, release, validateManifest, validateRegistry } from '../scripts/release-helpers.js';
+import { auditArchive, parseReleaseTag, release, validateManifest, validateRegistry, validateReleaseChecks } from '../scripts/release-helpers.js';
 import { environmentConfig } from '../src/config.js';
 import { packageName } from '../src/identity.js';
 import { firstPublishedArtifact, legacyConfigEnvironment } from '../src/legacy.js';
@@ -68,7 +68,7 @@ test('release annotation and registry bind owner, source, version and exact arti
 });
 
 test('release checkout restores the remote annotation after a SHA fetch replaces its local tag reference', async () => {
-  const historicalTag = 'v' + firstPublishedArtifact.version;
+  const historicalTag = release.tag;
   const work = resolve(await workDir('release-checkout-'));
   const origin = join(work, 'origin.git'), source = join(work, 'source'), checkout = join(work, 'checkout');
   const git = (cwd: string, ...args: string[]): string => execFileSync('git', args, { cwd, encoding: 'utf8', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] }).trim();
@@ -77,7 +77,7 @@ test('release checkout restores the remote annotation after a SHA fetch replaces
   await writeFile(join(source, 'synthetic.txt'), 'Synthetic release checkout only\n');
   git(source, 'add', 'synthetic.txt'); git(source, 'commit', '-m', 'Synthetic release source');
   const commit = git(source, 'rev-parse', 'HEAD');
-  const annotation = 'DSH-Reforge ' + historicalTag + '\n\npackage: dsh-reforge\nversion: ' + firstPublishedArtifact.version + '\nsource-commit: ' + commit
+  const annotation = 'DSH-Reforge ' + historicalTag + '\n\npackage: dsh-reforge\nversion: ' + release.version + '\nsource-commit: ' + commit
     + '\nnpm-integrity: sha512-' + 'A'.repeat(86) + '==\nnpm-shasum: ' + 'b'.repeat(40) + '\nnpm-publisher: wang129\n';
   git(source, 'tag', '-a', historicalTag, '-m', annotation); const tagObject = git(source, 'rev-parse', historicalTag);
   git(source, 'remote', 'add', 'origin', origin); git(source, 'push', 'origin', 'main', 'refs/tags/' + historicalTag);
@@ -95,6 +95,19 @@ test('release checkout restores the remote annotation after a SHA fetch replaces
   assert.equal(git(checkout, 'cat-file', '-t', 'refs/tags/' + historicalTag), 'tag');
   assert.equal(git(checkout, 'rev-parse', 'refs/tags/' + historicalTag), tagObject);
   assert.equal(git(checkout, 'rev-parse', 'HEAD'), commit);
-  assert.equal(parseReleaseTag(git(checkout, 'for-each-ref', '--format=%(contents)', 'refs/tags/' + historicalTag), firstPublishedArtifact.version).commit, commit);
+  assert.equal(parseReleaseTag(git(checkout, 'for-each-ref', '--format=%(contents)', 'refs/tags/' + historicalTag)).commit, commit);
   assert.equal(git(checkout, 'ls-remote', 'origin', 'refs/tags/' + historicalTag).split(/\s+/)[0], tagObject);
+});
+
+test('publication gates require all four current source checks and reject stale, pending, spoofed or failing results', () => {
+  const sha = 'a'.repeat(40);
+  const checks = ['ubuntu-latest', 'windows-latest'].flatMap(os => ['0.2.0-rc.2', '0.2.1-rc.5'].map((host, i) => ({ name: `check (${os}, ${host})`, head_sha: sha,
+    status: 'completed', conclusion: 'success', id: i + 1, app: { slug: 'github-actions' } })));
+  validateReleaseChecks(checks, sha);
+  assert.throws(() => validateReleaseChecks(checks.slice(1), sha));
+  assert.throws(() => validateReleaseChecks(checks, 'b'.repeat(40)));
+  for (const changed of [{ status: 'in_progress', conclusion: null }, { conclusion: 'failure' }, { app: { slug: 'untrusted' } }]) {
+    assert.throws(() => validateReleaseChecks([{ ...checks[0]!, ...changed }, ...checks.slice(1)], sha));
+  }
+  assert.throws(() => validateReleaseChecks([...checks, { ...checks[0]!, id: 99, status: 'queued', conclusion: null }], sha));
 });

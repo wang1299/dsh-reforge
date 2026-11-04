@@ -11,6 +11,14 @@ const required = ['package.json', 'README.md', 'LICENSE', 'CHANGELOG.md', 'docs/
 const allowed = (p: string): boolean => required.includes(p) || /^dist\/src\/[a-z][a-z0-9-]*\.(?:js|d\.ts)$/.test(p);
 type RecordValue = Record<string, unknown>;
 
+export function validateReleaseChecks(checks: { name: string; head_sha: string; status: string; conclusion: string | null; id: number; app?: { slug?: string } }[], commit: string): void {
+  for (const os of ['ubuntu-latest', 'windows-latest']) for (const host of ['0.2.0-rc.2', '0.2.1-rc.5']) {
+    const name = `check (${os}, ${host})`;
+    const latest = checks.filter(check => check.name === name && check.head_sha === commit && check.app?.slug === 'github-actions').sort((a, b) => b.id - a.id)[0];
+    assert(latest?.status === 'completed' && latest.conclusion === 'success', 'Required source check missing or unsuccessful: ' + name);
+  }
+}
+
 export function validateManifest(input: unknown): void {
   const p = input as RecordValue;
   assert.equal(p.name, release.name); assert.equal(p.version, release.version); assert.equal(p.license, 'MIT');

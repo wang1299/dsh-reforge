@@ -7,8 +7,8 @@
 <p align="center"><strong>修复有据，经验可循。</strong></p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.1"><img src="https://img.shields.io/npm/v/dsh-reforge/alpha?label=npm%20alpha" alt="npm alpha" /></a>
-  <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/compatibility.md"><img src="https://img.shields.io/badge/DSH-0.2.0--rc.2-39424e" alt="DSH 0.2.0-rc.2" /></a>
+  <a href="https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.2"><img src="https://img.shields.io/npm/v/dsh-reforge/alpha?label=npm%20alpha" alt="npm alpha" /></a>
+  <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/dsh-version-matrix.md"><img src="https://img.shields.io/badge/DSH-0.2.0--rc.2%20%7C%200.2.1--rc.5-39424e" alt="DSH 0.2.0-rc.2 / 0.2.1-rc.5" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/actions/workflows/check.yml"><img src="https://github.com/wang1299/dsh-reforge/actions/workflows/check.yml/badge.svg?branch=main" alt="CI" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" /></a>
 </p>
@@ -23,10 +23,10 @@
 
 **DSH-Reforge (`dsh-reforge` on npm) is a community plugin for DeepSeek Harness. It builds traceable experience from test-verified Python bug fixes and selects applicable experience as context for later tasks.**
 
-**Experimental alpha: `dsh-reforge@0.1.0-alpha.1`.** Published on October 23, 2026. Public npm download and installation were checked; the [GitHub Release](https://github.com/wang1299/dsh-reforge/releases/tag/v0.1.0-alpha.1) assets and digests were verified. See [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75) for the results. The source repository is now `wang1299/dsh-reforge`; GitHub redirects its former address. This independent community project is not officially reviewed, endorsed, or security certified by DeepSeek.
+**This release: `dsh-reforge@0.1.0-alpha.2`, experimental alpha.** It includes the new workbench, runnable example, conservative setup, diagnostics, backup and restore. Check [publication status](release-status.md) and [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113) for actual npm/Release verification. This independent community project is not officially reviewed, endorsed, or security certified by DeepSeek.
 
 
-Development candidate: the source prepares `0.1.0-alpha.2` for a tested matrix of DSH `0.2.0-rc.2` and `0.2.1-rc.5`. See the [version matrix (Chinese)](dsh-version-matrix.md) and [Issue #93](https://github.com/wang1299/dsh-reforge/issues/93) for acceptance results. This candidate is not published. The public alpha.1 still targets the older host; a marketplace listing does not establish compatibility with a newer DSH.
+Supports exactly DSH `0.2.0-rc.2` and `0.2.1-rc.5`, through an independent adapter and four Windows/Linux combinations; see the [version matrix](dsh-version-matrix.md). Historical alpha.1 supports only the older host. Other DSH versions require separate verification.
 
 ## What it does
 
@@ -48,16 +48,16 @@ Source verification establishes that a repair passed its checks at that time. **
 
 The video follows a customer form that loses input after a failed save: explicit correction, a real patch, independent acceptance, and a stored experience. Both original acceptance checks fail; the fixed version passes 2/2 checks and 3/3 regression tests. The video has Chinese narration and burned-in Chinese captions; English subtitles are provided as a separate file.
 
-**This is a synthetic, local explicit-recording case**, using the alpha.2 source candidate's standalone workbench. Codex prepared the patch, which the demo page applies. It does not record DSH autonomous coding or automatic extraction, makes no paid model calls, and does not evaluate future-task benefit. The public npm alpha.1 compatibility scope is unchanged.
+**This is a synthetic, local explicit-recording case**, using the alpha.2 standalone workbench. Codex prepared the patch, which the demo page applies. The video has no autonomous coding, automatic extraction or paid calls. A separate [real-model report](evaluation/t049-20261104/README.md) passed the automatic path; both retrieval arms abstained on held-out tasks, so no effect of using memory was measured.
 
 ## Install and open
 
-Requires **Node.js ≥24.10 and DSH 0.2.0-rc.2**. Repair verification also requires Git, Python ≥3.10, and pytest; CI pins pytest 9.1.1. Compatibility is limited to that DSH version. The plugin does not run in the DeepSeek chat website.
+Requires **Node.js ≥24.10 and DSH 0.2.0-rc.2 or 0.2.1-rc.5**. Repair verification also requires Git, Python ≥3.10, and pytest; CI pins pytest 9.1.1. Only those exact hosts are supported. The plugin does not run in the DeepSeek chat website.
 
 Install the exact version in your DSH environment:
 
 ```sh
-dsh plugin --profile web add dsh-reforge@0.1.0-alpha.1
+dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2
 ```
 
 Before starting DSH, set `DSH_REFORGE_CONFIG` to the absolute path of a private JSON configuration file. A minimal read-only configuration is:

@@ -1,9 +1,9 @@
-// Runs only for the one reviewed, authorized first-release tag (ADR035).
+// Runs only for the reviewed, authorized alpha.2 tag (ADR044).
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { auditArchive, parseReleaseTag, release, validateManifest, validateRegistry } from '../dist/scripts/release-helpers.js';
+import { auditArchive, parseReleaseTag, release, validateManifest, validateRegistry, validateReleaseChecks } from '../dist/scripts/release-helpers.js';
 const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
 const gh = (...args) => execFileSync('gh', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 assert.equal(process.env.GITHUB_REPOSITORY, release.repository);
@@ -13,6 +13,11 @@ const tag = parseReleaseTag(git('for-each-ref', '--format=%(contents)', 'refs/ta
 assert.equal(git('rev-parse', 'HEAD'), tag.commit);
 assert.equal(git('rev-parse', release.tag + '^{commit}'), tag.commit);
 git('merge-base', '--is-ancestor', tag.commit, 'origin/main');
+const runs = JSON.parse(gh('api', 'repos/' + release.repository + '/actions/workflows/check.yml/runs?branch=main&event=push&head_sha=' + tag.commit + '&per_page=100'));
+const mainRun = runs.workflow_runs.find(run => run.head_sha === tag.commit && run.head_branch === 'main' && run.event === 'push');
+assert(mainRun?.status === 'completed' && mainRun.conclusion === 'success', 'Exact main source CI must pass before release');
+const pages = JSON.parse(gh('api', '--paginate', '--slurp', 'repos/' + release.repository + '/commits/' + tag.commit + '/check-runs?per_page=100'));
+validateReleaseChecks(pages.flatMap(page => page.check_runs), tag.commit);
 validateManifest(JSON.parse(await readFile('package.json', 'utf8')));
 // A previous side effect must be inspected by the owner; never overwrite an existing release.
 const existing = JSON.parse(gh('api', '--paginate', '--slurp', 'repos/' + release.repository + '/releases?per_page=100'));

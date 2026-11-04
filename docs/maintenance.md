@@ -27,9 +27,9 @@ Keep the failed original. Restore into a new directory, verify hashes and reposi
 
 Stop the host/panel before removing code through the same official profile. Data, external acceptance, snapshots and separate budgets are retained; reinstalling does not add authorization. There is no one-click complete erasure of all linked data. Inspect exact paths and retention requirements before manual deletion; do not remove the entire `.dsh` directory.
 
-## 当前源码工具 / Current source tools
+## alpha.2工具 / Alpha.2 tools
 
-以下命令属于未发行 alpha.2 源码，先运行 `npm run build`；公开 alpha.1 没有它们。安装到后续公开包后可用 `dsh-reforge` 替换 `node dist/src/cli.js`。
+以下命令属于alpha.2，旧alpha.1没有它们。示例使用已构建源码目录（先 `npm run build`）；若已自行将alpha.2 CLI安装在PATH，可用 `dsh-reforge` 替换 `node dist/src/cli.js`。DSH profile内安装插件不等于安装了全局CLI。公开发行状态见[版本状态](release-status.md)。
 
 ```powershell
 node dist/src/cli.js doctor --config 'C:\local-config\reforge.json'

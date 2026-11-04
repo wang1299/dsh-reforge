@@ -1,5 +1,7 @@
 # DSH-Reforge documentation
 
+Actual results: [automatic learning and all pilot metrics](evaluation/t049-20261104/README.md). The real-model automatic path passed; both retrieval arms abstained on held-out tasks, so no memory-treatment effect was measured.
+
 [中文](index.md) · [Version and release status](release-status.md)
 
 Start with the video, run the same case, configure read-only access, authorize learning separately, then inspect the results. Source verification, automatic-loop execution and future-task benefit are different kinds of evidence.

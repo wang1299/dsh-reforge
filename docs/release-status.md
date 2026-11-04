@@ -15,8 +15,8 @@ The alpha.2 source has Windows/Linux checks for both exact SDK graphs, same-pack
 | 证据 / Evidence | 当前结论 / Current conclusion |
 |---|---|
 | 视频与完整示例 / Video and runnable example | 合成数据、显式补丁、实际独立测试，零模型调用 / Synthetic explicit patch, real independent checks, zero model calls |
-| 自动学习 / Automatic learning | 已实现及离线验证；真实完整闭环待完成 / Implemented and offline verified; complete real-model loop pending |
-| 后续收益 / Future-task benefit | 旧小规模实验未观察到验收改善；新试验尚未得出结果 / Earlier small experiment found no acceptance improvement; new pilot has no result yet |
-| 外部试用 / External trial | 正在准备入口，未宣称已获得 3–5 人反馈 / Entry points being prepared; no claim of 3–5 external participants |
+| 自动学习 / Automatic learning | [本轮真实安装包/官方SDK闭环通过](evaluation/t049-20261104/README.md)：1经验/1应用/0反馈、提炼1次 / Actual bounded synthetic loop passed |
+| 后续收益 / Future-task benefit | 三组均4/4；两检索均拒选，未测到实际使用经验效果 / All4/4; both retrieval arms abstained, no memory treatment observed |
+| 外部试用 / External trial | [公开入口#112](https://github.com/wang1299/dsh-reforge/issues/112)已开放；真实参与仍为0 / Public call open; 0 actual participants |
 
 下一步与逐项进度 / Next steps: [T046](tasks/T046-public-readiness.md)。
