@@ -67,6 +67,7 @@
     "check": "tsc --noEmit && eslint src test scripts && tsc && node scripts/build-client.mjs && node --test --test-concurrency=4 dist/test/*.test.js",
     "compat": "tsc && node --test dist/test/dsh.test.js dist/test/bundle.test.js dist/test/dsh-extraction.test.js",
     "demo": "tsc && node dist/scripts/demo.js",
+    "example:customer-form": "tsc && node dist/scripts/customer-form.js",
     "dsh-rehearsal": "tsc && node dist/scripts/agent-rehearsal.js",
     "panel": "node dist/src/cli.js panel",
     "prepack": "tsc && node scripts/build-client.mjs",

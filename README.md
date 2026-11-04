@@ -16,6 +16,7 @@
 <p align="center">
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/README.md">中文</a> ·
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/README.en.md">English</a> ·
+  <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/index.md">文档导航</a> ·
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/installation.md">安装指南</a> ·
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/compatibility.md">兼容性</a> ·
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/CHANGELOG.md">更新记录</a>
@@ -41,6 +42,8 @@ T040 / 开发候选：当前源码准备 `0.1.0-alpha.2`，目标验证 DSH `0.2
 来源验证说明当时的修复通过检查，**不证明经验能改善未来任务**。已有小规模对照没有观察到验收成功率改善，不能宣传普遍有效；结果与失败见 [评价记录](https://github.com/wang1299/dsh-reforge/blob/main/docs/development/T008c-acceptance.md)。
 
 ## 演示视频：保存失败，也不丢输入
+
+**亲自运行同款工程：** [examples/customer-form](examples/customer-form/README.md) 提供原始代码、补丁、外部验收和回归测试。运行 `npm run example:customer-form`，无需 Key 或 DSH，实际核对失败、修复和经验入库。[第一次配置与验证](docs/getting-started/quickstart.md)将体验、只读配置与学习授权串起来。
 
 [![DSH-Reforge 首次任务演示：保存失败，也不丢输入](https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/demos/first-task-poster.jpg)](https://github.com/wang1299/dsh-reforge/raw/refs/heads/main/docs/assets/demos/first-task-demo-1080p.mp4)
 
@@ -91,6 +94,8 @@ dsh plugin --profile web add dsh-reforge@0.1.0-alpha.1
 - 已有 Windows 完整 Web、双平台核心与实际安装演练；脚本模型证明执行路径可运行，不能替代真实模型质量、Desktop、多版本或收益验证。
 
 ## 从源码开发
+
+读者入口：[文档导航](docs/index.md) · [版本与发行状态](docs/release-status.md) · [FAQ](docs/faq.md) · [数据运维](docs/maintenance.md) · [参与试用](docs/community/pilot.md)。开发历史与公开发行分开记录，八项补齐进度见 [T046](docs/tasks/T046-public-readiness.md)。
 
 ```sh
 npm ci --ignore-scripts

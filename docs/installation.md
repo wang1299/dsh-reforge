@@ -1,5 +1,7 @@
 # 安装与首次使用
 
+首次阅读建议先看[快速开始](getting-started/quickstart.md)与[版本状态](release-status.md)。零模型费用的[完整客户表单案例](../examples/customer-form/README.md)可先体验修复与来源验证；排障见[FAQ](faq.md)，升级、恢复、卸载前看[数据运维](maintenance.md)。本页保留详细配置及历史升级步骤。
+
 包名 `dsh-reforge`，品牌 DSH-Reforge。首个实验性版本 `0.1.0-alpha.1` 已发布至 npm `alpha` 并通过公开安装；发行附件与最终结果见 [npm](https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.1)、[Release](https://github.com/wang1299/dsh-reforge/releases/tag/v0.1.0-alpha.1) 和 [Issue #75](https://github.com/wang1299/dsh-reforge/issues/75)。源码、本机 tgz 与远端公开结果分别核验。
 
 ## 版本选择
