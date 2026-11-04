@@ -1,5 +1,6 @@
 import { closeSync, existsSync, mkdirSync, openSync, readSync, unlinkSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
@@ -8,6 +9,7 @@ import { z } from 'zod';
 export const pilotPolicy = Object.freeze({ cap: 10_000_000, reservation: 5_345_728, maxInput: 1_100_000,
   maxOutput: 393_216, requestedOutput: 2048, maxCalls: 32, maxRequestBytes: 262144, maxResponseBytes: 1048576,
   model: 'deepseek-flash', endpoint: 'https://api.deepseek.com/anthropic/v1/messages' });
+export const pilotAuthorizationPath = fileURLToPath(new URL('../../.probe-work/t049-authorized-budget.sqlite', import.meta.url));
 const integer = z.number().int().nonnegative().safe();
 const usageSchema = z.object({ input: integer.max(pilotPolicy.maxInput), output: integer.max(pilotPolicy.maxOutput) }).strict();
 type Usage = z.infer<typeof usageSchema>;
@@ -15,8 +17,11 @@ const reasons = ['pending', 'complete', 'transport_or_timeout', 'http_error', 'i
 type Reason = typeof reasons[number];
 const callSchema = z.object({ id: z.string().uuid(), createdAt: z.string().datetime(), charge: integer,
   usage: usageSchema.nullable(), reason: z.enum(reasons), httpStatus: z.number().int().min(100).max(599).nullable() }).strict();
-const ledgerSchema = z.object({ schemaVersion: z.literal(1), policy: z.literal('t049-peak-bound-v1'), cap: z.literal(10_000_000),
+const ledgerSchema = z.object({ schemaVersion: z.literal(2), policy: z.literal('t049-peak-bound-v2'), cap: z.literal(10_000_000),
   stopped: z.enum(reasons).nullable(), calls: z.array(callSchema).max(32) }).strict();
+const bindingSchema = z.object({ root: z.string().min(1).max(4096), planDigest: z.string().regex(/^[a-f0-9]{64}$/),
+  state: z.enum(['prepared', 'started', 'completed', 'incomplete', 'unknown']) }).strict();
+export type PilotAuthorization = Pick<z.infer<typeof bindingSchema>, 'root' | 'planDigest'>;
 
 /** Independent experiment accounting. Never reads or migrates historical product/financial ledgers. */
 export class PilotBudget {
@@ -35,7 +40,7 @@ export class PilotBudget {
         const header = Buffer.alloc(100); const fd = openSync(path, 'r');
         try { if (readSync(fd, header, 0, header.length, 0) !== header.length) throw new Error('Invalid pilot database'); }
         finally { closeSync(fd); }
-        if (header.subarray(0, 16).toString('binary') !== 'SQLite format 3\0' || header.readUInt32BE(60) !== 1
+        if (header.subarray(0, 16).toString('binary') !== 'SQLite format 3\0' || header.readUInt32BE(60) !== 2 || header.readUInt32BE(68) !== 0x52463439
           || header[18] !== 1 || header[19] !== 1) throw new Error('Not an existing pilot ledger; never migrate historical data');
       }
       database = new DatabaseSync(path); this.db = database;
@@ -44,11 +49,11 @@ export class PilotBudget {
         || this.db.prepare('PRAGMA synchronous').get()!.synchronous !== 3
         || this.db.prepare('PRAGMA quick_check').get()!.quick_check !== 'ok') throw new Error('Pilot durability unavailable');
       this.db.exec('BEGIN IMMEDIATE');
-      if (fresh) this.db.exec('CREATE TABLE pilot_ledger(id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL); PRAGMA user_version=1;');
+      if (fresh) this.db.exec('CREATE TABLE pilot_ledger(id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL); CREATE TABLE pilot_authorization(id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL); PRAGMA user_version=2; PRAGMA application_id=0x52463439;');
       const row = fresh ? null : this.db.prepare('SELECT body FROM pilot_ledger WHERE id=1').get();
       if (!fresh && !row) throw new Error('Missing existing pilot state');
       this.state = row ? ledgerSchema.parse(JSON.parse(String(row.body)))
-        : { schemaVersion: 1, policy: 't049-peak-bound-v1', cap: 10_000_000, stopped: null, calls: [] };
+        : { schemaVersion: 2, policy: 't049-peak-bound-v2', cap: 10_000_000, stopped: null, calls: [] };
       if (this.state.calls.some(call => call.charge !== (call.usage ? call.usage.input * 2 + call.usage.output * 8 : pilotPolicy.reservation))
         || this.spent > pilotPolicy.cap || this.state.calls.some(call => call.usage ? !['complete', 'request_output_exceeded'].includes(call.reason) : call.reason === 'complete')) throw new Error('Invalid pilot accounting');
       if (fresh) this.db.prepare('INSERT INTO pilot_ledger VALUES(1,?)').run(JSON.stringify(this.state));
@@ -59,6 +64,44 @@ export class PilotBudget {
     }
   }
   get spent(): number { return this.state.calls.reduce((sum, call) => sum + call.charge, 0); }
+  get settledUpperBound(): number { return this.state.calls.filter(call => call.usage !== null).reduce((sum, call) => sum + call.charge, 0); }
+  get unknownReserved(): number { return this.state.calls.filter(call => call.usage === null).reduce((sum, call) => sum + call.charge, 0); }
+  get settled(): boolean { return !this.state.stopped && this.state.calls.every(call => call.usage !== null); }
+  get authorization(): z.infer<typeof bindingSchema> | null {
+    const row = this.db.prepare('SELECT body FROM pilot_authorization WHERE id=1').get();
+    return row ? bindingSchema.parse(JSON.parse(String(row.body))) : null;
+  }
+  private metadata(write: () => void): void {
+    if (this.closed || this.poisoned) throw new Error('Pilot accounting unavailable');
+    try { this.db.exec('BEGIN IMMEDIATE'); write(); this.db.exec('COMMIT'); }
+    catch (error) { try { this.db.exec('ROLLBACK'); } catch { /* Preserve prior binding. */ } this.poisoned = true; throw error; }
+  }
+  bindStudy(input: PilotAuthorization): void {
+    const binding = bindingSchema.parse({ ...input, state: 'prepared' });
+    this.metadata(() => {
+      if (this.authorization || this.state.calls.length) throw new Error('Authorization is already bound; never create a new cap');
+      this.db.prepare('INSERT INTO pilot_authorization VALUES(1,?)').run(JSON.stringify(binding));
+    });
+  }
+  beginStudy(input: PilotAuthorization): void {
+    this.metadata(() => {
+      const binding = this.authorization;
+      if (!binding || binding.state !== 'prepared' || binding.root !== input.root || binding.planDigest !== input.planDigest || this.state.calls.length) throw new Error('Study already started or plan changed');
+      this.db.prepare('UPDATE pilot_authorization SET body=? WHERE id=1').run(JSON.stringify({ ...binding, state: 'started' }));
+    });
+  }
+  requireAuthorization(input?: PilotAuthorization): void {
+    const binding = this.authorization;
+    if (this.closed || this.poisoned || !input || !binding || binding.state !== 'started'
+      || binding.root !== input.root || binding.planDigest !== input.planDigest) throw new Error('Durable live authorization required');
+  }
+  finishStudy(input: PilotAuthorization, complete: boolean): void {
+    this.metadata(() => {
+      this.requireAuthorization(input); const binding = this.authorization!;
+      this.db.prepare('UPDATE pilot_authorization SET body=? WHERE id=1').run(JSON.stringify({ ...binding,
+        state: !this.settled ? 'unknown' : complete ? 'completed' : 'incomplete' }));
+    });
+  }
   private persist(): void {
     if (this.closed || this.poisoned) throw new Error('Pilot accounting unavailable');
     try {
@@ -143,7 +186,7 @@ export function pilotUsage(stream: string): Usage | null {
 }
 
 export async function startPilotRelay(budget: PilotBudget, options: {
-  transport?: typeof fetch; beforeForward?: () => Promise<void>; inspect?: (request: Record<string, unknown>) => void;
+  transport?: typeof fetch; beforeForward?: () => Promise<void>; inspect?: (request: Record<string, unknown>) => void; authorization?: PilotAuthorization;
 } = {}): Promise<{ baseURL: string; close: () => Promise<void> }> {
   const path = '/pilot-' + randomUUID() + '/v1/messages'; let origin = ''; let active = false;
   const operations = new Set<Promise<void>>();
@@ -171,6 +214,10 @@ export async function startPilotRelay(budget: PilotBudget, options: {
           }))) throw new Error('Pilot request policy');
         const auth = req.headers.authorization;
         if (!auth?.startsWith('Bearer ') || auth.length < 16) throw new Error('Credential header required');
+        if (!options.transport) {
+          if (resolve(budget.path) !== resolve(pilotAuthorizationPath)) throw new Error('Use the one authorized pilot ledger');
+          budget.requireAuthorization(options.authorization);
+        }
         options.inspect?.(body); await options.beforeForward?.(); id = budget.reserve();
         const response = await (options.transport ?? fetch)(pilotPolicy.endpoint, { method: 'POST', body: raw,
           headers: { Authorization: auth, 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },

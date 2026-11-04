@@ -83,6 +83,31 @@ test('pilot accounting never migrates an old JSON budget or plugin database and 
   assert.throws(() => new PilotBudget(crashed), /EEXIST/);
 });
 
+test('authorization binding and live-once state survive reopening without any JSON locator or fresh cap', async () => {
+  const file = await path(); const identity = { root: '/synthetic/owned-study', planDigest: 'a'.repeat(64) };
+  const initial = new PilotBudget(file); initial.bindStudy(identity); initial.close();
+  const live = new PilotBudget(file);
+  assert.equal(live.authorization!.root, identity.root); assert.equal(live.authorization!.state, 'prepared');
+  live.beginStudy(identity); live.requireAuthorization(identity); live.settle(live.reserve(), { input: 1, output: 1 }); live.close();
+  const reopened = new PilotBudget(file);
+  assert.equal(reopened.authorization!.state, 'started'); assert.equal(reopened.state.calls.length, 1);
+  reopened.finishStudy(identity, true); assert.throws(() => reopened.requireAuthorization(identity)); reopened.close();
+  const final = new PilotBudget(file);
+  try { assert.equal(final.authorization!.state, 'completed'); assert.equal(final.state.cap, 10_000_000);
+    assert.throws(() => final.bindStudy({ ...identity, root: '/another-study' })); }
+  finally { final.close(); }
+});
+
+test('real forwarding refuses a temporary unbound ledger before any reservation or network request', async () => {
+  const budget = new PilotBudget(await path()); const relay = await startPilotRelay(budget);
+  try {
+    const response = await fetch(relay.baseURL + '/v1/messages', { method: 'POST',
+      headers: { Authorization: 'Bearer synthetic-not-a-key', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: pilotPolicy.model, max_tokens: 2048, stream: true, messages: [] }) });
+    assert.equal(response.status, 502); assert.equal(budget.state.calls.length, 0);
+  } finally { await relay.close(); budget.close(); }
+});
+
 test('pilot relay validates and freezes before forwarding, settles before delivery and stops permanently on an unknown receipt', async () => {
   const file = await path(); const budget = new PilotBudget(file); let calls = 0; let frozen = true;
   const relay = await startPilotRelay(budget, { beforeForward: async () => { if (!frozen) throw new Error('Synthetic qualification drift'); },

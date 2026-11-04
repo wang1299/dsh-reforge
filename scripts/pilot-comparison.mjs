@@ -54,9 +54,10 @@ function offlineComparisonTransport(cases) {
 export async function comparePilot(input) {
   assert.equal(typeof input.offline, 'boolean'); assert.equal(typeof input.validate, 'function');
   if (!input.offline) assert.equal(input.live, true, 'Explicit live mode required');
-  const cases = await pilotCases(); const runtime = await pilotHost(input.host);
+  const cases = await pilotCases();
   let credentialContext; let headers = { Authorization: 'Bearer offline-synthetic-not-a-key' };
   if (!input.offline) {
+    const runtime = await pilotHost(input.host);
     const [{ Context }, { LocalCredentialProvider }, { credentialRef }] = await Promise.all([
       runtime.load('@deepseek-ai/cordis'), runtime.load('@deepseek-ai/dsh-credentials-local'), runtime.load('@deepseek-ai/dsh-credentials')]);
     credentialContext = new Context();
@@ -69,7 +70,8 @@ export async function comparePilot(input) {
   const bank = service.store.experiences(); assert.equal(bank.length, 1); assert.equal(bank[0].status, 'source_verified');
   const bankDigest = digest(JSON.stringify(bank)); const grantBefore = JSON.stringify(service.store.extraction.grants());
   const budget = new PilotBudget(input.budgetFile); const overhead = budget.spent; const startCalls = budget.state.calls.length;
-  const trials = []; const relay = await startPilotRelay(budget, { transport: input.offline ? offlineComparisonTransport(cases) : undefined, beforeForward: input.validate });
+  const trials = []; const relay = await startPilotRelay(budget, { transport: input.offline ? input.offlineTransport ?? offlineComparisonTransport(cases) : undefined,
+    beforeForward: input.validate, authorization: input.authorization });
   await mkdir(join(input.root, 'trials'));
   try {
     for (const block of comparisonOrder) for (const arm of block.arms) {
@@ -91,7 +93,7 @@ export async function comparePilot(input) {
       const row = { id, case: item.id, repeat: block.repeat, arm, plannedCalls: 1, actualCalls: 0, offered: !!experience,
         experienceRevision: experience?.revision ?? null, applicationRecorded: !!application, requestDigest: digest(JSON.stringify(request)),
         codeDigest: null, accepted: false, failure: null, checks: null, negativePathFailures: null, needsRework: true,
-        actualHumanEdits: 0, automaticRepairRounds: 0, conservativeMicroCny: 0 };
+        actualHumanEdits: 0, automaticRepairRounds: 0, conservativeMicroCny: 0, financialKnown: false };
       const before = budget.spent; const callsBefore = budget.state.calls.length; const began = Date.now();
       try {
         const response = await fetch(relay.baseURL + '/v1/messages', { method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' },
@@ -106,6 +108,7 @@ export async function comparePilot(input) {
       } catch { row.failure = budget.state.stopped ? 'financial_unknown_or_limit' : 'generation_or_validation_incomplete'; }
       finally {
         row.actualCalls = budget.state.calls.length - callsBefore; row.conservativeMicroCny = input.offline ? 0 : budget.spent - before;
+        row.financialKnown = row.actualCalls === 1 && budget.state.calls.at(-1)?.usage !== null && !budget.state.stopped;
         row.durationMs = Date.now() - began; if (task) service.finish(task.id);
         trials.push(row); await writeFile(join(folder, 'result.json'), JSON.stringify(row, null, 2), { flag: 'wx' });
         console.log(JSON.stringify({ stage: 'comparison', trial: id, accepted: row.accepted, modelHttpRequests: input.offline ? 0 : row.actualCalls }));
@@ -113,15 +116,17 @@ export async function comparePilot(input) {
     }
     assert.equal(JSON.stringify(service.store.extraction.grants()), grantBefore);
     const arms = Object.fromEntries(['none', 'plain', 'reforge'].map(arm => {
-      const rows = trials.filter(trial => trial.arm === arm); return [arm, { planned: 4, completed: rows.length,
+      const rows = trials.filter(trial => trial.arm === arm); return [arm, { planned: 4, attempted: rows.length, completed: rows.filter(row => row.financialKnown).length,
+        evaluated: rows.filter(row => row.checks !== null).length, invalidGenerations: rows.filter(row => row.financialKnown && row.checks === null).length,
         accepted: rows.filter(row => row.accepted).length, offered: rows.filter(row => row.offered).length,
         needsRework: rows.filter(row => row.needsRework).length, negativePathFailures: rows.reduce((n, row) => n + (row.negativePathFailures ?? 0), 0),
         conservativeMicroCny: rows.reduce((n, row) => n + row.conservativeMicroCny, 0) }];
     }));
-    const result = { kind: input.offline ? 'offline-comparison-rehearsal' : 'real-model-small-three-arm-pilot', complete: trials.length === 12 && trials.every(row => row.actualCalls === 1),
+    const result = { kind: input.offline ? 'offline-comparison-rehearsal' : 'real-model-small-three-arm-pilot', complete: trials.length === 12 && trials.every(row => row.actualCalls === 1) && budget.settled,
       model: pilotPolicy.model, repetitionsPerCase: 2, cases: cases.map(item => item.id), order: comparisonOrder, retrievalPolicyDigest,
       bankDigest, arms, trials, actualHumanEdits: 0, repairRoundsAllowed: 0, misuseCausallyAttributed: false, futureBenefitProven: false,
       learningAndReferenceOverheadMicroCny: input.offline ? 0 : overhead, totalConservativeMicroCny: input.offline ? 0 : budget.spent,
+      settledUpperBoundMicroCny: input.offline ? 0 : budget.settledUpperBound, unknownReservedMicroCny: input.offline ? 0 : budget.unknownReserved,
       modelHttpRequests: input.offline ? 0 : budget.state.calls.length - startCalls, heldCalls: budget.state.calls.filter(call => !call.usage).length,
       completedTrials: trials.length, stoppedReason: budget.state.stopped,
       limitations: ['two synthetic cases; four trials per arm', 'one valid source experience; no stale/distractor corpus',

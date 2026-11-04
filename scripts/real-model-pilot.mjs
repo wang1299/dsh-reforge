@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { existsSync, realpathSync } from 'node:fs';
-import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, realpath, stat, writeFile } from 'node:fs/promises';
 import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
@@ -10,13 +10,12 @@ import { digest, redact } from '../dist/src/domain.js';
 import { git } from '../dist/src/repository.js';
 import { acceptanceDigest, reproduces } from '../dist/src/verification.js';
 import { auditArchive } from '../dist/scripts/release-helpers.js';
-import { PilotBudget, pilotPolicy } from '../dist/scripts/pilot-budget.js';
+import { PilotBudget, pilotPolicy, pilotAuthorizationPath } from '../dist/scripts/pilot-budget.js';
 import { createPilotFixture, pilotCases, runPilotTests } from '../dist/scripts/pilot-fixtures.js';
 import { automaticPilot, installPilotPackage, pilotHost } from './pilot-harness.mjs';
 import { comparePilot, comparisonOrder } from './pilot-comparison.mjs';
 
 const workspace = fileURLToPath(new URL('../', import.meta.url));
-const marker = join(workspace, '.probe-work/t049-active-run.json');
 const runtimeNames = ['@deepseek-ai/cordis', '@deepseek-ai/dsh-app-boot', '@deepseek-ai/dsh-agent', '@deepseek-ai/dsh-agent-loop',
   '@deepseek-ai/dsh-llm', '@deepseek-ai/dsh-session', '@deepseek-ai/dsh-session-projection', '@deepseek-ai/dsh-system-prompt',
   '@deepseek-ai/dsh-tools', '@deepseek-ai/dsh-llm-deepseek', '@deepseek-ai/dsh-credentials-local', '@deepseek-ai/dsh-credentials'];
@@ -35,25 +34,29 @@ async function credentialReady(runtime, path) {
   } finally { await ctx.fiber.dispose(); }
 }
 export async function validatePilotPlan(run) {
-  owned(run); const bytes = await readFile(join(run, 'plan.json')); assert(bytes.length <= 2 * 1024 * 1024);
+  owned(run); const bytes = await readFile(join(run, 'plan.json')); assert(bytes.length <= 8 * 1024 * 1024);
   assert.equal(digest(bytes), await readFile(join(run, 'plan.sha256'), 'utf8'), 'Plan drift');
   const plan = JSON.parse(bytes); assert.equal(plan.kind, 't049-real-model-pilot-v1'); assert.equal(plan.root, resolve(run));
   assert.equal(plan.sourceCommit, git(workspace, ['rev-parse', 'HEAD']), 'Source changed since qualification');
   assert.equal(plan.nodeVersion, process.version); assert.deepEqual(plan.order, comparisonOrder);
   assert.deepEqual(plan.policy, pilotPolicy);
+  for (const [path, target] of Object.entries(plan.links)) assert.equal(await realpath(path), target, 'Runtime link changed');
   for (const [file, sha] of Object.entries(plan.files)) assert.equal(digest(await readFile(file)), sha, 'Frozen file drift');
   for (const [path, sha] of Object.entries(plan.acceptance)) assert.equal(await acceptanceDigest(path), sha, 'Acceptance drift');
   for (const fixture of [plan.offlineFixture, plan.liveFixture]) {
     assert.equal(git(fixture.repo, ['rev-parse', 'HEAD']), fixture.base, 'Synthetic HEAD changed');
-    assert.equal(digest(await readFile(join(fixture.repo, '.git/index'))), fixture.indexDigest, 'Synthetic index changed');
-    const changed = git(fixture.repo, ['diff', '--name-only', 'HEAD', '--']).split(/\r?\n/).filter(Boolean);
+    assert.equal(digest(git(fixture.repo, ['ls-files', '--stage', '-z'])), fixture.indexDigest, 'Synthetic staged content changed');
+    const changed = git(fixture.repo, ['--no-optional-locks', 'diff', '--name-only', 'HEAD', '--']).split(/\r?\n/).filter(Boolean);
     assert(changed.every(path => ['ledger.py', 'stock.py', 'customer_form.py'].includes(path)), 'Unexpected fixture changes');
   }
   return plan;
 }
 async function prepare(options, offlineOnly) {
   assert.equal(git(workspace, ['status', '--porcelain']), '', 'Commit all experiment code before freezing a plan');
-  if (!offlineOnly) assert(!existsSync(marker), 'An authorized run already exists; do not reset its cap or unknowns');
+  if (!offlineOnly && existsSync(pilotAuthorizationPath)) {
+    const budget = new PilotBudget(pilotAuthorizationPath);
+    try { assert(!budget.authorization && budget.state.calls.length === 0, 'Existing authorization or calls must be preserved'); } finally { budget.close(); }
+  }
   const host = resolve(required(options, '--host')); const archive = resolve(required(options, '--archive'));
   const python = resolve(required(options, '--python')); const credentialFile = offlineOnly ? null : resolve(required(options, '--credentials'));
   const runtime = await pilotHost(host); const archiveResult = await auditArchive(archive);
@@ -68,9 +71,9 @@ async function prepare(options, offlineOnly) {
     authorization: offlineOnly ? 'offline-only' : 'owner-CNY10-20261104', createdAt: new Date().toISOString(),
     host, archive, archiveSha256: digest(await readFile(archive)), archiveIntegrity: archiveResult.integrity,
     python, pythonInfo, credentialFile, nodeVersion: process.version, policy: pilotPolicy, order: comparisonOrder,
-    profile, offlineFixture, liveFixture, offlineGrant: randomUUID(), liveGrant: randomUUID(), anonymousId: randomUUID(), files: {}, acceptance: {} };
+    profile, offlineFixture, liveFixture, offlineGrant: randomUUID(), liveGrant: randomUUID(), anonymousId: randomUUID(), files: {}, links: {}, acceptance: {} };
   for (const fixture of [offlineFixture, liveFixture]) {
-    fixture.indexDigest = digest(await readFile(join(fixture.repo, '.git/index')));
+    fixture.indexDigest = digest(git(fixture.repo, ['ls-files', '--stage', '-z']));
     const fixtureRoot = resolve(fixture.repo, '..');
     for (const [id, tests] of [['source', fixture.acceptance], ...(await pilotCases()).map(item => [item.id, join(fixtureRoot, item.id + '-checks')])]) {
       const proof = await runPilotTests(python, fixture.repo, tests, join(fixtureRoot, 'baseline-' + id + '.xml'));
@@ -79,17 +82,27 @@ async function prepare(options, offlineOnly) {
     plan.acceptance[join(fixture.repo, 'tests')] = await acceptanceDigest(join(fixture.repo, 'tests'));
   }
   const tracked = git(workspace, ['ls-files', '-z']).split('\0').filter(file => /^(src|scripts|test|examples\/customer-form)\//.test(file));
-  const files = [...tracked.map(file => join(workspace, file)), archive, python, join(workspace, 'package.json'), join(workspace, 'package-lock.json'),
+  const files = [...tracked.map(file => join(workspace, file)), archive, python, process.execPath, join(workspace, 'package.json'), join(workspace, 'package-lock.json'),
     ...runtimeNames.map(name => runtime.require.resolve(name)),
     ...Object.keys(profile.productFiles).map(file => join(profile.packageDir, 'dist/src', file)),
     ...['package.json', 'pnpm-lock.yaml', 'cordis.yml', 'cordis.patch.yml'].map(file => join(profile.profile, file)).filter(file => existsSync(file)),
     ...['pilot-budget', 'pilot-fixtures'].map(file => join(workspace, 'dist/scripts', file + '.js'))];
   for (const file of files) plan.files[file] = digest(await readFile(file));
+  const visited = new Set();
+  async function runtimeFiles(path) {
+    const actual = await realpath(path); if (actual !== resolve(path)) plan.links[path] = actual;
+    if (visited.has(actual)) return; visited.add(actual); assert(visited.size <= 50000, 'Runtime graph too large');
+    const entry = await stat(actual);
+    if (entry.isDirectory()) {
+      for (const child of await readdir(actual)) if (!['.cache', '.bin', '.git'].includes(child)) await runtimeFiles(join(actual, child));
+    } else if (/\.(?:js|mjs|cjs|json|node)$/.test(actual)) plan.files[actual] = digest(await readFile(actual));
+  }
+  for (const path of [join(workspace, 'dist/src'), join(workspace, 'dist/scripts'), join(host, 'node_modules'), join(profile.profile, 'node_modules')]) await runtimeFiles(path);
   const text = JSON.stringify(plan, null, 2); await writeFile(join(root, 'plan.json'), text, { flag: 'wx', mode: 0o600 });
   await writeFile(join(root, 'plan.sha256'), digest(text), { flag: 'wx', mode: 0o600 });
   if (!offlineOnly) {
-    const budget = new PilotBudget(join(root, 'live-budget.sqlite')); budget.close();
-    await writeFile(marker, JSON.stringify({ root, authorization: plan.authorization, capMicroCny: pilotPolicy.cap }), { flag: 'wx', mode: 0o600 });
+    const budget = new PilotBudget(pilotAuthorizationPath);
+    try { budget.bindStudy({ root, planDigest: digest(text) }); } finally { budget.close(); }
   }
   await validatePilotPlan(root); console.log(JSON.stringify({ prepared: true, offlineOnly, root, planDigest: digest(text), modelHttpRequests: 0 }));
 }
@@ -97,28 +110,30 @@ async function execute(run, offline) {
   const plan = await validatePilotPlan(run); const root = join(run, offline ? 'offline' : 'live');
   assert(!existsSync(join(root, 'automatic-result.json')), 'Retain the previous attempt; never replay it');
   if (!offline) {
-    assert.equal(plan.authorization, 'owner-CNY10-20261104'); assert.equal(JSON.parse(await readFile(marker, 'utf8')).root, resolve(run));
+    assert.equal(plan.authorization, 'owner-CNY10-20261104');
     const prior = JSON.parse(await readFile(join(run, 'offline-summary.json'), 'utf8')); assert.equal(prior.complete, true);
     assert.equal(prior.planDigest, await readFile(join(run, 'plan.sha256'), 'utf8'));
-    assert(!existsSync(join(run, 'live-started.json')), 'Live attempt already started; preserve ledger and unknowns');
+    const budget = new PilotBudget(pilotAuthorizationPath);
+    try { budget.beginStudy({ root: resolve(run), planDigest: await readFile(join(run, 'plan.sha256'), 'utf8') }); } finally { budget.close(); }
   }
-  let marked = false;
-  const validate = async () => {
-    await validatePilotPlan(run);
-    if (!offline && !marked) { await writeFile(join(run, 'live-started.json'), JSON.stringify({ planDigest: await readFile(join(run, 'plan.sha256'), 'utf8'), startedAt: new Date().toISOString() }), { flag: 'wx', mode: 0o600 }); marked = true; }
-  };
+  const validate = async () => { await validatePilotPlan(run); };
   const input = { root, fixtureRoot: root, fixture: offline ? plan.offlineFixture : plan.liveFixture,
     host: plan.host, archive: plan.archive, profile: plan.profile, python: plan.python, credentialFile: plan.credentialFile,
     grantId: offline ? plan.offlineGrant : plan.liveGrant, anonymousId: plan.anonymousId, offline, live: !offline,
-    budgetFile: join(run, offline ? 'offline-budget.sqlite' : 'live-budget.sqlite'), validate };
+    budgetFile: offline ? join(run, 'offline-budget.sqlite') : pilotAuthorizationPath,
+    authorization: { root: resolve(run), planDigest: await readFile(join(run, 'plan.sha256'), 'utf8') }, validate };
   console.log(JSON.stringify({ stage: 'automatic_loop', offline, modelHttpRequests: 0 }));
   const automatic = await automaticPilot(input); let comparison = null;
   if (automatic.passed) comparison = await comparePilot(input);
   const summary = { kind: offline ? 'offline-preflight' : 'real-model-small-pilot', planDigest: await readFile(join(run, 'plan.sha256'), 'utf8'),
-    complete: automatic.passed && comparison?.complete === true, automatic, comparison: comparison && { complete: comparison.complete, arms: comparison.arms,
+    complete: automatic.passed && comparison?.complete === true && (!offline || Object.values(comparison.arms).every(arm => arm.accepted === 4 && arm.evaluated === 4)), automatic, comparison: comparison && { complete: comparison.complete, arms: comparison.arms,
       totalConservativeMicroCny: comparison.totalConservativeMicroCny, learningAndReferenceOverheadMicroCny: comparison.learningAndReferenceOverheadMicroCny,
       heldCalls: comparison.heldCalls, modelHttpRequests: comparison.modelHttpRequests, limitations: comparison.limitations } };
   await writeFile(join(run, offline ? 'offline-summary.json' : 'live-summary.json'), JSON.stringify(summary, null, 2), { flag: 'wx', mode: 0o600 });
+  if (!offline) {
+    const budget = new PilotBudget(pilotAuthorizationPath);
+    try { budget.finishStudy(input.authorization, summary.complete); } finally { budget.close(); }
+  }
   console.log(JSON.stringify(summary)); if (!summary.complete) process.exitCode = 1;
 }
 function required(options, name) { const value = options.get(name); assert(value, 'Missing explicit local argument'); return value; }
@@ -135,7 +150,7 @@ try {
   else if (command === 'offline' || command === 'live') await execute(resolve(required(options, '--run')), command === 'offline');
   else if (command === 'status') {
     const run = resolve(required(options, '--run')); await validatePilotPlan(run);
-    const path = join(run, 'live-budget.sqlite'); const db = existsSync(path) ? new DatabaseSync(path, { readOnly: true }) : null;
+    const db = existsSync(pilotAuthorizationPath) ? new DatabaseSync(pilotAuthorizationPath, { readOnly: true }) : null;
     try { const budget = db && JSON.parse(db.prepare('SELECT body FROM pilot_ledger WHERE id=1').get().body);
       console.log(JSON.stringify({ authorized: !!budget, capMicroCny: budget?.cap ?? 0, calls: budget?.calls.length ?? 0,
         conservativeMicroCny: budget?.calls.reduce((n, call) => n + call.charge, 0) ?? 0, heldCalls: budget?.calls.filter(call => !call.usage).length ?? 0, stopped: budget?.stopped ?? null })); }

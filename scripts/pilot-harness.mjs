@@ -80,7 +80,7 @@ export async function automaticPilot(input) {
   const budget = new PilotBudget(input.budgetFile); let phase = 'source'; let strategy = ''; let offered = false;
   const preparedByPhase = { source: 0, learning: 0, later: 0 }; const tools = [];
   const relay = await startPilotRelay(budget, { transport: input.offline ? offlinePilotTransport() : undefined,
-    beforeForward: input.validate,
+    beforeForward: input.validate, authorization: input.authorization,
     inspect(body) {
       assert(++preparedByPhase[phase] <= (phase === 'source' ? 4 : phase === 'later' ? 2 : 1), 'Pilot phase request limit');
       if (phase === 'later' && strategy) offered ||= JSON.stringify(body).includes(strategy);
@@ -172,6 +172,7 @@ export async function automaticPilot(input) {
     for (const handle of handles.reverse()) await handle.dispose(); await ctx?.fiber.dispose(); db?.close();
     await relay.close(); report.modelHttpRequests = input.offline ? 0 : budget.state.calls.length;
     report.conservativeMicroCny = input.offline ? 0 : budget.spent; report.heldCalls = budget.state.calls.filter(call => !call.usage).length;
+    report.settledUpperBoundMicroCny = input.offline ? 0 : budget.settledUpperBound; report.unknownReservedMicroCny = input.offline ? 0 : budget.unknownReserved;
     budget.close();
   }
   await writeFile(join(input.root, 'automatic-result.json'), JSON.stringify(report, null, 2), { flag: 'wx' });
