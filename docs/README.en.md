@@ -1,5 +1,7 @@
 # DSH-Reforge
 
+[Website](https://wang1299.github.io/dsh-reforge/en/) · [Website publication status](https://github.com/wang1299/dsh-reforge/issues/116)
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/dsh-reforge-hero-v3.png" alt="DSH-Reforge — Fix. Verify. Reforge." width="1000" />
 </p>
