@@ -1,0 +1,1118 @@
+{
+  "schemaVersion": 2,
+  "kind": "author-written-synthetic-retrieval",
+  "experiences": [
+    {
+      "id": "atomic-file",
+      "split": "development",
+      "family": "atomic-file",
+      "title": "Atomic file replacement",
+      "strategy": "Write a temporary sibling, flush its contents, then rename over the destination only after a complete write."
+    },
+    {
+      "id": "empty-value",
+      "split": "development",
+      "family": "empty-value",
+      "title": "Preserve explicit zero defaults",
+      "strategy": "Use an explicit None check instead of truthiness when assigning fallback settings; zero and empty strings are valid values."
+    },
+    {
+      "id": "tenant-cache",
+      "split": "development",
+      "family": "tenant-cache",
+      "title": "Tenant cache isolation",
+      "strategy": "Include tenant identity and request parameters in every cache key; never reuse a cached result across accounts."
+    },
+    {
+      "id": "validate-state",
+      "split": "development",
+      "family": "validate-state",
+      "title": "Validate before mutation",
+      "strategy": "Check known invalid input and raise before changing shared state; rejected operations must leave the original balance unchanged."
+    },
+    {
+      "id": "resource-release",
+      "split": "holdout",
+      "family": "resource-release",
+      "title": "Release acquired resources",
+      "strategy": "Close open file handles in a finally block or context manager even when parsing raises; preserve the original exception."
+    },
+    {
+      "id": "retry-deduplication",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "title": "Deduplicate retried commands",
+      "strategy": "Persist a stable idempotency key with the completed result; return the recorded response for a repeated request without charging again."
+    },
+    {
+      "id": "cursor-order",
+      "split": "holdout",
+      "family": "cursor-order",
+      "title": "Stable cursor pagination",
+      "strategy": "Sort records by a unique pair of timestamp and identifier; encode both in the next cursor to avoid skipping equal timestamps."
+    },
+    {
+      "id": "schema-upgrade",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "title": "Transactional schema upgrades",
+      "strategy": "Run data conversion and schema version updates in one transaction; roll back both if a conversion fails and preserve existing rows."
+    },
+    {
+      "id": "process-cancel",
+      "split": "holdout",
+      "family": "process-cancel",
+      "title": "Cancel timed-out process trees",
+      "strategy": "On deadline expiration terminate spawned descendants as well as the parent, drain bounded output and wait for cleanup before returning."
+    },
+    {
+      "id": "money-decimal",
+      "split": "holdout",
+      "family": "money-decimal",
+      "title": "Exact monetary arithmetic",
+      "strategy": "Parse currency values from strings into Decimal, apply an explicit rounding rule and avoid binary floating point for totals."
+    }
+  ],
+  "queries": [
+    {
+      "id": "atomic-file-literal",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "literal",
+      "text": "Fix atomic file replacement when a write is interrupted.",
+      "relevantIds": [
+        "atomic-file"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "atomic-file-long",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "long",
+      "text": "Repair atomic file replacement. Keep unrelated behavior, add regression tests, preserve permissions and explain the patch.",
+      "relevantIds": [
+        "atomic-file"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "atomic-file-strategy-only",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "strategy-only",
+      "text": "Write a temporary sibling and flush contents before rename over the destination.",
+      "relevantIds": [
+        "atomic-file"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "atomic-file-chinese",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "chinese",
+      "text": "修复文件写入中断，先写临时文件，完成后再替换目标文件。",
+      "relevantIds": [
+        "atomic-file"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "atomic-file-paraphrase",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "paraphrase",
+      "text": "A half-written settings file must never overwrite the previous valid copy.",
+      "relevantIds": [
+        "atomic-file"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "atomic-file-unrelated",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "unrelated",
+      "text": "Update the color palette of the account settings page.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "atomic-file-documentation-only",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "documentation-only",
+      "text": "Only update documentation about atomic file replacement; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "atomic-file-stale",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "stale",
+      "text": "Fix atomic file replacement when a write is interrupted.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "atomic-file"
+      ]
+    },
+    {
+      "id": "atomic-file-other-repo",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "other-repo",
+      "text": "Fix atomic file replacement when a write is interrupted.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "atomic-file"
+      ]
+    },
+    {
+      "id": "atomic-file-ambiguous",
+      "split": "development",
+      "family": "atomic-file",
+      "kind": "ambiguous",
+      "text": "atomic",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "empty-value-literal",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "literal",
+      "text": "Fix explicit zero defaults in settings.",
+      "relevantIds": [
+        "empty-value"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "empty-value-long",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "long",
+      "text": "Preserve explicit zero defaults when loading settings. Add independent tests and retain unrelated behavior.",
+      "relevantIds": [
+        "empty-value"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "empty-value-strategy-only",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "strategy-only",
+      "text": "Use an explicit None check instead of truthiness when assigning fallback settings.",
+      "relevantIds": [
+        "empty-value"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "empty-value-chinese",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "chinese",
+      "text": "默认配置中零和空字符串是合法值，只有缺失时才使用默认值。",
+      "relevantIds": [
+        "empty-value"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "empty-value-paraphrase",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "paraphrase",
+      "text": "A supplied 0 must survive configuration loading rather than become the fallback.",
+      "relevantIds": [
+        "empty-value"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "empty-value-unrelated",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "unrelated",
+      "text": "Improve the spacing of the profile card.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "empty-value-documentation-only",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "documentation-only",
+      "text": "Only update documentation about explicit zero defaults; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "empty-value-stale",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "stale",
+      "text": "Fix explicit zero defaults in settings.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "empty-value"
+      ]
+    },
+    {
+      "id": "empty-value-other-repo",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "other-repo",
+      "text": "Fix explicit zero defaults in settings.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "empty-value"
+      ]
+    },
+    {
+      "id": "empty-value-ambiguous",
+      "split": "development",
+      "family": "empty-value",
+      "kind": "ambiguous",
+      "text": "defaults",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "tenant-cache-literal",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "literal",
+      "text": "Repair tenant cache isolation for account requests.",
+      "relevantIds": [
+        "tenant-cache"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "tenant-cache-long",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "long",
+      "text": "Repair tenant cache isolation. Keep existing response fields, preserve unrelated files and add targeted acceptance checks.",
+      "relevantIds": [
+        "tenant-cache"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "tenant-cache-strategy-only",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "strategy-only",
+      "text": "Include tenant identity and request parameters in every key before reusing a cached result.",
+      "relevantIds": [
+        "tenant-cache"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "tenant-cache-chinese",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "chinese",
+      "text": "缓存键应包含租户身份与请求参数，不能让不同账号共享结果。",
+      "relevantIds": [
+        "tenant-cache"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "tenant-cache-paraphrase",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "paraphrase",
+      "text": "Two customers requesting the same endpoint must not receive each other's stored response.",
+      "relevantIds": [
+        "tenant-cache"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "tenant-cache-unrelated",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "unrelated",
+      "text": "Change the appearance of the navigation menu.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "tenant-cache-documentation-only",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "documentation-only",
+      "text": "Only update documentation about tenant cache isolation; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "tenant-cache-stale",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "stale",
+      "text": "Repair tenant cache isolation for account requests.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "tenant-cache"
+      ]
+    },
+    {
+      "id": "tenant-cache-other-repo",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "other-repo",
+      "text": "Repair tenant cache isolation for account requests.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "tenant-cache"
+      ]
+    },
+    {
+      "id": "tenant-cache-ambiguous",
+      "split": "development",
+      "family": "tenant-cache",
+      "kind": "ambiguous",
+      "text": "tenant",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "validate-state-literal",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "literal",
+      "text": "Validate before mutation when rejecting invalid input.",
+      "relevantIds": [
+        "validate-state"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "validate-state-long",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "long",
+      "text": "Validate before mutation when rejecting invalid input. Preserve successful updates, add assertions and explain remaining risks.",
+      "relevantIds": [
+        "validate-state"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "validate-state-strategy-only",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "strategy-only",
+      "text": "Check known invalid input and raise before changing shared state.",
+      "relevantIds": [
+        "validate-state"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "validate-state-chinese",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "chinese",
+      "text": "先检查非法输入，再修改共享状态；拒绝操作时余额不能改变。",
+      "relevantIds": [
+        "validate-state"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "validate-state-paraphrase",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "paraphrase",
+      "text": "An invalid operation must not alter the balance before it throws.",
+      "relevantIds": [
+        "validate-state"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "validate-state-unrelated",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "unrelated",
+      "text": "Add a logo to the landing page.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "validate-state-documentation-only",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "documentation-only",
+      "text": "Only update documentation about validate before mutation; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "validate-state-stale",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "stale",
+      "text": "Validate before mutation when rejecting invalid input.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "validate-state"
+      ]
+    },
+    {
+      "id": "validate-state-other-repo",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "other-repo",
+      "text": "Validate before mutation when rejecting invalid input.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "validate-state"
+      ]
+    },
+    {
+      "id": "validate-state-ambiguous",
+      "split": "development",
+      "family": "validate-state",
+      "kind": "ambiguous",
+      "text": "mutation",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "resource-release-literal",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "literal",
+      "text": "Release acquired resources after a parser exception.",
+      "relevantIds": [
+        "resource-release"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "resource-release-long",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "long",
+      "text": "Release acquired resources after a parser exception. Keep the API stable, cover the failure path and preserve successful parsing.",
+      "relevantIds": [
+        "resource-release"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "resource-release-strategy-only",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "strategy-only",
+      "text": "Close open file handles in a finally block even when parsing raises.",
+      "relevantIds": [
+        "resource-release"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "resource-release-chinese",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "chinese",
+      "text": "解析抛异常后也要关闭文件句柄，用上下文管理器释放资源。",
+      "relevantIds": [
+        "resource-release"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "resource-release-paraphrase",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "paraphrase",
+      "text": "A failed reader must not leak descriptors or mask the first error.",
+      "relevantIds": [
+        "resource-release"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "resource-release-unrelated",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "unrelated",
+      "text": "Adjust the header typography on the website.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "resource-release-documentation-only",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "documentation-only",
+      "text": "Only update documentation about release acquired resources; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "resource-release-stale",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "stale",
+      "text": "Release acquired resources after a parser exception.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "resource-release"
+      ]
+    },
+    {
+      "id": "resource-release-other-repo",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "other-repo",
+      "text": "Release acquired resources after a parser exception.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "resource-release"
+      ]
+    },
+    {
+      "id": "resource-release-ambiguous",
+      "split": "holdout",
+      "family": "resource-release",
+      "kind": "ambiguous",
+      "text": "resources",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "retry-deduplication-literal",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "literal",
+      "text": "Deduplicate retried commands after a network interruption.",
+      "relevantIds": [
+        "retry-deduplication"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "retry-deduplication-long",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "long",
+      "text": "Deduplicate retried commands after a network interruption. Preserve the response contract and verify repeated requests.",
+      "relevantIds": [
+        "retry-deduplication"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "retry-deduplication-strategy-only",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "strategy-only",
+      "text": "Persist a stable idempotency key with the completed result before returning the recorded response.",
+      "relevantIds": [
+        "retry-deduplication"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "retry-deduplication-chinese",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "chinese",
+      "text": "用幂等键记录处理结果，重复请求不能再次扣款。",
+      "relevantIds": [
+        "retry-deduplication"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "retry-deduplication-paraphrase",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "paraphrase",
+      "text": "A payment submitted twice after losing the reply must debit the account once.",
+      "relevantIds": [
+        "retry-deduplication"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "retry-deduplication-unrelated",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "unrelated",
+      "text": "Change the footer background on the product page.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "retry-deduplication-documentation-only",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "documentation-only",
+      "text": "Only update documentation about deduplicate retried commands; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "retry-deduplication-stale",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "stale",
+      "text": "Deduplicate retried commands after a network interruption.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "retry-deduplication"
+      ]
+    },
+    {
+      "id": "retry-deduplication-other-repo",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "other-repo",
+      "text": "Deduplicate retried commands after a network interruption.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "retry-deduplication"
+      ]
+    },
+    {
+      "id": "retry-deduplication-ambiguous",
+      "split": "holdout",
+      "family": "retry-deduplication",
+      "kind": "ambiguous",
+      "text": "retried",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "cursor-order-literal",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "literal",
+      "text": "Fix stable cursor pagination for repeated timestamps.",
+      "relevantIds": [
+        "cursor-order"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "cursor-order-long",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "long",
+      "text": "Fix stable cursor pagination for repeated timestamps. Preserve response fields, test equal sort values and avoid duplicates.",
+      "relevantIds": [
+        "cursor-order"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "cursor-order-strategy-only",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "strategy-only",
+      "text": "Sort records by a unique pair of timestamp and identifier and encode both in the next token.",
+      "relevantIds": [
+        "cursor-order"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "cursor-order-chinese",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "chinese",
+      "text": "分页游标要包含时间戳和唯一标识，避免同一时间的记录被跳过。",
+      "relevantIds": [
+        "cursor-order"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "cursor-order-paraphrase",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "paraphrase",
+      "text": "Rows sharing a creation time must appear exactly once across adjacent pages.",
+      "relevantIds": [
+        "cursor-order"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "cursor-order-unrelated",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "unrelated",
+      "text": "Add a decorative border to the user avatar.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "cursor-order-documentation-only",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "documentation-only",
+      "text": "Only update documentation about stable cursor pagination; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "cursor-order-stale",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "stale",
+      "text": "Fix stable cursor pagination for repeated timestamps.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "cursor-order"
+      ]
+    },
+    {
+      "id": "cursor-order-other-repo",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "other-repo",
+      "text": "Fix stable cursor pagination for repeated timestamps.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "cursor-order"
+      ]
+    },
+    {
+      "id": "cursor-order-ambiguous",
+      "split": "holdout",
+      "family": "cursor-order",
+      "kind": "ambiguous",
+      "text": "pagination",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "schema-upgrade-literal",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "literal",
+      "text": "Repair transactional schema upgrades after a conversion error.",
+      "relevantIds": [
+        "schema-upgrade"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "schema-upgrade-long",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "long",
+      "text": "Repair transactional schema upgrades after a conversion error. Preserve existing rows, test failed upgrades and keep old databases readable.",
+      "relevantIds": [
+        "schema-upgrade"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "schema-upgrade-strategy-only",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "strategy-only",
+      "text": "Run data conversion and version updates in one transaction and roll back both if conversion fails.",
+      "relevantIds": [
+        "schema-upgrade"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "schema-upgrade-chinese",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "chinese",
+      "text": "数据库升级时把数据转换和版本更新放进同一事务，失败后保留旧数据。",
+      "relevantIds": [
+        "schema-upgrade"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "schema-upgrade-paraphrase",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "paraphrase",
+      "text": "An interrupted database update must not announce the new format while old rows remain unconverted.",
+      "relevantIds": [
+        "schema-upgrade"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "schema-upgrade-unrelated",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "unrelated",
+      "text": "Improve the placement of the search icon.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "schema-upgrade-documentation-only",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "documentation-only",
+      "text": "Only update documentation about transactional schema upgrades; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "schema-upgrade-stale",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "stale",
+      "text": "Repair transactional schema upgrades after a conversion error.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "schema-upgrade"
+      ]
+    },
+    {
+      "id": "schema-upgrade-other-repo",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "other-repo",
+      "text": "Repair transactional schema upgrades after a conversion error.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "schema-upgrade"
+      ]
+    },
+    {
+      "id": "schema-upgrade-ambiguous",
+      "split": "holdout",
+      "family": "schema-upgrade",
+      "kind": "ambiguous",
+      "text": "upgrades",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "process-cancel-literal",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "literal",
+      "text": "Cancel timed-out process trees during verification.",
+      "relevantIds": [
+        "process-cancel"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "process-cancel-long",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "long",
+      "text": "Cancel timed-out process trees during verification. Keep normal execution intact, bound output and test child cleanup.",
+      "relevantIds": [
+        "process-cancel"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "process-cancel-strategy-only",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "strategy-only",
+      "text": "On deadline expiration terminate spawned descendants as well as the parent and wait for cleanup.",
+      "relevantIds": [
+        "process-cancel"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "process-cancel-chinese",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "chinese",
+      "text": "验证超时后终止整个子进程树，不能只结束父进程。",
+      "relevantIds": [
+        "process-cancel"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "process-cancel-paraphrase",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "paraphrase",
+      "text": "Stopping the test runner must not leave its workers running in the background.",
+      "relevantIds": [
+        "process-cancel"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "process-cancel-unrelated",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "unrelated",
+      "text": "Reorder the links in the help menu.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "process-cancel-documentation-only",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "documentation-only",
+      "text": "Only update documentation about cancel timed-out process trees; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "process-cancel-stale",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "stale",
+      "text": "Cancel timed-out process trees during verification.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "process-cancel"
+      ]
+    },
+    {
+      "id": "process-cancel-other-repo",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "other-repo",
+      "text": "Cancel timed-out process trees during verification.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "process-cancel"
+      ]
+    },
+    {
+      "id": "process-cancel-ambiguous",
+      "split": "holdout",
+      "family": "process-cancel",
+      "kind": "ambiguous",
+      "text": "trees",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "money-decimal-literal",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "literal",
+      "text": "Fix exact monetary arithmetic in invoice totals.",
+      "relevantIds": [
+        "money-decimal"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "money-decimal-long",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "long",
+      "text": "Fix exact monetary arithmetic in invoice totals. Preserve the invoice format, cover fractional amounts and explain rounding.",
+      "relevantIds": [
+        "money-decimal"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "money-decimal-strategy-only",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "strategy-only",
+      "text": "Parse currency values from strings into Decimal and apply an explicit rounding rule.",
+      "relevantIds": [
+        "money-decimal"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "money-decimal-chinese",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "chinese",
+      "text": "金额使用十进制定点计算，明确舍入规则，避免浮点误差。",
+      "relevantIds": [
+        "money-decimal"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "money-decimal-paraphrase",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "paraphrase",
+      "text": "Adding 0.1 and 0.2 should produce the expected cent total without an accumulated fraction.",
+      "relevantIds": [
+        "money-decimal"
+      ],
+      "ineligibleIds": []
+    },
+    {
+      "id": "money-decimal-unrelated",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "unrelated",
+      "text": "Add a hover animation to the submit button.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "money-decimal-documentation-only",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "documentation-only",
+      "text": "Only update documentation about exact monetary arithmetic; do not change runtime behavior.",
+      "relevantIds": [],
+      "ineligibleIds": []
+    },
+    {
+      "id": "money-decimal-stale",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "stale",
+      "text": "Fix exact monetary arithmetic in invoice totals.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "money-decimal"
+      ]
+    },
+    {
+      "id": "money-decimal-other-repo",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "other-repo",
+      "text": "Fix exact monetary arithmetic in invoice totals.",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "money-decimal"
+      ]
+    },
+    {
+      "id": "money-decimal-ambiguous",
+      "split": "holdout",
+      "family": "money-decimal",
+      "kind": "ambiguous",
+      "text": "monetary",
+      "relevantIds": [],
+      "ineligibleIds": []
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 # 更新记录
 
+## 未发行：离线检索评测工具
+
+- 冻结100条合成查询、开发/任务族留出及逐项JSON/本地可视报告；记录真实分母、拒绝和失败，独立保留T049适用性未知案例。
+- 增加与原BM25结果完全一致的只读预建索引，以及正文覆盖/明确文档请求的实验候选。[结果与局限](docs/evaluation/retrieval-v2.md)单列本机重复查询性能、构建成本和仍未解决的中文/改述漏选。
+- 默认DSH策略、SQLite v9、历史经验与授权不变；零模型调用。本节源码工具未发布至npm，不代表任务成功率或模型费用改善。
+
 ## 0.1.0-alpha.2 — 实验性 alpha
 
 公开制品与核验结果见[版本状态](https://github.com/wang1299/dsh-reforge/blob/main/docs/release-status.md)和[发行记录](https://github.com/wang1299/dsh-reforge/issues/113)；本节按版本说明内容，不替代注册表状态。

@@ -14,6 +14,7 @@
 | 网页打不开、仓库不匹配、没有经验 | [常见问题](faq.md) |
 | 了解保留什么、怎样安全升级与恢复 | [数据运维](maintenance.md) |
 | 理解证据边界和后续收益 | [产品需求](product.md)、[真实模型小规模试验](evaluation/real-model-pilot.md)、[早期评价](development/T008c-acceptance.md) |
+| 复查检索改进数字与选择原因 | [冻结检索评测、逐条解释与性能报告](evaluation/retrieval-v2.md) |
 | 参与试用或报告问题 | [外部试用](community/pilot.md)、[问题表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)、[安全报告](../SECURITY.md) |
 | 从一个小贡献开始 | [贡献指南](../CONTRIBUTING.md)、[新人任务](community/newcomers.md) |
 
