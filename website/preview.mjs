@@ -2,10 +2,13 @@ import http from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 const root = path.resolve(import.meta.dirname, "dist");
+const basePath = JSON.parse(await readFile(path.join(root, "build-info.json"), "utf8")).basePath;
 const types = { ".html":"text/html; charset=utf-8", ".css":"text/css; charset=utf-8", ".js":"text/javascript; charset=utf-8", ".svg":"image/svg+xml", ".png":"image/png", ".jpg":"image/jpeg", ".mp4":"video/mp4", ".vtt":"text/vtt; charset=utf-8", ".json":"application/json", ".xml":"application/xml", ".txt":"text/plain" };
 const server = http.createServer(async (req, res) => {
   try {
-    const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
+    const requested = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
+    if (basePath && !requested.startsWith(basePath + "/")) throw new Error("Outside site base");
+    const pathname = requested.slice(basePath.length);
     let file = path.resolve(root, "." + pathname);
     if (file !== root && !file.startsWith(root + path.sep)) throw new Error("Outside preview");
     if ((await stat(file)).isDirectory()) file = path.join(file, "index.html");
@@ -22,5 +25,5 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { "Content-Length":data.length }); res.end(data);
   } catch { res.writeHead(404, { "Content-Type":"text/plain" }); res.end("Not found"); }
 });
-server.listen(0, "127.0.0.1", () => console.log("Local: http://127.0.0.1:" + server.address().port));
+server.listen(0, "127.0.0.1", () => console.log("Local: http://127.0.0.1:" + server.address().port + basePath + "/"));
 for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => server.close(() => process.exit(0)));

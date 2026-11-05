@@ -3,6 +3,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { Marked } from "marked";
 import { sourceURL } from "./links.mjs";
+import { siteLocation, prefixHTML } from "./urls.mjs";
 
 const siteRoot = import.meta.dirname;
 const repoRoot = path.dirname(siteRoot);
@@ -14,7 +15,8 @@ const read = file => readFile(path.join(siteRoot, file), "utf8");
 const config = JSON.parse(await read("site.json"));
 const copy = JSON.parse(await read("copy.json"));
 if (JSON.parse(await readFile(path.join(repoRoot, "package.json"), "utf8")).version !== config.version) throw new Error("Website/package version drift");
-const origin = config.url ? new URL(config.url).origin : "";
+const location = siteLocation(process.env.WEBSITE_URL || config.url);
+const { origin, basePath } = location;
 const repoURL = "https://github.com/wang1299/dsh-reforge";
 const assets = [
   ["docs/assets/dsh-reforge-hero-v3.png", "brand.png"],
@@ -77,8 +79,8 @@ function shell(locale, title, description, body, pagePath, oppositePath, isDocs 
     '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; script-src \'self\'; style-src \'self\'; img-src \'self\' data:; media-src \'self\'; object-src \'none\'; base-uri \'none\'; frame-src \'none\'; form-action \'none\'">',
     '<link rel="icon" type="image/png" href="/assets/logo.png"><link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>',
     '<meta property="og:type" content="website"><meta property="og:title" content="' + escapeHTML(siteTitle) + '"><meta property="og:description" content="' + escapeHTML(description) + '">',
-    origin ? '<link rel="canonical" href="' + escapeHTML(origin + pagePath) + '"><meta property="og:url" content="' + escapeHTML(origin + pagePath) + '"><meta property="og:image" content="' + escapeHTML(origin + "/assets/brand.png") + '">' : "",
-    '<link rel="alternate" hreflang="' + (en ? "zh-CN" : "en") + '" href="' + escapeHTML(origin + oppositePath) + '"></head><body>',
+    '<link rel="canonical" href="' + escapeHTML(location.absolute(pagePath)) + '"><meta property="og:url" content="' + escapeHTML(location.absolute(pagePath)) + '"><meta property="og:image" content="' + escapeHTML(location.absolute("/assets/brand.png")) + '">',
+    '<link rel="alternate" hreflang="' + (en ? "zh-CN" : "en") + '" href="' + escapeHTML(location.absolute(oppositePath)) + '"></head><body>',
     '<a class="skip" href="#main">' + (en ? "Skip to content" : "跳到正文") + '</a><header class="header"><div class="wrap header-row">' + brand(locale),
     '<button class="menu" type="button" aria-expanded="false" aria-controls="navigation" aria-label="' + (en ? "Toggle navigation" : "展开导航") + '" data-menu><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>',
     '<nav class="nav" id="navigation" aria-label="' + (en ? "Main navigation" : "主导航") + '"><a href="' + route(locale) + '#how">' + (en ? "How it works" : "工作方式") + '</a><a href="' + route(locale) + '#demo">' + (en ? "Demo" : "案例演示") + '</a><a href="' + prefix(locale) + '/docs/"' + (isDocs ? ' aria-current="page"' : "") + '>' + (en ? "Documentation" : "文档") + '</a><a class="github" href="' + repoURL + '">GitHub ' + icon("external") + '</a><a class="lang" href="' + oppositePath + '" lang="' + (en ? "zh-CN" : "en") + '">' + (en ? "中文" : "English") + '</a></nav></div></header>',
@@ -90,7 +92,7 @@ async function emit(url, html) {
   if (/\{\{[A-Z_]+\}\}/.test(html)) throw new Error("Unresolved page token: " + url);
   const directory = path.join(out, url.slice(1));
   await mkdir(directory, { recursive:true });
-  await writeFile(path.join(directory, "index.html"), html);
+  await writeFile(path.join(directory, "index.html"), prefixHTML(html, basePath));
   pages.push(url);
 }
 const home = await read("home.html");
@@ -161,8 +163,8 @@ for (const locale of [0, 1]) {
     await emit(route(locale, doc.key), shell(locale, doc.title[locale], doc.desc[locale], body, route(locale, doc.key), route(1-locale, doc.key), true));
   }
 }
-await writeFile(path.join(out, "robots.txt"), "User-agent: *\nAllow: /\n" + (origin ? "Sitemap: " + origin + "/sitemap.xml\n" : ""));
-await writeFile(path.join(out, "sitemap.xml"), '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + pages.map(p => "<url><loc>" + escapeHTML(origin + p) + "</loc></url>").join("") + "</urlset>");
-await writeFile(path.join(out, "build-info.json"), JSON.stringify({ version:config.version, hosts:config.hosts, pages, publicInputs:inputs }, null, 2));
+await writeFile(path.join(out, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: " + location.absolute("/sitemap.xml") + "\n");
+await writeFile(path.join(out, "sitemap.xml"), '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + pages.map(p => "<url><loc>" + escapeHTML(location.absolute(p)) + "</loc></url>").join("") + "</urlset>");
+await writeFile(path.join(out, "build-info.json"), JSON.stringify({ version:config.version, hosts:config.hosts, origin, basePath, pages, publicInputs:inputs }, null, 2));
 console.log("Built " + pages.length + " bilingual pages; " + inputs.length + " whitelisted public inputs.");
 

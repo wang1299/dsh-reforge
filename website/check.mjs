@@ -2,6 +2,11 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import assert from "node:assert/strict";
 import { sourceURL } from "./links.mjs";
+import { siteLocation, prefixHTML } from "./urls.mjs";
+assert.equal(siteLocation("https://example.org/project/").absolute("/en/"), "https://example.org/project/en/");
+assert.equal(siteLocation("https://example.org/").basePath, "");
+assert.equal(prefixHTML('<a href="/docs/"><img src="/assets/x.png"><a href="#main"><a href="https://example.org/">', "/project"), '<a href="/project/docs/"><img src="/project/assets/x.png"><a href="#main"><a href="https://example.org/">');
+for (const url of ["javascript:alert(1)", "https://user:secret@example.org/", "https://example.org/?token=secret"]) assert.throws(() => siteLocation(url));
 for (const href of [" javascript:alert(1)", " data:text/html,<x>", "file:///private", "vbscript:msgbox(1)", "java\tscript:alert(1)", "\u0000https://example.org", ""]) {
   assert.equal(sourceURL(href, "docs/index.md"), null, "Reject unsafe Markdown URLs");
 }
@@ -10,6 +15,8 @@ for (const href of ["https://example.org/a", "../README.md#heading", "#标题", 
 }
 const root = path.join(import.meta.dirname, "dist");
 const info = JSON.parse(await readFile(path.join(root, "build-info.json"), "utf8"));
+const basePath = info.basePath;
+assert.equal(typeof basePath, "string");
 const files = [];
 async function walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes:true })) {
@@ -42,16 +49,18 @@ for (const file of files) {
   for (const match of html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>/g)) {
     const label = match[2].trim();
     if (!match[1].startsWith("/")) continue;
-    if (label === "English") assert(match[1].startsWith("/en/"), "English link selects English content");
-    if (label === "中文") assert(!match[1].startsWith("/en/"), "Chinese link selects Chinese content");
+    const localHref = basePath ? match[1].slice(basePath.length) : match[1];
+    if (label === "English") assert(localHref.startsWith("/en/"), "English link selects English content");
+    if (label === "中文") assert(!localHref.startsWith("/en/"), "Chinese link selects Chinese content");
   }
   for (const match of html.matchAll(/\b(?:href|src|poster)="([^"]+)"/g)) {
     const href = match[1].replaceAll("&amp;", "&").trim();
     assert(!/^(javascript|data|file):/i.test(href), "Safe URL protocols");
     if (/^(https?:|mailto:)/i.test(href)) continue;
-    const current = "/" + path.relative(root, file).replaceAll("\\", "/");
+    const current = basePath + "/" + path.relative(root, file).replaceAll("\\", "/");
     const target = new URL(href, "https://local.invalid" + current);
-    let local = path.resolve(root, "." + decodeURIComponent(target.pathname));
+    assert(!basePath || target.pathname.startsWith(basePath + "/"), "Local links retain the deployment base");
+    let local = path.resolve(root, "." + decodeURIComponent(target.pathname.slice(basePath.length)));
     assert(local.startsWith(root + path.sep) || local === root, "Link stays within output");
     const meta = await stat(local).catch(() => null);
     assert(meta, "Missing local link " + href + " in " + relative);
@@ -64,6 +73,12 @@ for (const file of files) {
     references++;
   }
 }
+for (const page of info.pages) {
+  const html = await readFile(path.join(root, page.slice(1), "index.html"), "utf8");
+  assert(html.includes('rel="canonical" href="' + info.origin + basePath + page + '"'), "Canonical URL includes deployment base");
+}
+const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
+for (const page of info.pages) assert(sitemap.includes("<loc>" + info.origin + basePath + page + "</loc>"), "Sitemap includes deployment base");
 for (const language of ["zh-CN","en"]) assert((await readFile(path.join(root,"assets/first-task."+language+".vtt"),"utf8")).startsWith("WEBVTT\n"));
 assert(!files.some(f => /\.(map|ts|srt)$/.test(f)), "Only required static assets");
 console.log("Verified " + info.pages.length + " pages, " + references + " local references/anchors and the static publication whitelist.");

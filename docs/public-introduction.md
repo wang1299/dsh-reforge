@@ -8,7 +8,7 @@
 
 > DSH-Reforge (dsh-reforge) — DeepSeek Harness plugin for traceable experience from test-verified Python bug fixes. 从有测试依据的 Python 修复中积累可追溯经验。Experimental alpha · DSH 0.2.0-rc.2 / 0.2.1-rc.5.
 
-网站入口建议：[中英文文档导航](https://github.com/wang1299/dsh-reforge/blob/main/docs/index.md)。
+网站入口：[官网](https://wang1299.github.io/dsh-reforge/)与[中英文文档导航](https://wang1299.github.io/dsh-reforge/docs/)。实际公开部署和可访问性以[官网发布回执#116](https://github.com/wang1299/dsh-reforge/issues/116)为准。
 
 主题标签：`dsh-reforge`、`deepseek`、`deepseek-harness`、`dsh-plugin`、`experience-learning`、`agent-memory`、`bug-fix`、`python`、`pytest`、`verification`、`typescript`。
 

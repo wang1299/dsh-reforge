@@ -2,6 +2,10 @@
 
 独立官网与任务导向文档。设计边界见 [ADR045](../docs/decisions/045-public-website.md)，任务见 [T051](../docs/tasks/T051-public-website.md)。
 
+Sites初次发布虽返回成功，用户与内置浏览器都无法访问，因此通过[ADR046](../docs/decisions/046-github-pages-fallback.md)新增本仓库GitHub Pages入口。当前公开地址、发布及实访回执见[Issue #116](https://github.com/wang1299/dsh-reforge/issues/116)。Pages工作流从官方configure-pages读取base_url，使用WEBSITE_URL注入构建；不得把预期URL或成功上传当作已可访问。
+
+根路径和项目子路径均由网站CI检查。手动检查子路径可在构建前设置`$env:WEBSITE_URL='https://example.invalid/dsh-reforge/'`；预览服务会打印相应本机子路径。默认site.json和Sites身份保留，未更改旧Site安全策略。GitHub Pages只发布33个静态文件，权限限于本仓库main的Pages发布/OIDC；不创建PAT或密钥。
+
 ```powershell
 cd website
 npm ci --ignore-scripts

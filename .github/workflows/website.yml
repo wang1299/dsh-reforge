@@ -21,5 +21,11 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
       - run: npm ci --ignore-scripts --no-audit --no-fund
-      - run: npm run build
-      - run: npm run check
+      - name: Build and check root hosting
+        run: npm run build && npm run check
+        env:
+          WEBSITE_URL: https://example.invalid/
+      - name: Build and check project subpath hosting
+        run: npm run build && npm run check
+        env:
+          WEBSITE_URL: https://example.invalid/dsh-reforge/
