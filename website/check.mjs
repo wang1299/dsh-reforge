@@ -1,6 +1,13 @@
 import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import assert from "node:assert/strict";
+import { sourceURL } from "./links.mjs";
+for (const href of [" javascript:alert(1)", " data:text/html,<x>", "file:///private", "vbscript:msgbox(1)", "java\tscript:alert(1)", "\u0000https://example.org", ""]) {
+  assert.equal(sourceURL(href, "docs/index.md"), null, "Reject unsafe Markdown URLs");
+}
+for (const href of ["https://example.org/a", "../README.md#heading", "#标题", " mailto:maintainer@example.org "]) {
+  assert(sourceURL(href, "docs/index.md"), "Keep safe Markdown navigation");
+}
 const root = path.join(import.meta.dirname, "dist");
 const info = JSON.parse(await readFile(path.join(root, "build-info.json"), "utf8"));
 const files = [];
@@ -32,8 +39,14 @@ for (const file of files) {
   assert(html.includes('id="main"') && html.includes('href="#main"'), "Skip navigation");
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
   assert.equal(new Set(ids).size, ids.length, "Unique anchors");
+  for (const match of html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>/g)) {
+    const label = match[2].trim();
+    if (!match[1].startsWith("/")) continue;
+    if (label === "English") assert(match[1].startsWith("/en/"), "English link selects English content");
+    if (label === "中文") assert(!match[1].startsWith("/en/"), "Chinese link selects Chinese content");
+  }
   for (const match of html.matchAll(/\b(?:href|src|poster)="([^"]+)"/g)) {
-    const href = match[1].replaceAll("&amp;", "&");
+    const href = match[1].replaceAll("&amp;", "&").trim();
     assert(!/^(javascript|data|file):/i.test(href), "Safe URL protocols");
     if (/^(https?:|mailto:)/i.test(href)) continue;
     const current = "/" + path.relative(root, file).replaceAll("\\", "/");

@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir, copyFile, rm, lstat } from "node:fs/promise
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { Marked } from "marked";
+import { sourceURL } from "./links.mjs";
 
 const siteRoot = import.meta.dirname;
 const repoRoot = path.dirname(siteRoot);
@@ -112,15 +113,15 @@ for (const locale of [0, 1]) {
     const headings = [];
     const used = new Map();
     function resolve(href, image = false) {
-      if (!href || /[\u0000-\u001f\u007f]/.test(href)) return "#";
-      if (/^[a-z][a-z0-9+.-]*:/i.test(href) && !/^(https?:|mailto:)/i.test(href)) return "#";
+      const target = sourceURL(href, source);
+      if (!target) return "#";
+      href = href.trim();
       if (href.startsWith("#")) return href;
-      const target = new URL(href, "https://source.invalid/" + source);
       if (target.origin !== "https://source.invalid") return target.href;
       const file = decodeURIComponent(target.pathname).slice(1);
       const match = docs.find(d => d.source.includes(file));
       if (match && !image) {
-        const targetLocale = target.hash && match.source[0] !== match.source[1] ? match.source.indexOf(file) : locale;
+        const targetLocale = match.source[0] !== match.source[1] ? match.source.indexOf(file) : locale;
         return route(targetLocale, match.key) + target.hash;
       }
       const asset = assets.find(([s]) => s === file);
@@ -155,7 +156,7 @@ for (const locale of [0, 1]) {
     for (const folder of ["docs/decisions","docs","docs/development","examples/customer-form","docs/evaluation/t049-20261104"]) awaitStat.set(folder,"directory");
     const html = new Marked({ gfm:true, renderer }).parse(markdown);
     const sidebar = '<aside class="docs-side" aria-label="' + (locale ? "Documentation navigation" : "文档导航") + '"><p>' + (locale ? "DSH-Reforge guides" : "使用指南") + '</p><nav>' + docs.map(d => '<a href="' + route(locale, d.key) + '"' + (d.key === doc.key ? ' aria-current="page"' : "") + ">" + d.title[locale] + "</a>").join("") + '</nav><a class="source-link" href="' + repoURL + '/blob/main/' + source + '">' + icon("external") + (locale ? "Original Markdown" : "查看原始文档") + "</a></aside>";
-    const note = locale && doc.source[0] === doc.source[1] ? '<div class="doc-note">This guide contains both Chinese and English sections and is generated from the same source document.</div>' : "";
+    const note = locale && doc.source[0] === doc.source[1] ? '<div class="doc-note">Generated from the canonical repository guide, which may include Chinese text. For a fully English first-run path, see the <a href="/en/docs/start/">English quickstart</a>.</div>' : "";
     const body = '<div class="wrap docs-layout">' + sidebar + '<article class="article"><div class="breadcrumb"><a href="' + prefix(locale) + '/docs/">' + (locale ? "DOCUMENTATION" : "文档") + '</a> / ' + doc.title[locale] + '</div>' + note + html + '<div class="article-source"><a href="' + repoURL + '/blob/main/' + source + '">' + (locale ? "Read or edit the source on GitHub ↗" : "在 GitHub 查看或编辑本文 ↗") + '</a><span>' + config.version + '</span></div></article><aside class="toc" aria-label="' + (locale ? "On this page" : "本页内容") + '"><p>' + (locale ? "On this page" : "本页内容") + "</p>" + headings.map(h => '<a href="#' + escapeHTML(h.id) + '">' + escapeHTML(h.text) + "</a>").join("") + "</aside></div>";
     await emit(route(locale, doc.key), shell(locale, doc.title[locale], doc.desc[locale], body, route(locale, doc.key), route(1-locale, doc.key), true));
   }
