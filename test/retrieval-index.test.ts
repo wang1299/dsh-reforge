@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { rankText } from '../src/retrieval.js';
 import { prepareTextIndex, rankStrategy } from '../src/retrieval-index.js';
 import { evaluateRetrieval, parseRetrievalCorpus, renderRetrievalReport, validateRetrievalCorpus } from '../src/retrieval-evaluation.js';
@@ -85,4 +87,25 @@ test('development report retains every error and explains exclusion without trea
   const html = renderRetrievalReport(modified);
   assert(!html.includes('<script>')); assert(html.includes('&lt;script&gt;'));
   assert(html.includes('default-src \'none\'')); assert(!html.includes('https://'));
+});
+
+test('saved development and first holdout reproduce every decision, denominator and method digest', async () => {
+  const corpus = parseRetrievalCorpus(await readFile(new URL('../../test/fixtures/retrieval-v2-cases.json', import.meta.url)));
+  for (const split of ['development', 'holdout'] as const) {
+    const actual = evaluateRetrieval(corpus, split);
+    const frozen = JSON.parse(await readFile(new URL(`../../docs/evaluation/retrieval-v2-${split}.json`, import.meta.url), 'utf8'));
+    for (const key of ['dataDigest', 'methodDigests', 'groups', 'gate', 'limitations'] as const) assert.deepEqual(actual[key], frozen[key]);
+  }
+});
+
+test('CLI reproduces the historical unknown-applicability cases and rejects report paths outside ignored work', () => {
+  const cli = fileURLToPath(new URL('../scripts/retrieval-evaluate.js', import.meta.url));
+  const report = JSON.parse(execFileSync(process.execPath, [cli, 'development'], { encoding: 'utf8', windowsHide: true, maxBuffer: 1048576 }));
+  assert.equal(report.historicalDiagnostics.length, 2);
+  assert(report.historicalDiagnostics.every((row: { applicability: string; candidate: { reason: string | null }[] }) =>
+    row.applicability === 'unconfirmed/not-a-positive-label' && row.candidate.every(m => m.reason !== null)));
+  const outside = spawnSync(process.execPath, [cli, 'development', '--out', 'docs/not-an-output'], { encoding: 'utf8', windowsHide: true });
+  assert.notEqual(outside.status, 0); assert.match(outside.stderr, /Reports must stay inside/);
+  const invalid = spawnSync(process.execPath, [cli, 'unknown'], { encoding: 'utf8', windowsHide: true });
+  assert.notEqual(invalid.status, 0); assert.match(invalid.stderr, /Usage/);
 });
