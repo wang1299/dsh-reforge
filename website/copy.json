@@ -1,0 +1,274 @@
+{
+  "HERO_TITLE": [
+    "修复有据。<br><span>经验可循。</span>",
+    "Every fix, verified.<br><span>Experience, traceable.</span>"
+  ],
+  "HERO_INTRO": [
+    "从有测试依据的 Python 修复中积累可追溯经验。在后续相似任务中，给 DeepSeek Harness 一份有来源、有边界的参考。",
+    "Build traceable experience from test-verified Python fixes. Give DeepSeek Harness scoped, source-backed context for later, similar tasks."
+  ],
+  "START": [
+    "开始使用",
+    "Get started"
+  ],
+  "WATCH": [
+    "观看演示",
+    "Watch the demo"
+  ],
+  "EXPERIMENTAL": [
+    "实验版",
+    "Experimental alpha"
+  ],
+  "COPY": [
+    "复制",
+    "Copy"
+  ],
+  "COPY_INSTALL": [
+    "复制插件安装命令",
+    "Copy the plugin installation command"
+  ],
+  "CASE_LABEL": [
+    "合成案例",
+    "SYNTHETIC EXAMPLE"
+  ],
+  "RECEIPT_TITLE": [
+    "保存失败，也不丢输入",
+    "Keep the draft when saving fails"
+  ],
+  "RECEIPT_BODY": [
+    "独立验收确认修复来源，再把适用条件与验证记录留在经验中。",
+    "Independent checks qualify the repair source; applicability and verification records stay with the experience."
+  ],
+  "BEFORE": [
+    "原始失败",
+    "Before the fix"
+  ],
+  "FAIL": [
+    "失败",
+    "failures"
+  ],
+  "ACCEPTANCE": [
+    "修复验收",
+    "Acceptance"
+  ],
+  "REGRESSION": [
+    "回归测试",
+    "Regressions"
+  ],
+  "LOCAL_EVIDENCE": [
+    "本地结构化证据",
+    "Local structured evidence"
+  ],
+  "OFF_BY_DEFAULT": [
+    "学习默认关闭",
+    "Learning off by default"
+  ],
+  "OPEN_SOURCE": [
+    "开源",
+    "Open source"
+  ],
+  "HOW_TITLE": [
+    "让一次修复，<br>留下可查阅的依据。",
+    "Give a repair a source<br>you can return to."
+  ],
+  "HOW_INTRO": [
+    "不用把整段聊天变成“记忆”。保留必要的材料，核对发生过什么，再决定何时提供参考。",
+    "Keep bounded evidence instead of a full conversation. Check what happened, then decide when the experience is applicable."
+  ],
+  "STEP1_TITLE": [
+    "记录必要材料",
+    "Capture what matters"
+  ],
+  "STEP1_BODY": [
+    "获得授权后，记录有限任务摘要、明确纠正与受限代码快照；关联实际仓库与版本。",
+    "Once authorized, capture bounded task summaries, explicit corrections and limited code snapshots, tied to the repository and revision."
+  ],
+  "STEP1_TAG": [
+    "有边界的采集",
+    "Bounded capture"
+  ],
+  "STEP2_TITLE": [
+    "验证修复来源",
+    "Verify the repair source"
+  ],
+  "STEP2_BODY": [
+    "在临时工作区核对原始失败、修复验收与回归测试。回合结束和模型自评都不算通过。",
+    "Replay original failures, independent acceptance and regressions in temporary workspaces. Turn completion and model self-reports are not acceptance."
+  ],
+  "STEP2_TAG": [
+    "独立检查",
+    "Independent checks"
+  ],
+  "STEP3_TITLE": [
+    "按适用条件参考",
+    "Use it where it applies"
+  ],
+  "STEP3_BODY": [
+    "模型提炼候选后独立复核。后续请求按代码、依赖与相关度选择少量经验，也可以拒选。",
+    "Extract a candidate with the selected model, then reverify it independently. Later requests receive scoped context only when conditions and relevance qualify."
+  ],
+  "STEP3_TAG": [
+    "可查看、修订与停用",
+    "Inspect, revise or deactivate"
+  ],
+  "DEMO_TITLE": [
+    "从一个保存失败的表单开始。",
+    "Start with a form<br>that loses its draft."
+  ],
+  "DEMO_INTRO": [
+    "2 分钟，看清楚失败、修复、验收和经验入库；再亲自运行同款工程。",
+    "Two minutes from a failing form to a verified fix and a stored experience. Then run the same example yourself."
+  ],
+  "VIDEO_LABEL": [
+    "DSH-Reforge 保存失败表单案例演示",
+    "DSH-Reforge form-repair example demo"
+  ],
+  "VIDEO_FALLBACK": [
+    "浏览器无法播放视频，请从案例文档下载 MP4。",
+    "Your browser cannot play the video. Download the MP4 from the example documentation."
+  ],
+  "VIDEO_NOTE": [
+    "合成数据 · 显式补丁 · 实际独立测试。本片没有模型自主编码、自动提炼或付费调用。",
+    "Synthetic data, an explicit patch and real independent tests. This video has no autonomous model coding, automatic extraction or paid calls."
+  ],
+  "EXAMPLE_GUIDE": [
+    "案例说明",
+    "Example guide"
+  ],
+  "CASE_TITLE": [
+    "失败时保留草稿，<br>通过测试确认修复。",
+    "Keep the draft.<br>Check the fix with tests."
+  ],
+  "CASE_BODY": [
+    "示例提供原始工程、明确补丁、仓库外独立验收与回归测试。你看到的通过结果，来自真正运行的检查。",
+    "The example includes the original project, explicit patch, external acceptance and regressions. Its passing results come from real test execution."
+  ],
+  "FACT1": [
+    "原始实现",
+    "Original implementation"
+  ],
+  "FACT1_RESULT": [
+    "2 项验收失败",
+    "2 failing acceptance tests"
+  ],
+  "FACT2": [
+    "修复后的独立验收",
+    "Fixed independent acceptance"
+  ],
+  "FACT3": [
+    "回归检查",
+    "Regression checks"
+  ],
+  "PASS": [
+    "通过",
+    "passed"
+  ],
+  "RUN_EXAMPLE": [
+    "运行完整案例",
+    "Run the full example"
+  ],
+  "COPY_EXAMPLE": [
+    "复制示例启动命令",
+    "Copy the example command"
+  ],
+  "EXAMPLE_PREREQUISITE": [
+    "先克隆仓库并安装依赖，再在项目根目录运行；完整步骤见案例文档。无需 Key 或 DSH。",
+    "Clone the repository and install its dependencies first; run from the project root. See the example guide. No key or DSH is needed."
+  ],
+  "DOCS_TITLE": [
+    "下一步，从你的问题开始。",
+    "Find the next step<br>for your project."
+  ],
+  "DOCS_INTRO": [
+    "从第一次体验到数据维护，每一步都有操作说明和明确的核对方法。",
+    "From a first run to data maintenance, follow instructions with concrete verification steps."
+  ],
+  "CARD1_TITLE": [
+    "第一次使用",
+    "Your first run"
+  ],
+  "CARD1_BODY": [
+    "先体验，再只读配置，最后决定是否开启学习。",
+    "Try the example, configure read-only access, then decide whether to enable learning."
+  ],
+  "CARD2_TITLE": [
+    "安装与配置",
+    "Install and configure"
+  ],
+  "CARD2_BODY": [
+    "准确版本、同一 profile、权限与提炼授权。",
+    "Use the exact package and host, the same profile, and explicit permissions."
+  ],
+  "CARD3_TITLE": [
+    "兼容范围",
+    "Compatibility"
+  ],
+  "CARD3_BODY": [
+    "两宿主、双平台；查看已验证的范围和边界。",
+    "Two exact hosts on Windows and Linux. Check the verified scope."
+  ],
+  "CARD4_TITLE": [
+    "排障与常见问题",
+    "Troubleshooting"
+  ],
+  "CARD4_BODY": [
+    "链接打不开、仓库不匹配、为什么没有经验。",
+    "Connection failures, repository mismatches and an empty experience list."
+  ],
+  "CONTROL_TITLE": [
+    "从只读开始，<br>由你决定开启什么。",
+    "Start read-only.<br>Choose what to enable."
+  ],
+  "CONTROL_BODY": [
+    "学习默认关闭。体验示例和阅读官网，不需要交出模型 Key。开启正式学习前，请先理解执行、共享与费用的边界。",
+    "Learning is off by default. The example and website do not need your model key. Understand execution, sharing and costs before enabling learning."
+  ],
+  "MAINTENANCE_LINK": [
+    "数据备份、升级与恢复",
+    "Backups, upgrades and recovery"
+  ],
+  "CONTROL1_TITLE": [
+    "执行与共享，分别授权",
+    "Authorize execution and sharing"
+  ],
+  "CONTROL1_BODY": [
+    "只对信任的 Python 仓库开启。验证会运行代码；本地工作区隔离不是强安全沙箱。",
+    "Enable only for trusted Python repositories. Verification executes code; workspace isolation is not a strong security sandbox."
+  ],
+  "CONTROL2_TITLE": [
+    "本地保留有界证据",
+    "Keep bounded evidence locally"
+  ],
+  "CONTROL2_BODY": [
+    "经验、来源、使用记录与私有快照留在本机；模型共享开启后，有限修复材料会发送给指定服务。",
+    "Experience, source records, usage and private snapshots stay local. Enabling model sharing sends bounded repair material to the selected service."
+  ],
+  "CONTROL3_TITLE": [
+    "提炼次数，不是金额上限",
+    "An extraction allowance is not a currency cap"
+  ],
+  "CONTROL3_BODY": [
+    "普通 DSH 对话也可能计费。未知回执保留占额，不自动重放；升级与恢复不重置已有授权。",
+    "Normal DSH chat may also incur costs. Unknown receipts retain their holds and are not replayed automatically. Upgrades do not reset grants."
+  ],
+  "EVIDENCE_NOTE": [
+    "我们验证了受限合成案例中的真实自动闭环。后续任务对照中，两检索组均未提供经验，因此尚未测到实际使用经验的收益。来源通过不代表未来任务会更好。",
+    "A bounded synthetic real-model loop was verified. Both retrieval arms abstained in the later-task pilot, so no effect of using memory was measured. Verified source evidence does not establish future-task benefit."
+  ],
+  "EVIDENCE_LINK": [
+    "阅读实际结果与限制",
+    "Read the results and limitations"
+  ],
+  "CLOSING_TITLE": [
+    "先跑一个案例，<br>再把经验带回自己的项目。",
+    "Try a small example.<br>Bring the process to your project."
+  ],
+  "CLOSING_BODY": [
+    "完整工程、清楚的来源、由你掌握的权限。",
+    "A complete example. Traceable sources. Permissions you control."
+  ],
+  "GITHUB_LINK": [
+    "查看 GitHub 源码",
+    "View the source on GitHub"
+  ]
+}

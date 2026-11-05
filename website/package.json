@@ -1,0 +1,12 @@
+{
+  "name": "dsh-reforge-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node check.mjs",
+    "dev": "node preview.mjs"
+  },
+  "dependencies": { "marked": "18.1.3" },
+  "engines": { "node": ">=24.10.0" }
+}

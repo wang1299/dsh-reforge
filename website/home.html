@@ -1,0 +1,75 @@
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">DEEPSEEK HARNESS · COMMUNITY PLUGIN</p>
+      <h1>{{HERO_TITLE}}</h1>
+      <p class="intro">{{HERO_INTRO}}</p>
+      <div class="hero-actions"><a class="button primary" href="{{DOC_START}}">{{START}} {{ARROW}}</a><a class="button secondary" href="#demo">{{WATCH}} {{PLAY}}</a></div>
+      <div class="edition"><span class="dot"></span><span>0.1.0-alpha.2</span><span>·</span><span>{{EXPERIMENTAL}}</span><span>·</span><span>DSH 0.2.0-rc.2 / 0.2.1-rc.5</span></div>
+      <div class="command">
+        <div class="command-line"><code id="install-command" tabindex="0">dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2</code><button type="button" data-copy="install-command" aria-label="{{COPY_INSTALL}}">{{COPY}}</button></div>
+        <div role="status" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="forge-visual">
+      <img src="/assets/brand.png" width="2016" height="806" alt="DSH-Reforge — Fix. Verify. Reforge." fetchpriority="high">
+      <div class="visual-caption"><span>EXPERIENCE / SOURCE VERIFIED</span><span>{{CASE_LABEL}}</span></div>
+      <div class="receipt">
+        <div class="receipt-top">{{FILE_ICON}} <span>customer-form / submit.py</span></div>
+        <h3>{{RECEIPT_TITLE}}</h3><p>{{RECEIPT_BODY}}</p>
+        <div class="checks"><div class="check">{{BEFORE}}<strong>2 {{FAIL}}</strong></div><div class="check">{{ACCEPTANCE}}<strong>2 / 2</strong></div><div class="check">{{REGRESSION}}<strong>3 / 3</strong></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="wrap ribbon"><span>{{CODE_ICON}} Python + pytest</span><span>{{DATABASE_ICON}} {{LOCAL_EVIDENCE}}</span><span>{{LOCK_ICON}} {{OFF_BY_DEFAULT}}</span><span>{{OPEN_ICON}} MIT · {{OPEN_SOURCE}}</span></div>
+<section id="how" class="section">
+  <div class="wrap">
+    <div class="section-head"><div><p class="eyebrow">FROM REPAIR TO EXPERIENCE</p><h2>{{HOW_TITLE}}</h2></div><p>{{HOW_INTRO}}</p></div>
+    <div class="flow">
+      <article class="flow-item"><div class="flow-icon"><span>01 / CAPTURE</span>{{FILE_ICON}}</div><h3>{{STEP1_TITLE}}</h3><p>{{STEP1_BODY}}</p><span class="tag blue">{{STEP1_TAG}}</span></article>
+      <article class="flow-item"><div class="flow-icon"><span>02 / VERIFY</span>{{CHECK_ICON}}</div><h3>{{STEP2_TITLE}}</h3><p>{{STEP2_BODY}}</p><span class="tag">{{STEP2_TAG}}</span></article>
+      <article class="flow-item"><div class="flow-icon"><span>03 / REFORGE</span>{{LAYERS_ICON}}</div><h3>{{STEP3_TITLE}}</h3><p>{{STEP3_BODY}}</p><span class="tag orange">{{STEP3_TAG}}</span></article>
+    </div>
+  </div>
+</section>
+<section id="demo" class="section demo">
+  <div class="wrap">
+    <div class="section-head"><div><p class="eyebrow">ONE SMALL FIX. A COMPLETE EXAMPLE.</p><h2>{{DEMO_TITLE}}</h2></div><p>{{DEMO_INTRO}}</p></div>
+    <div class="demo-grid">
+      <div class="video-frame"><video controls playsinline preload="none" poster="/assets/demo-poster.jpg" aria-label="{{VIDEO_LABEL}}"><source src="/assets/first-task.mp4" type="video/mp4"><track kind="subtitles" src="/assets/first-task.zh-CN.vtt" srclang="zh" label="中文" {{ZH_DEFAULT}}><track kind="subtitles" src="/assets/first-task.en.vtt" srclang="en" label="English" {{EN_DEFAULT}}>{{VIDEO_FALLBACK}}</video><div class="video-caption">{{VIDEO_NOTE}} <a href="{{DOC_EXAMPLE}}">{{EXAMPLE_GUIDE}} ↗</a></div></div>
+      <div class="case-copy">
+        <h3>{{CASE_TITLE}}</h3><p>{{CASE_BODY}}</p>
+        <ul class="case-facts"><li><span>{{FACT1}}</span><strong>{{FACT1_RESULT}}</strong></li><li><span>{{FACT2}}</span><strong>2 / 2 {{PASS}}</strong></li><li><span>{{FACT3}}</span><strong>3 / 3 {{PASS}}</strong></li></ul>
+        <a class="text-link" href="{{DOC_EXAMPLE}}">{{RUN_EXAMPLE}} {{ARROW}}</a>
+        <div class="command"><div class="command-line"><code id="example-command" tabindex="0">npm run example:customer-form</code><button type="button" data-copy="example-command" aria-label="{{COPY_EXAMPLE}}">{{COPY}}</button></div><div role="status" aria-live="polite"></div></div>
+        <p class="small-note">{{EXAMPLE_PREREQUISITE}}</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="learn" class="section">
+  <div class="wrap">
+    <div class="section-head"><div><p class="eyebrow">A CLEAR NEXT STEP</p><h2>{{DOCS_TITLE}}</h2></div><p>{{DOCS_INTRO}}</p></div>
+    <div class="docs-grid">
+      <a class="doc-card" href="{{DOC_START}}">{{COMPASS_ICON}}<h3>{{CARD1_TITLE}}</h3><p>{{CARD1_BODY}}</p><span class="arrow" aria-hidden="true">↗</span></a>
+      <a class="doc-card" href="{{DOC_INSTALL}}">{{TERMINAL_ICON}}<h3>{{CARD2_TITLE}}</h3><p>{{CARD2_BODY}}</p><span class="arrow" aria-hidden="true">↗</span></a>
+      <a class="doc-card" href="{{DOC_COMPAT}}">{{LAYERS_ICON}}<h3>{{CARD3_TITLE}}</h3><p>{{CARD3_BODY}}</p><span class="arrow" aria-hidden="true">↗</span></a>
+      <a class="doc-card" href="{{DOC_FAQ}}">{{LIFE_ICON}}<h3>{{CARD4_TITLE}}</h3><p>{{CARD4_BODY}}</p><span class="arrow" aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>
+<section class="wrap" aria-labelledby="control-title">
+  <div class="boundary">
+    <div><p class="eyebrow">YOUR PROJECT. YOUR DECISION.</p><h2 id="control-title">{{CONTROL_TITLE}}</h2><p>{{CONTROL_BODY}}</p><a class="text-link" href="{{DOC_MAINTENANCE}}">{{MAINTENANCE_LINK}} {{ARROW}}</a></div>
+    <div>
+      <div class="permission">{{LOCK_ICON}}<div><h3>{{CONTROL1_TITLE}}</h3><p>{{CONTROL1_BODY}}</p></div></div>
+      <div class="permission">{{DATABASE_ICON}}<div><h3>{{CONTROL2_TITLE}}</h3><p>{{CONTROL2_BODY}}</p></div></div>
+      <div class="permission">{{RECEIPT_ICON}}<div><h3>{{CONTROL3_TITLE}}</h3><p>{{CONTROL3_BODY}}</p></div></div>
+    </div>
+  </div>
+  <div class="evidence">{{INFO_ICON}}<p>{{EVIDENCE_NOTE}} <a href="{{DOC_EVIDENCE}}">{{EVIDENCE_LINK}}</a></p></div>
+</section>
+<section class="section">
+  <div class="wrap closing"><p class="eyebrow">FIX. VERIFY. REFORGE.</p><h2>{{CLOSING_TITLE}}</h2><p>{{CLOSING_BODY}}</p><div class="hero-actions"><a class="button primary" href="{{DOC_EXAMPLE}}">{{RUN_EXAMPLE}} {{ARROW}}</a><a class="button secondary" href="https://github.com/wang1299/dsh-reforge">{{GITHUB_LINK}} {{OPEN_ICON}}</a></div></div>
+</section>
