@@ -1,5 +1,7 @@
 # 本轮实现与验证状态
 
+2026-11-05 T051：新增独立官网与22个中英文首页/文档页，复用公开品牌、视频和案例；本地站内链接与浏览器检查通过。稳定SHA评审、CI、合并及实际公开发布状态见[T051](../tasks/T051-public-website.md)与[Issue #116](https://github.com/wang1299/dsh-reforge/issues/116)。来源包和历史数据不变，零模型调用。
+
 2026-11-05：当前总进度以[T046八项清单](../tasks/T046-public-readiness.md)与[发行状态](../release-status.md)为准。T047可运行视频案例/导航、T048保守配置/诊断/备份恢复已合并。[T049真实自动闭环](../evaluation/t049-20261104/README.md)通过，三组均4/4但两检索均拒选，未测到实际使用经验的效果；费用上界0.037128元、unknown0。T050的alpha.2 npm/Release已公开并核对三资产、两个宿主试装；可变标签回执见Issue #113。下一项研究是[#114检索覆盖与更有区分度的预注册试验](https://github.com/wang1299/dsh-reforge/issues/114)，新付费须另行授权。外部试用参与仍为0。下文为历史实现证据，不覆盖当前发行核验。
 
 T040：用户要求独立宿主适配与多版本测试。ADR039 先于实现提交；同一 alpha.2 候选包覆盖旧0.2.0-rc.2与新0.2.1-rc.5的目标矩阵，原生owner身份变化在适配层处理，核心/SQLite9/预算/授权保持。当前验收、失败、稳定SHA审查与CI以 [Issue #93](https://github.com/wang1299/dsh-reforge/issues/93) 和 [矩阵指南](../dsh-version-matrix.md) 为准，未公开发布候选，以下为历史状态。
