@@ -405,7 +405,7 @@
       "split": "holdout",
       "family": "tensor-normalization-axis",
       "title": "Keep row reduction dimensions when broadcasting row normalization",
-      "strategy": "For a two-dimensional tensor normalized by rows, reduce each row with its dimension retained and divide using broadcasting. Handle zero denominators separately.",
+      "strategy": "Normalize each row of a two-dimensional tensor independently: reduce axis 1 with its dimension retained and divide using broadcasting. Handle zero denominators separately.",
       "contract": {
         "schemaVersion": 1,
         "requires": [
@@ -444,7 +444,7 @@
       "split": "holdout",
       "family": "tensor-normalization-axis",
       "title": "按列归一化时保留列归约的广播维度",
-      "strategy": "二维张量按列归一化时，沿行方向归约并保留维度，使每列分母正确广播，零分母需单独处理。",
+      "strategy": "二维张量每一列独立归一化时，按axis=0归约并保留维度，使每列分母正确广播，零分母需单独处理。",
       "contract": {
         "schemaVersion": 1,
         "requires": [
@@ -537,12 +537,6 @@
             "oneOf": [
               "contains_all"
             ]
-          },
-          {
-            "field": "overlap_possible",
-            "oneOf": [
-              true
-            ]
           }
         ],
         "excludes": [
@@ -560,8 +554,8 @@
       "revision": 1,
       "split": "holdout",
       "family": "html-context-escaping",
-      "title": "Escape untrusted literal values for quoted HTML attribute context",
-      "strategy": "For an untrusted literal inserted into a quoted HTML attribute, use an attribute-context escaping routine that handles the quote delimiter and HTML metacharacters. Do not treat allowed markup as a literal value.",
+      "title": "Escape literal values for quoted inert HTML attributes",
+      "strategy": "For an untrusted literal inserted into a quoted inert attribute such as title, use attribute-context escaping for the quote delimiter and HTML metacharacters. This does not cover URL, event-handler, style or script contexts, which require separate rules.",
       "contract": {
         "schemaVersion": 1,
         "requires": [
@@ -574,7 +568,7 @@
           {
             "field": "insertion_context",
             "oneOf": [
-              "quoted_attribute"
+              "quoted_inert_attribute"
             ]
           },
           {
@@ -2379,7 +2373,7 @@
           "taskId": "html-context-escaping-literal",
           "revision": 1,
           "path": "contracts/html-context-escaping-literal-0.json",
-          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
+          "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1"
         }
       ],
       "pairId": "html-context-escaping-single-fact-flip",
@@ -2390,7 +2384,7 @@
       "split": "holdout",
       "family": "html-context-escaping",
       "kind": "cross_language",
-      "text": "不可信字符串应安全放入带引号的HTML属性中，请按上下文转义。",
+      "text": "不可信字面字符串应放入带引号的HTML title属性中，请按惰性普通属性上下文转义。",
       "relevantIds": [
         "html-context-escaping-primary"
       ],
@@ -2400,7 +2394,7 @@
           "taskId": "html-context-escaping-cross_language",
           "revision": 1,
           "path": "contracts/html-context-escaping-cross_language-0.json",
-          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
+          "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1"
         }
       ],
       "pairId": null,
@@ -2411,7 +2405,7 @@
       "split": "holdout",
       "family": "html-context-escaping",
       "kind": "paraphrase",
-      "text": "A caller-supplied value must not terminate the surrounding attribute delimiter or form markup.",
+      "text": "A caller-supplied title value must not terminate its quoted inert attribute delimiter or form markup.",
       "relevantIds": [
         "html-context-escaping-primary"
       ],
@@ -2421,7 +2415,7 @@
           "taskId": "html-context-escaping-paraphrase",
           "revision": 1,
           "path": "contracts/html-context-escaping-paraphrase-0.json",
-          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
+          "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1"
         }
       ],
       "pairId": null,
@@ -2463,7 +2457,7 @@
           "taskId": "html-context-escaping-missing_positive",
           "revision": 1,
           "path": "contracts/html-context-escaping-missing_positive-0.json",
-          "sha256": "be0515bdde5d0de513d1a1a66275a9db94c841708d1205c85b42d10cb0dcdd5e"
+          "sha256": "7a72c51bc11ab181f50941a1b8cdbe644696fbbdf2d70abd4482bee5e2b64472"
         }
       ],
       "pairId": null,
@@ -2474,7 +2468,7 @@
       "split": "holdout",
       "family": "html-context-escaping",
       "kind": "low_overlap",
-      "text": "Protect the boundary around the attribute value while preserving what the reader sees.",
+      "text": "Protect the boundary around a quoted inert title attribute while preserving what the reader sees.",
       "relevantIds": [
         "html-context-escaping-primary"
       ],
@@ -2484,7 +2478,7 @@
           "taskId": "html-context-escaping-low_overlap",
           "revision": 1,
           "path": "contracts/html-context-escaping-low_overlap-0.json",
-          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
+          "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1"
         }
       ],
       "pairId": null,
@@ -2503,7 +2497,7 @@
           "taskId": "html-context-escaping-hard_contradiction",
           "revision": 1,
           "path": "contracts/html-context-escaping-hard_contradiction-0.json",
-          "sha256": "ae0d1206cf9d9e6da2a408788002f0fba828999a18529fc826b99134d8455069"
+          "sha256": "49761be7f3205c17a307f87b5c08c2b26baa2615d0c70660455447c825d64009"
         }
       ],
       "pairId": "html-context-escaping-single-fact-flip",
@@ -2541,7 +2535,7 @@
           "taskId": "html-context-escaping-irrelevant_same_facts",
           "revision": 1,
           "path": "contracts/html-context-escaping-irrelevant_same_facts-0.json",
-          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
+          "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1"
         }
       ],
       "pairId": null,
@@ -2560,14 +2554,14 @@
           "taskId": "html-context-escaping-conflicting_evidence",
           "revision": 1,
           "path": "contracts/html-context-escaping-conflicting_evidence-0.json",
-          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
+          "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1"
         },
         {
           "namespace": "holdout/contracts",
           "taskId": "html-context-escaping-conflicting_evidence",
           "revision": 1,
           "path": "contracts/html-context-escaping-conflicting_evidence-1.json",
-          "sha256": "ae0d1206cf9d9e6da2a408788002f0fba828999a18529fc826b99134d8455069"
+          "sha256": "49761be7f3205c17a307f87b5c08c2b26baa2615d0c70660455447c825d64009"
         }
       ],
       "pairId": null,
@@ -2586,7 +2580,7 @@
           "taskId": "html-context-escaping-stale_evidence",
           "revision": 1,
           "path": "contracts/html-context-escaping-stale_evidence-0.json",
-          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
+          "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1"
         }
       ],
       "pairId": null,
@@ -2605,7 +2599,7 @@
           "taskId": "html-context-escaping-no_applicable_candidate",
           "revision": 1,
           "path": "contracts/html-context-escaping-no_applicable_candidate-0.json",
-          "sha256": "c8a4fb073db2134b085ed957483d25ef341d65d1a0a894de9c4fca9aec520d49"
+          "sha256": "cb6b91df1311a4dae319263e3bf31cadef7101be562c853a373076293660a70e"
         }
       ],
       "pairId": null,
@@ -3346,24 +3340,24 @@
       "taskId": "html-context-escaping-literal",
       "revision": 1,
       "path": "contracts/html-context-escaping-literal-0.json",
-      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
+      "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
       "taskId": "html-context-escaping-cross_language",
       "revision": 1,
       "path": "contracts/html-context-escaping-cross_language-0.json",
-      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
+      "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
       "taskId": "html-context-escaping-paraphrase",
       "revision": 1,
       "path": "contracts/html-context-escaping-paraphrase-0.json",
-      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
+      "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
@@ -3378,24 +3372,24 @@
       "taskId": "html-context-escaping-missing_positive",
       "revision": 1,
       "path": "contracts/html-context-escaping-missing_positive-0.json",
-      "sha256": "be0515bdde5d0de513d1a1a66275a9db94c841708d1205c85b42d10cb0dcdd5e",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"markup_allowed\":false}}\n"
+      "sha256": "7a72c51bc11ab181f50941a1b8cdbe644696fbbdf2d70abd4482bee5e2b64472",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
       "taskId": "html-context-escaping-low_overlap",
       "revision": 1,
       "path": "contracts/html-context-escaping-low_overlap-0.json",
-      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
+      "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
       "taskId": "html-context-escaping-hard_contradiction",
       "revision": 1,
       "path": "contracts/html-context-escaping-hard_contradiction-0.json",
-      "sha256": "ae0d1206cf9d9e6da2a408788002f0fba828999a18529fc826b99134d8455069",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"plain_text\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
+      "sha256": "49761be7f3205c17a307f87b5c08c2b26baa2615d0c70660455447c825d64009",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"plain_text\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
@@ -3410,40 +3404,40 @@
       "taskId": "html-context-escaping-irrelevant_same_facts",
       "revision": 1,
       "path": "contracts/html-context-escaping-irrelevant_same_facts-0.json",
-      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
+      "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
       "taskId": "html-context-escaping-conflicting_evidence",
       "revision": 1,
       "path": "contracts/html-context-escaping-conflicting_evidence-0.json",
-      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
+      "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
       "taskId": "html-context-escaping-conflicting_evidence",
       "revision": 1,
       "path": "contracts/html-context-escaping-conflicting_evidence-1.json",
-      "sha256": "ae0d1206cf9d9e6da2a408788002f0fba828999a18529fc826b99134d8455069",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"plain_text\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
+      "sha256": "49761be7f3205c17a307f87b5c08c2b26baa2615d0c70660455447c825d64009",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"plain_text\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
       "taskId": "html-context-escaping-stale_evidence",
       "revision": 1,
       "path": "contracts/html-context-escaping-stale_evidence-0.json",
-      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n "
+      "sha256": "807eef073e2f95bab976fcf11e1588a0cbd4bfa016c0eb565acf8db0c352bbe1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n "
     },
     {
       "namespace": "holdout/contracts",
       "taskId": "html-context-escaping-no_applicable_candidate",
       "revision": 1,
       "path": "contracts/html-context-escaping-no_applicable_candidate-0.json",
-      "sha256": "c8a4fb073db2134b085ed957483d25ef341d65d1a0a894de9c4fca9aec520d49",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":true}}\n"
+      "sha256": "cb6b91df1311a4dae319263e3bf31cadef7101be562c853a373076293660a70e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_inert_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":true}}\n"
     }
   ]
 }

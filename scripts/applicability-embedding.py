@@ -17,7 +17,7 @@ SPEC = importlib.util.spec_from_file_location('frozen_embedding_assets', ROOT / 
 ASSETS = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ASSETS)
 DATA = (ROOT / 'test/fixtures/applicability-v1-cases.json').read_bytes()
-DATA_DIGEST = 'f9e26fc86ac761013115c53d183aef86808596700d7f9db91793a156a0be17ca'
+DATA_DIGEST = '9946016730fc0c054b9ffaeb282d06854ba552a15cefd60ab9fc1b662d0ee3aa'
 
 
 def export(partition):
