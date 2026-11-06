@@ -1,0 +1,2889 @@
+{
+  "schemaVersion": 1,
+  "kind": "author-synthetic-project-schema-facts",
+  "note": "New schema/artifact-heldout examples within an already-seen JSON presence/null domain; author-visible, not external blind labels or real users.",
+  "experiences": [
+    {
+      "id": "customer-alias-primary",
+      "split": "development",
+      "artifact": "customer-alias",
+      "revision": 1,
+      "targetProperty": "alias",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "customer profile: validate optional nullable alias",
+      "strategy": "Validate alias against its declared optional nullable contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "string"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "customer-alias-alternate",
+      "split": "development",
+      "artifact": "customer-alias",
+      "revision": 1,
+      "targetProperty": "alias",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "customer profile: validate required non-null alias",
+      "strategy": "Validate alias against its declared required non-null contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "string"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "schedule-interval-primary",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "revision": 1,
+      "targetProperty": "interval",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "scheduler options: validate required non-null interval",
+      "strategy": "Validate interval against its declared required non-null contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "number"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "schedule-interval-alternate",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "revision": 1,
+      "targetProperty": "interval",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "scheduler options: validate optional nullable interval",
+      "strategy": "Validate interval against its declared optional nullable contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "number"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "feature-enabled-primary",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "revision": 1,
+      "targetProperty": "enabled",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "feature settings: validate optional non-null enabled",
+      "strategy": "Validate enabled against its declared optional non-null contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "boolean"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "feature-enabled-alternate",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "revision": 1,
+      "targetProperty": "enabled",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "feature settings: validate required nullable enabled",
+      "strategy": "Validate enabled against its declared required nullable contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "boolean"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "payload-options-primary",
+      "split": "development",
+      "artifact": "payload-options",
+      "revision": 1,
+      "targetProperty": "options",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "request options: validate required nullable options",
+      "strategy": "Validate options against its declared required nullable contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "object"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "payload-options-alternate",
+      "split": "development",
+      "artifact": "payload-options",
+      "revision": 1,
+      "targetProperty": "options",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "request options: validate optional non-null options",
+      "strategy": "Validate options against its declared optional non-null contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "object"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "sensor-samples-primary",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "revision": 1,
+      "targetProperty": "samples",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "sensor reading: validate optional nullable samples",
+      "strategy": "Validate samples against its declared optional nullable contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "array"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "sensor-samples-alternate",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "revision": 1,
+      "targetProperty": "samples",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "sensor reading: validate required non-null samples",
+      "strategy": "Validate samples against its declared required non-null contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "array"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "audit-trace-primary",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "revision": 1,
+      "targetProperty": "traceId",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "audit envelope: validate required non-null traceId",
+      "strategy": "Validate traceId against its declared required non-null contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "string"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "audit-trace-alternate",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "revision": 1,
+      "targetProperty": "traceId",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "audit envelope: validate optional nullable traceId",
+      "strategy": "Validate traceId against its declared optional nullable contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "string"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "inventory-count-primary",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "revision": 1,
+      "targetProperty": "count",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "inventory update: validate optional non-null count",
+      "strategy": "Validate count against its declared optional non-null contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "integer"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "inventory-count-alternate",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "revision": 1,
+      "targetProperty": "count",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "inventory update: validate required nullable count",
+      "strategy": "Validate count against its declared required nullable contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "integer"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "billing-status-primary",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "revision": 1,
+      "targetProperty": "status",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "billing event: validate required nullable status",
+      "strategy": "Validate status against its declared required nullable contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "union"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "billing-status-alternate",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "revision": 1,
+      "targetProperty": "status",
+      "allowedGoals": [
+        "validate_payload"
+      ],
+      "title": "billing event: validate optional non-null status",
+      "strategy": "Validate status against its declared optional non-null contract. Check presence separately from null. Do not treat zero, false or an empty value as missing, and do not fill defaults during validation. This concerns payload validation, not changing the contract, UI labels or documentation.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "field_required",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_nullable",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "field_type",
+            "oneOf": [
+              "union"
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    }
+  ],
+  "queries": [
+    {
+      "id": "customer-alias-literal",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "literal",
+      "text": "Fix alias field handling in the customer profile payload path so it follows the current contract.",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-literal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "customer-alias-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": "customer-alias-controlled"
+    },
+    {
+      "id": "customer-alias-cross_language",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "cross_language",
+      "text": "请修复客户资料的别名 alias 的校验，让字段缺失和空值严格遵守现有接口契约。",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-cross_language.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "customer-alias-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "customer-alias-alternate_positive",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "alternate_positive",
+      "text": "Repair customer profile validation for alias: the schema has changed, honor its presence and null rules.",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-alternate_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"alias\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "customer-alias-alternate"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "customer-alias-low_overlap",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "low_overlap",
+      "text": "The intake boundary for customer profile disagrees with the declared shape around alias; align the checker without rewriting the incoming data.",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-low_overlap.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "customer-alias-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "customer-alias-unsupported_positive",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "unsupported_positive",
+      "text": "Make alias validation in customer profile honor the composed contract, distinguishing omission from null.",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-unsupported_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false,\"allOf\":[{\"properties\":{\"alias\":{}}}]}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "customer-alias-primary"
+      ],
+      "rationale": "Relevant with benign allOf; manual reference can interpret it, automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "customer-alias-missing_goal_positive",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "missing_goal_positive",
+      "text": "Resolve alias acceptance in customer profile without conflating an absent member with a null value.",
+      "targetProperty": "alias",
+      "goal": null,
+      "source": {
+        "path": "schemas/customer-alias-missing_goal_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "customer-alias-primary"
+      ],
+      "rationale": "Relevant payload repair, but the explicit goal input is missing; goal-gated coverage loss must remain visible.",
+      "pairId": null
+    },
+    {
+      "id": "customer-alias-single_fact_negative",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "single_fact_negative",
+      "text": "Fix alias field handling in the customer profile payload path so it follows the current contract.",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-single_fact_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"alias\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Only required flips relative to literal; neither reminder matches this mixed condition.",
+      "pairId": "customer-alias-controlled"
+    },
+    {
+      "id": "customer-alias-ui_goal",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "ui_goal",
+      "text": "Fix alias field handling in the customer profile payload path so it follows the current contract.",
+      "targetProperty": "alias",
+      "goal": "present_ui",
+      "source": {
+        "path": "schemas/customer-alias-ui_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Same ambiguous text and schema as literal; explicit owner goal is UI presentation. This controlled extra-input pair is not improved language understanding.",
+      "pairId": "customer-alias-controlled"
+    },
+    {
+      "id": "customer-alias-missing_source",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "missing_source",
+      "text": "Fix alias field handling in the customer profile payload path so it follows the current contract.",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-missing_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": false,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "The file is unavailable; no bound facts can be trusted. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "customer-alias-stale_source",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "stale_source",
+      "text": "Fix alias field handling in the customer profile payload path so it follows the current contract.",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-stale_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "stale"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Expected digest is stale; no bound facts may survive. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "customer-alias-enum_negative",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "enum_negative",
+      "text": "Fix alias field handling in the customer profile payload path so it follows the current contract.",
+      "targetProperty": "alias",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/customer-alias-enum_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\",\"enum\":[\"sample\"]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Enum flips actual null acceptance while preserving the non-null type declaration and required flag; neither reminder matches. Automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "customer-alias-docs_goal",
+      "split": "development",
+      "artifact": "customer-alias",
+      "kind": "docs_goal",
+      "text": "Update the documentation examples for alias in customer profile; leave runtime validation unchanged.",
+      "targetProperty": "alias",
+      "goal": "generate_docs",
+      "source": {
+        "path": "schemas/customer-alias-docs_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"alias\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Owner requested documentation only; payload-validation reminders are unrelated.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-literal",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "literal",
+      "text": "Fix interval field handling in the scheduler options payload path so it follows the current contract.",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-literal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [
+        "schedule-interval-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": "schedule-interval-controlled"
+    },
+    {
+      "id": "schedule-interval-cross_language",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "cross_language",
+      "text": "请修复调度参数的间隔 interval 的校验，让字段缺失和空值严格遵守现有接口契约。",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-cross_language.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [
+        "schedule-interval-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-alternate_positive",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "alternate_positive",
+      "text": "Repair scheduler options validation for interval: the schema has changed, honor its presence and null rules.",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-alternate_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":[\"number\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "number"
+      },
+      "relevantIds": [
+        "schedule-interval-alternate"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-low_overlap",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "low_overlap",
+      "text": "The intake boundary for scheduler options disagrees with the declared shape around interval; align the checker without rewriting the incoming data.",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-low_overlap.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [
+        "schedule-interval-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-unsupported_positive",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "unsupported_positive",
+      "text": "Make interval validation in scheduler options honor the composed contract, distinguishing omission from null.",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-unsupported_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false,\"allOf\":[{\"properties\":{\"interval\":{}}}]}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [
+        "schedule-interval-primary"
+      ],
+      "rationale": "Relevant with benign allOf; manual reference can interpret it, automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-missing_goal_positive",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "missing_goal_positive",
+      "text": "Resolve interval acceptance in scheduler options without conflating an absent member with a null value.",
+      "targetProperty": "interval",
+      "goal": null,
+      "source": {
+        "path": "schemas/schedule-interval-missing_goal_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [
+        "schedule-interval-primary"
+      ],
+      "rationale": "Relevant payload repair, but the explicit goal input is missing; goal-gated coverage loss must remain visible.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-single_fact_negative",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "single_fact_negative",
+      "text": "Fix interval field handling in the scheduler options payload path so it follows the current contract.",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-single_fact_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [],
+      "rationale": "Only required flips relative to literal; neither reminder matches this mixed condition.",
+      "pairId": "schedule-interval-controlled"
+    },
+    {
+      "id": "schedule-interval-ui_goal",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "ui_goal",
+      "text": "Fix interval field handling in the scheduler options payload path so it follows the current contract.",
+      "targetProperty": "interval",
+      "goal": "present_ui",
+      "source": {
+        "path": "schemas/schedule-interval-ui_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [],
+      "rationale": "Same ambiguous text and schema as literal; explicit owner goal is UI presentation. This controlled extra-input pair is not improved language understanding.",
+      "pairId": "schedule-interval-controlled"
+    },
+    {
+      "id": "schedule-interval-missing_source",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "missing_source",
+      "text": "Fix interval field handling in the scheduler options payload path so it follows the current contract.",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-missing_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": false,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [],
+      "rationale": "The file is unavailable; no bound facts can be trusted. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-stale_source",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "stale_source",
+      "text": "Fix interval field handling in the scheduler options payload path so it follows the current contract.",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-stale_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "stale"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [],
+      "rationale": "Expected digest is stale; no bound facts may survive. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-enum_negative",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "enum_negative",
+      "text": "Fix interval field handling in the scheduler options payload path so it follows the current contract.",
+      "targetProperty": "interval",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/schedule-interval-enum_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":[\"number\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5,\"enum\":[null]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "number"
+      },
+      "relevantIds": [],
+      "rationale": "Enum flips actual null acceptance while preserving the non-null type declaration and required flag; neither reminder matches. Automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "schedule-interval-docs_goal",
+      "split": "development",
+      "artifact": "schedule-interval",
+      "kind": "docs_goal",
+      "text": "Update the documentation examples for interval in scheduler options; leave runtime validation unchanged.",
+      "targetProperty": "interval",
+      "goal": "generate_docs",
+      "source": {
+        "path": "schemas/schedule-interval-docs_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"interval\":{\"type\":\"number\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":1.5},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"interval\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "number"
+      },
+      "relevantIds": [],
+      "rationale": "Owner requested documentation only; payload-validation reminders are unrelated.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-literal",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "literal",
+      "text": "Fix enabled field handling in the feature settings payload path so it follows the current contract.",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-literal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [
+        "feature-enabled-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": "feature-enabled-controlled"
+    },
+    {
+      "id": "feature-enabled-cross_language",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "cross_language",
+      "text": "请修复功能设置的开关 enabled 的校验，让字段缺失和空值严格遵守现有接口契约。",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-cross_language.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [
+        "feature-enabled-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-alternate_positive",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "alternate_positive",
+      "text": "Repair feature settings validation for enabled: the schema has changed, honor its presence and null rules.",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-alternate_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":[\"boolean\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"enabled\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "boolean"
+      },
+      "relevantIds": [
+        "feature-enabled-alternate"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-low_overlap",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "low_overlap",
+      "text": "The intake boundary for feature settings disagrees with the declared shape around enabled; align the checker without rewriting the incoming data.",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-low_overlap.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [
+        "feature-enabled-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-unsupported_positive",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "unsupported_positive",
+      "text": "Make enabled validation in feature settings honor the composed contract, distinguishing omission from null.",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-unsupported_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false,\"allOf\":[{\"properties\":{\"enabled\":{}}}]}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [
+        "feature-enabled-primary"
+      ],
+      "rationale": "Relevant with benign allOf; manual reference can interpret it, automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-missing_goal_positive",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "missing_goal_positive",
+      "text": "Resolve enabled acceptance in feature settings without conflating an absent member with a null value.",
+      "targetProperty": "enabled",
+      "goal": null,
+      "source": {
+        "path": "schemas/feature-enabled-missing_goal_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [
+        "feature-enabled-primary"
+      ],
+      "rationale": "Relevant payload repair, but the explicit goal input is missing; goal-gated coverage loss must remain visible.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-single_fact_negative",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "single_fact_negative",
+      "text": "Fix enabled field handling in the feature settings payload path so it follows the current contract.",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-single_fact_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"enabled\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [],
+      "rationale": "Only required flips relative to literal; neither reminder matches this mixed condition.",
+      "pairId": "feature-enabled-controlled"
+    },
+    {
+      "id": "feature-enabled-ui_goal",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "ui_goal",
+      "text": "Fix enabled field handling in the feature settings payload path so it follows the current contract.",
+      "targetProperty": "enabled",
+      "goal": "present_ui",
+      "source": {
+        "path": "schemas/feature-enabled-ui_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [],
+      "rationale": "Same ambiguous text and schema as literal; explicit owner goal is UI presentation. This controlled extra-input pair is not improved language understanding.",
+      "pairId": "feature-enabled-controlled"
+    },
+    {
+      "id": "feature-enabled-missing_source",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "missing_source",
+      "text": "Fix enabled field handling in the feature settings payload path so it follows the current contract.",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-missing_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": false,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [],
+      "rationale": "The file is unavailable; no bound facts can be trusted. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-stale_source",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "stale_source",
+      "text": "Fix enabled field handling in the feature settings payload path so it follows the current contract.",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-stale_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "stale"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [],
+      "rationale": "Expected digest is stale; no bound facts may survive. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-enum_negative",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "enum_negative",
+      "text": "Fix enabled field handling in the feature settings payload path so it follows the current contract.",
+      "targetProperty": "enabled",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/feature-enabled-enum_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":[\"boolean\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false,\"enum\":[null]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "boolean"
+      },
+      "relevantIds": [],
+      "rationale": "Enum flips actual null acceptance while preserving the non-null type declaration and required flag; neither reminder matches. Automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "feature-enabled-docs_goal",
+      "split": "development",
+      "artifact": "feature-enabled",
+      "kind": "docs_goal",
+      "text": "Update the documentation examples for enabled in feature settings; leave runtime validation unchanged.",
+      "targetProperty": "enabled",
+      "goal": "generate_docs",
+      "source": {
+        "path": "schemas/feature-enabled-docs_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":false},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "boolean"
+      },
+      "relevantIds": [],
+      "rationale": "Owner requested documentation only; payload-validation reminders are unrelated.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-literal",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "literal",
+      "text": "Fix options field handling in the request options payload path so it follows the current contract.",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-literal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [
+        "payload-options-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": "payload-options-controlled"
+    },
+    {
+      "id": "payload-options-cross_language",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "cross_language",
+      "text": "请修复请求配置对象 options 的校验，让字段缺失和空值严格遵守现有接口契约。",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-cross_language.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [
+        "payload-options-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-alternate_positive",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "alternate_positive",
+      "text": "Repair request options validation for options: the schema has changed, honor its presence and null rules.",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-alternate_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":\"object\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "object"
+      },
+      "relevantIds": [
+        "payload-options-alternate"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-low_overlap",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "low_overlap",
+      "text": "The intake boundary for request options disagrees with the declared shape around options; align the checker without rewriting the incoming data.",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-low_overlap.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [
+        "payload-options-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-unsupported_positive",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "unsupported_positive",
+      "text": "Make options validation in request options honor the composed contract, distinguishing omission from null.",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-unsupported_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false,\"allOf\":[{\"properties\":{\"options\":{}}}]}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [
+        "payload-options-primary"
+      ],
+      "rationale": "Relevant with benign allOf; manual reference can interpret it, automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-missing_goal_positive",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "missing_goal_positive",
+      "text": "Resolve options acceptance in request options without conflating an absent member with a null value.",
+      "targetProperty": "options",
+      "goal": null,
+      "source": {
+        "path": "schemas/payload-options-missing_goal_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [
+        "payload-options-primary"
+      ],
+      "rationale": "Relevant payload repair, but the explicit goal input is missing; goal-gated coverage loss must remain visible.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-single_fact_negative",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "single_fact_negative",
+      "text": "Fix options field handling in the request options payload path so it follows the current contract.",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-single_fact_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [],
+      "rationale": "Only required flips relative to literal; neither reminder matches this mixed condition.",
+      "pairId": "payload-options-controlled"
+    },
+    {
+      "id": "payload-options-ui_goal",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "ui_goal",
+      "text": "Fix options field handling in the request options payload path so it follows the current contract.",
+      "targetProperty": "options",
+      "goal": "present_ui",
+      "source": {
+        "path": "schemas/payload-options-ui_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [],
+      "rationale": "Same ambiguous text and schema as literal; explicit owner goal is UI presentation. This controlled extra-input pair is not improved language understanding.",
+      "pairId": "payload-options-controlled"
+    },
+    {
+      "id": "payload-options-missing_source",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "missing_source",
+      "text": "Fix options field handling in the request options payload path so it follows the current contract.",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-missing_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": false,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [],
+      "rationale": "The file is unavailable; no bound facts can be trusted. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-stale_source",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "stale_source",
+      "text": "Fix options field handling in the request options payload path so it follows the current contract.",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-stale_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "stale"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [],
+      "rationale": "Expected digest is stale; no bound facts may survive. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-enum_negative",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "enum_negative",
+      "text": "Fix options field handling in the request options payload path so it follows the current contract.",
+      "targetProperty": "options",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/payload-options-enum_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{},\"enum\":[{}]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "object"
+      },
+      "relevantIds": [],
+      "rationale": "Enum flips actual null acceptance while preserving the non-null type declaration and required flag; neither reminder matches. Automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "payload-options-docs_goal",
+      "split": "development",
+      "artifact": "payload-options",
+      "kind": "docs_goal",
+      "text": "Update the documentation examples for options in request options; leave runtime validation unchanged.",
+      "targetProperty": "options",
+      "goal": "generate_docs",
+      "source": {
+        "path": "schemas/payload-options-docs_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"options\":{\"type\":[\"object\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":{}},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"options\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "object"
+      },
+      "relevantIds": [],
+      "rationale": "Owner requested documentation only; payload-validation reminders are unrelated.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-literal",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "literal",
+      "text": "Fix samples field handling in the sensor reading payload path so it follows the current contract.",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-literal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [
+        "sensor-samples-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": "sensor-samples-controlled"
+    },
+    {
+      "id": "sensor-samples-cross_language",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "cross_language",
+      "text": "请修复传感器采样列表 samples 的校验，让字段缺失和空值严格遵守现有接口契约。",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-cross_language.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [
+        "sensor-samples-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-alternate_positive",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "alternate_positive",
+      "text": "Repair sensor reading validation for samples: the schema has changed, honor its presence and null rules.",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-alternate_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":\"array\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"samples\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "array"
+      },
+      "relevantIds": [
+        "sensor-samples-alternate"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-low_overlap",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "low_overlap",
+      "text": "The intake boundary for sensor reading disagrees with the declared shape around samples; align the checker without rewriting the incoming data.",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-low_overlap.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [
+        "sensor-samples-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-unsupported_positive",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "unsupported_positive",
+      "text": "Make samples validation in sensor reading honor the composed contract, distinguishing omission from null.",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-unsupported_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false,\"allOf\":[{\"properties\":{\"samples\":{}}}]}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [
+        "sensor-samples-primary"
+      ],
+      "rationale": "Relevant with benign allOf; manual reference can interpret it, automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-missing_goal_positive",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "missing_goal_positive",
+      "text": "Resolve samples acceptance in sensor reading without conflating an absent member with a null value.",
+      "targetProperty": "samples",
+      "goal": null,
+      "source": {
+        "path": "schemas/sensor-samples-missing_goal_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [
+        "sensor-samples-primary"
+      ],
+      "rationale": "Relevant payload repair, but the explicit goal input is missing; goal-gated coverage loss must remain visible.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-single_fact_negative",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "single_fact_negative",
+      "text": "Fix samples field handling in the sensor reading payload path so it follows the current contract.",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-single_fact_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"samples\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [],
+      "rationale": "Only required flips relative to literal; neither reminder matches this mixed condition.",
+      "pairId": "sensor-samples-controlled"
+    },
+    {
+      "id": "sensor-samples-ui_goal",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "ui_goal",
+      "text": "Fix samples field handling in the sensor reading payload path so it follows the current contract.",
+      "targetProperty": "samples",
+      "goal": "present_ui",
+      "source": {
+        "path": "schemas/sensor-samples-ui_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [],
+      "rationale": "Same ambiguous text and schema as literal; explicit owner goal is UI presentation. This controlled extra-input pair is not improved language understanding.",
+      "pairId": "sensor-samples-controlled"
+    },
+    {
+      "id": "sensor-samples-missing_source",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "missing_source",
+      "text": "Fix samples field handling in the sensor reading payload path so it follows the current contract.",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-missing_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": false,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [],
+      "rationale": "The file is unavailable; no bound facts can be trusted. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-stale_source",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "stale_source",
+      "text": "Fix samples field handling in the sensor reading payload path so it follows the current contract.",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-stale_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "stale"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [],
+      "rationale": "Expected digest is stale; no bound facts may survive. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-enum_negative",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "enum_negative",
+      "text": "Fix samples field handling in the sensor reading payload path so it follows the current contract.",
+      "targetProperty": "samples",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/sensor-samples-enum_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[],\"enum\":[[]]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "array"
+      },
+      "relevantIds": [],
+      "rationale": "Enum flips actual null acceptance while preserving the non-null type declaration and required flag; neither reminder matches. Automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "sensor-samples-docs_goal",
+      "split": "holdout",
+      "artifact": "sensor-samples",
+      "kind": "docs_goal",
+      "text": "Update the documentation examples for samples in sensor reading; leave runtime validation unchanged.",
+      "targetProperty": "samples",
+      "goal": "generate_docs",
+      "source": {
+        "path": "schemas/sensor-samples-docs_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"samples\":{\"type\":[\"array\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":[]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "array"
+      },
+      "relevantIds": [],
+      "rationale": "Owner requested documentation only; payload-validation reminders are unrelated.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-literal",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "literal",
+      "text": "Fix traceId field handling in the audit envelope payload path so it follows the current contract.",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-literal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "audit-trace-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": "audit-trace-controlled"
+    },
+    {
+      "id": "audit-trace-cross_language",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "cross_language",
+      "text": "请修复审计信封的追踪编号 traceId 的校验，让字段缺失和空值严格遵守现有接口契约。",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-cross_language.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "audit-trace-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-alternate_positive",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "alternate_positive",
+      "text": "Repair audit envelope validation for traceId: the schema has changed, honor its presence and null rules.",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-alternate_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "audit-trace-alternate"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-low_overlap",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "low_overlap",
+      "text": "The intake boundary for audit envelope disagrees with the declared shape around traceId; align the checker without rewriting the incoming data.",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-low_overlap.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "audit-trace-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-unsupported_positive",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "unsupported_positive",
+      "text": "Make traceId validation in audit envelope honor the composed contract, distinguishing omission from null.",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-unsupported_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false,\"allOf\":[{\"properties\":{\"traceId\":{}}}]}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "audit-trace-primary"
+      ],
+      "rationale": "Relevant with benign allOf; manual reference can interpret it, automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-missing_goal_positive",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "missing_goal_positive",
+      "text": "Resolve traceId acceptance in audit envelope without conflating an absent member with a null value.",
+      "targetProperty": "traceId",
+      "goal": null,
+      "source": {
+        "path": "schemas/audit-trace-missing_goal_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [
+        "audit-trace-primary"
+      ],
+      "rationale": "Relevant payload repair, but the explicit goal input is missing; goal-gated coverage loss must remain visible.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-single_fact_negative",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "single_fact_negative",
+      "text": "Fix traceId field handling in the audit envelope payload path so it follows the current contract.",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-single_fact_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Only required flips relative to literal; neither reminder matches this mixed condition.",
+      "pairId": "audit-trace-controlled"
+    },
+    {
+      "id": "audit-trace-ui_goal",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "ui_goal",
+      "text": "Fix traceId field handling in the audit envelope payload path so it follows the current contract.",
+      "targetProperty": "traceId",
+      "goal": "present_ui",
+      "source": {
+        "path": "schemas/audit-trace-ui_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Same ambiguous text and schema as literal; explicit owner goal is UI presentation. This controlled extra-input pair is not improved language understanding.",
+      "pairId": "audit-trace-controlled"
+    },
+    {
+      "id": "audit-trace-missing_source",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "missing_source",
+      "text": "Fix traceId field handling in the audit envelope payload path so it follows the current contract.",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-missing_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": false,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "The file is unavailable; no bound facts can be trusted. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-stale_source",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "stale_source",
+      "text": "Fix traceId field handling in the audit envelope payload path so it follows the current contract.",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-stale_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "stale"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Expected digest is stale; no bound facts may survive. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-enum_negative",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "enum_negative",
+      "text": "Fix traceId field handling in the audit envelope payload path so it follows the current contract.",
+      "targetProperty": "traceId",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/audit-trace-enum_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":[\"string\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\",\"enum\":[null]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Enum flips actual null acceptance while preserving the non-null type declaration and required flag; neither reminder matches. Automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "audit-trace-docs_goal",
+      "split": "holdout",
+      "artifact": "audit-trace",
+      "kind": "docs_goal",
+      "text": "Update the documentation examples for traceId in audit envelope; leave runtime validation unchanged.",
+      "targetProperty": "traceId",
+      "goal": "generate_docs",
+      "source": {
+        "path": "schemas/audit-trace-docs_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"traceId\":{\"type\":\"string\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"sample\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"traceId\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "string"
+      },
+      "relevantIds": [],
+      "rationale": "Owner requested documentation only; payload-validation reminders are unrelated.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-literal",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "literal",
+      "text": "Fix count field handling in the inventory update payload path so it follows the current contract.",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-literal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [
+        "inventory-count-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": "inventory-count-controlled"
+    },
+    {
+      "id": "inventory-count-cross_language",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "cross_language",
+      "text": "请修复库存更新的数量 count 的校验，让字段缺失和空值严格遵守现有接口契约。",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-cross_language.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [
+        "inventory-count-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-alternate_positive",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "alternate_positive",
+      "text": "Repair inventory update validation for count: the schema has changed, honor its presence and null rules.",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-alternate_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":[\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"count\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "integer"
+      },
+      "relevantIds": [
+        "inventory-count-alternate"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-low_overlap",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "low_overlap",
+      "text": "The intake boundary for inventory update disagrees with the declared shape around count; align the checker without rewriting the incoming data.",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-low_overlap.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [
+        "inventory-count-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-unsupported_positive",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "unsupported_positive",
+      "text": "Make count validation in inventory update honor the composed contract, distinguishing omission from null.",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-unsupported_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false,\"allOf\":[{\"properties\":{\"count\":{}}}]}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [
+        "inventory-count-primary"
+      ],
+      "rationale": "Relevant with benign allOf; manual reference can interpret it, automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-missing_goal_positive",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "missing_goal_positive",
+      "text": "Resolve count acceptance in inventory update without conflating an absent member with a null value.",
+      "targetProperty": "count",
+      "goal": null,
+      "source": {
+        "path": "schemas/inventory-count-missing_goal_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [
+        "inventory-count-primary"
+      ],
+      "rationale": "Relevant payload repair, but the explicit goal input is missing; goal-gated coverage loss must remain visible.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-single_fact_negative",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "single_fact_negative",
+      "text": "Fix count field handling in the inventory update payload path so it follows the current contract.",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-single_fact_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"count\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [],
+      "rationale": "Only required flips relative to literal; neither reminder matches this mixed condition.",
+      "pairId": "inventory-count-controlled"
+    },
+    {
+      "id": "inventory-count-ui_goal",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "ui_goal",
+      "text": "Fix count field handling in the inventory update payload path so it follows the current contract.",
+      "targetProperty": "count",
+      "goal": "present_ui",
+      "source": {
+        "path": "schemas/inventory-count-ui_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [],
+      "rationale": "Same ambiguous text and schema as literal; explicit owner goal is UI presentation. This controlled extra-input pair is not improved language understanding.",
+      "pairId": "inventory-count-controlled"
+    },
+    {
+      "id": "inventory-count-missing_source",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "missing_source",
+      "text": "Fix count field handling in the inventory update payload path so it follows the current contract.",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-missing_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": false,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [],
+      "rationale": "The file is unavailable; no bound facts can be trusted. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-stale_source",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "stale_source",
+      "text": "Fix count field handling in the inventory update payload path so it follows the current contract.",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-stale_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "stale"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [],
+      "rationale": "Expected digest is stale; no bound facts may survive. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-enum_negative",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "enum_negative",
+      "text": "Fix count field handling in the inventory update payload path so it follows the current contract.",
+      "targetProperty": "count",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/inventory-count-enum_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":[\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0,\"enum\":[null]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "integer"
+      },
+      "relevantIds": [],
+      "rationale": "Enum flips actual null acceptance while preserving the non-null type declaration and required flag; neither reminder matches. Automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "inventory-count-docs_goal",
+      "split": "holdout",
+      "artifact": "inventory-count",
+      "kind": "docs_goal",
+      "text": "Update the documentation examples for count in inventory update; leave runtime validation unchanged.",
+      "targetProperty": "count",
+      "goal": "generate_docs",
+      "source": {
+        "path": "schemas/inventory-count-docs_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\",\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":0},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "integer"
+      },
+      "relevantIds": [],
+      "rationale": "Owner requested documentation only; payload-validation reminders are unrelated.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-literal",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "literal",
+      "text": "Fix status field handling in the billing event payload path so it follows the current contract.",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-literal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [
+        "billing-status-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": "billing-status-controlled"
+    },
+    {
+      "id": "billing-status-cross_language",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "cross_language",
+      "text": "请修复计费事件的状态 status 的校验，让字段缺失和空值严格遵守现有接口契约。",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-cross_language.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [
+        "billing-status-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-alternate_positive",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "alternate_positive",
+      "text": "Repair billing event validation for status: the schema has changed, honor its presence and null rules.",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-alternate_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": false,
+        "field_type": "union"
+      },
+      "relevantIds": [
+        "billing-status-alternate"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-low_overlap",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "low_overlap",
+      "text": "The intake boundary for billing event disagrees with the declared shape around status; align the checker without rewriting the incoming data.",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-low_overlap.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [
+        "billing-status-primary"
+      ],
+      "rationale": "The declared presence/null/type conditions match the named reminder and payload-validation goal.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-unsupported_positive",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "unsupported_positive",
+      "text": "Make status validation in billing event honor the composed contract, distinguishing omission from null.",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-unsupported_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false,\"allOf\":[{\"properties\":{\"status\":{}}}]}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [
+        "billing-status-primary"
+      ],
+      "rationale": "Relevant with benign allOf; manual reference can interpret it, automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-missing_goal_positive",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "missing_goal_positive",
+      "text": "Resolve status acceptance in billing event without conflating an absent member with a null value.",
+      "targetProperty": "status",
+      "goal": null,
+      "source": {
+        "path": "schemas/billing-status-missing_goal_positive.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [
+        "billing-status-primary"
+      ],
+      "rationale": "Relevant payload repair, but the explicit goal input is missing; goal-gated coverage loss must remain visible.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-single_fact_negative",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "single_fact_negative",
+      "text": "Fix status field handling in the billing event payload path so it follows the current contract.",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-single_fact_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": false,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [],
+      "rationale": "Only required flips relative to literal; neither reminder matches this mixed condition.",
+      "pairId": "billing-status-controlled"
+    },
+    {
+      "id": "billing-status-ui_goal",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "ui_goal",
+      "text": "Fix status field handling in the billing event payload path so it follows the current contract.",
+      "targetProperty": "status",
+      "goal": "present_ui",
+      "source": {
+        "path": "schemas/billing-status-ui_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [],
+      "rationale": "Same ambiguous text and schema as literal; explicit owner goal is UI presentation. This controlled extra-input pair is not improved language understanding.",
+      "pairId": "billing-status-controlled"
+    },
+    {
+      "id": "billing-status-missing_source",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "missing_source",
+      "text": "Fix status field handling in the billing event payload path so it follows the current contract.",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-missing_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": false,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [],
+      "rationale": "The file is unavailable; no bound facts can be trusted. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-stale_source",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "stale_source",
+      "text": "Fix status field handling in the billing event payload path so it follows the current contract.",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-stale_source.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "stale"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [],
+      "rationale": "Expected digest is stale; no bound facts may survive. Evidence probe, not ordinary semantic negative.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-enum_negative",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "enum_negative",
+      "text": "Fix status field handling in the billing event payload path so it follows the current contract.",
+      "targetProperty": "status",
+      "goal": "validate_payload",
+      "source": {
+        "path": "schemas/billing-status-enum_negative.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\",\"enum\":[\"ready\"]},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": false,
+        "field_type": "union"
+      },
+      "relevantIds": [],
+      "rationale": "Enum flips actual null acceptance while preserving the non-null type declaration and required flag; neither reminder matches. Automatic subset must remain unknown.",
+      "pairId": null
+    },
+    {
+      "id": "billing-status-docs_goal",
+      "split": "holdout",
+      "artifact": "billing-status",
+      "kind": "docs_goal",
+      "text": "Update the documentation examples for status in billing event; leave runtime validation unchanged.",
+      "targetProperty": "status",
+      "goal": "generate_docs",
+      "source": {
+        "path": "schemas/billing-status-docs_goal.schema.json",
+        "content": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"status\":{\"type\":[\"string\",\"integer\",\"null\"],\"title\":\"Synthetic field\",\"description\":\"Untrusted annotation only\",\"default\":\"ready\"},\"version\":{\"type\":\"integer\",\"default\":0}},\"required\":[\"status\",\"version\"],\"additionalProperties\":false}",
+        "available": true,
+        "binding": "current"
+      },
+      "manualFacts": {
+        "field_required": true,
+        "field_nullable": true,
+        "field_type": "union"
+      },
+      "relevantIds": [],
+      "rationale": "Owner requested documentation only; payload-validation reminders are unrelated.",
+      "pairId": null
+    }
+  ]
+}

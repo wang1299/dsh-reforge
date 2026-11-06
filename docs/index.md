@@ -19,6 +19,7 @@
 | 搜索一次参考运行，直接查看结论与候选 | [检查器截图、交互对照与零费用演示](evaluation/reference-inspector.md) |
 | 比较跨语言关键词、向量与混合检索 | [120条合成评测、错误与可重放向量](evaluation/retrieval-v3.md) |
 | 了解哪些经验应拒选及其代价 | [有依据的条件、三态判断与96条对照](evaluation/applicability-v1.md) |
+| 不手写事实JSON，核对工程条件与当前目标 | [真实文件检查页、五臂对照与漏选代价](evaluation/project-facts-v1.md) |
 | 参与试用或报告问题 | [外部试用](community/pilot.md)、[问题表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)、[安全报告](../SECURITY.md) |
 | 从一个小贡献开始 | [贡献指南](../CONTRIBUTING.md)、[新人任务](community/newcomers.md) |
 
