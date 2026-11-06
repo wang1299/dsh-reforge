@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { digest } from '../src/domain.js';
 import { snapshotEmbeddingPort, vectorSnapshotSchema } from '../src/embedding.js';
 import { evaluateProjectFacts, frozenProjectFactCorpusDigest, parseProjectFactCorpus, projectFactEvaluationPolicy,
@@ -22,17 +23,20 @@ for (const q of corpus.queries) assert.deepEqual(schemaFactOracle(q.source.conte
 const modelBytes = await read('compat/retrieval-embedding/model.json');
 const sourcePaths = ['src/project-facts.ts', 'src/project-facts-evaluation.ts', 'scripts/project-facts-evaluate.ts', 'scripts/project-facts-embedding.py',
   'scripts/project-facts-oracle.ts', 'src/applicability.ts', 'src/applicability-evaluation.ts', 'src/embedding.ts', 'src/hybrid-retrieval.ts',
-  'src/retrieval.ts', 'scripts/retrieval-embedding.py', 'package-lock.json'];
+  'src/retrieval.ts', 'scripts/retrieval-embedding.py', 'compat/dsh-0.2.1-rc.5.lock.json'];
 const sourceDigests = Object.fromEntries(await Promise.all(sourcePaths.map(async path => [path, digest(await read(path))])));
+const installedOracle = createRequire(import.meta.url)('ajv/package.json') as { version: string };
+assert.equal(installedOracle.version, '8.20.0', 'Independent oracle version must match its fixed dev dependency');
+const dependencyLockDigests = { '0.2.0-rc.2': digest(await read('package-lock.json')), '0.2.1-rc.5': digest(await read('compat/dsh-0.2.1-rc.5.lock.json')) };
 const method = { schemaVersion: 1, dataDigest: frozenProjectFactCorpusDigest, modelDigest: digest(modelBytes),
-  policy: projectFactEvaluationPolicy, policyDigest: projectFactEvaluationPolicyDigest, oracleVersion: 'ajv-8.20.0/no-data-mutation', sourceCommit, sourceDirty, sourceDigests };
+  policy: projectFactEvaluationPolicy, policyDigest: projectFactEvaluationPolicyDigest, oracleVersion: 'ajv-8.20.0/no-data-mutation', dependencyLockDigests, sourceCommit, sourceDirty, sourceDigests };
 const output = join(root, '.probe-work/t059'); await mkdir(output, { recursive: true });
 if (mode === 'freeze') {
   await writeFile(join(output, 'method.json'), JSON.stringify(method, null, 2) + '\n');
   process.stdout.write(JSON.stringify({ sourceCommit, sourceDirty, dataDigest: frozenProjectFactCorpusDigest, policyDigest: projectFactEvaluationPolicyDigest, oracleArtifacts: corpus.queries.length }) + '\n');
 } else {
   const methodBytes = await read('compat/project-facts/method.json'); const frozen = JSON.parse(methodBytes.toString('utf8')) as typeof method;
-  for (const key of ['schemaVersion', 'dataDigest', 'modelDigest', 'policy', 'policyDigest', 'oracleVersion', 'sourceDirty', 'sourceDigests'] as const) assert.deepEqual(method[key], frozen[key], 'Frozen method mismatch: ' + key);
+  for (const key of ['schemaVersion', 'dataDigest', 'modelDigest', 'policy', 'policyDigest', 'oracleVersion', 'dependencyLockDigests', 'sourceDirty', 'sourceDigests'] as const) assert.deepEqual(method[key], frozen[key], 'Frozen method mismatch: ' + key);
   const vectorBytes = await read(`test/fixtures/project-facts-v1-${mode}-vectors.json`);
   const snapshot = vectorSnapshotSchema.parse(JSON.parse(vectorBytes.toString('utf8')));
   assert.equal(snapshot.split, mode); assert.equal(snapshot.entries.length, 56);
