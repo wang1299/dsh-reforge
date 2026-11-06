@@ -146,6 +146,54 @@
       "source": "not_configured",
       "expected": "legacy_behavior",
       "rationale": "Without rules or prepared owner input, existing source/scope/feedback selection and data remain unchanged."
+    },
+    {
+      "id": "maintenance_owns_idle",
+      "stage": "pre_submit",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "blocked",
+      "rationale": "Official status idle plus empty inbox is insufficient while another maintenance owns the phase; reserve/followup must not run."
+    },
+    {
+      "id": "same_preview_new_uuid",
+      "stage": "idempotency",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "one_submission",
+      "rationale": "A preview is consumed at first durable reserve; changing request UUID cannot send twice."
+    },
+    {
+      "id": "evicted_receipt_retry",
+      "stage": "idempotency",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "expired",
+      "rationale": "After terminal receipt retention, old preview/key retries are expired, not a new enqueue; no infinite idempotency claim."
+    },
+    {
+      "id": "cross_database_main_rollback",
+      "stage": "recovery",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "not_replayed",
+      "rationale": "A sidecar bind surviving main task rollback is unknown, not an atomic success or recoverable execution."
+    },
+    {
+      "id": "context_only_tool_bypass",
+      "stage": "learning_boundary",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "no_learning",
+      "rationale": "Tool begin/finish/propose/verify cannot turn a context-only owner turn into learning or consume an extraction grant."
+    },
+    {
+      "id": "classification_after_prune_restart",
+      "stage": "learning_boundary",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "no_learning",
+      "rationale": "Durable message/task classification outlives a bounded receipt; pruning or restart cannot restore learning eligibility."
     }
   ]
 }
