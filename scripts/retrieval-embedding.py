@@ -142,7 +142,8 @@ def export(partition):
     directory.mkdir(parents=True, exist_ok=True)
     output = directory / (partition + '-vectors.json')
     # Explicit split prevents accidental holdout inference while preparing development.
-    output.write_text(json.dumps(snapshot, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
+    with output.open('w', encoding='utf-8', newline='\n') as stream:
+        stream.write(json.dumps(snapshot, ensure_ascii=False, separators=(',', ':')) + '\n')
     print(json.dumps(dict(split=partition, entries=len(entries), sha256=sha(output.read_bytes()),
                           inferenceSeconds=snapshot['provenance']['inferenceSeconds'],
                           forwardPasses=forward_passes, paidHttpCalls=0)), flush=True)
