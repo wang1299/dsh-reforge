@@ -122,6 +122,7 @@ test('decision inspector filters locally and preserves a chosen older attempt th
   assert.match(b.get('retrieval-history').textContent, /没有匹配/);
   const clear = b.descendants(b.get('retrieval-history')).find(e => e.tag === 'button' && e.textContent === '清除筛选')!;
   await clear.onclick!(); assert.equal(b.rows().length, 3); assert.match(b.selected().textContent, /Older/); assert.equal(b.posts.length, 0);
+  await b.run("if(document.activeElement?.id!=='retrieval-search')throw new Error('clear filter lost search focus')");
 });
 for (const focus of ['row', 'candidate', 'summary'] as const) test(`evicted decisions recover an owned ${focus} focus within retained scope`, async () => {
   const b = decisionFixture(); await b.run('refresh()'); await b.run("showView('uses')");
