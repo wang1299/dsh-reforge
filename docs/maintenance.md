@@ -8,6 +8,10 @@ Current schema is SQLite v9. An explicit `dataDir` overrides the default above. 
 
 ## 升级前 / Before upgrading
 
+源码新增的任务准备/owner条件功能仍保留主库v9，首次写入另建 `owner-inputs-v1.sqlite`（独立schema1）和 `owner-inputs-v1.identity.json`（仓库/存储身份锚）。完整停机备份必须同时保留它们；单个文件丢失或身份不符时不能清空重建，也不能与不理解条件的新旧进程混用目录。128条回执的保留上限不删除永久任务分类；4096条分类到限会拒绝新提交，不靠删除旧分类绕过限制。见[来源、恢复和不可自动重放规则](evaluation/owner-intake-v1.md)。两份元数据一同被手工删除/替换无法凭原v9主库辨认，不承诺抵抗目录级篡改。
+
+The source-only owner-input feature keeps main SQLite v9 and lazily adds `owner-inputs-v1.sqlite` (separate schema1) plus its repository/store identity anchor `owner-inputs-v1.identity.json`. Include both in stopped whole-directory backups. Never reset a missing half or share the directory with older code unaware of the rules. Receipt pruning preserves permanent task classifications; capacity exhaustion rejects new submissions. Deleting/replacing both metadata files cannot be detected from the unchanged v9 main database.
+
 1. 停止使用此数据目录的 DSH 和独立面板，确认无学习、提炼或验证任务正在执行；未知任务保留为未知，不重放。
 2. 在本机私密位置复制**完整 dataDir**，而不是只复制主 `.sqlite`。停机后仍存在的 WAL/SHM、快照与其他文件一并保留；副本不上传 Git/Issue。
 3. 另备份配置、profile、自定义 patch 和独立预算账本，作为私人备份保存。凭据沿用 DSH 的本机管理方式，不写进问题报告。
@@ -48,7 +52,7 @@ node dist/src/cli.js restore --input 'C:\private-backups\reforge-20261104' --out
 
 若诊断为 `wal_mode_requires_manual_private_copy_no_database_opened`，说明文件头处于持久 WAL 模式，即使没有 sidecar，只读 SQLite 连接也可能创建辅助文件。本工具会在打开数据库前拒绝；先停机人工复制整个 dataDir 保存现场，再交由熟悉 SQLite 的维护者在副本诊断。不要删除 WAL/SHM、改文件头或直接转换原件的 journal 模式来通过检查。此工具支持核心默认的 DELETE journal 模式。
 
-These commands belong to the current unpublished alpha.2 source; build first. All destination directories must be new with existing parents. `--stopped` is an owner assertion, not reliable detection of every idle host. Active work, any WAL/SHM/journal sidecar, links, file changes or limits (10,000 entries / 512 MiB) cause rejection. Never delete sidecars to bypass checks: privately copy the full failed state and diagnose with compatible software.
+These commands belong to the alpha.2 CLI; check publication status and build first when using source. All destination directories must be new with existing parents. `--stopped` is an owner assertion, not reliable detection of every idle host. Active work, any WAL/SHM/journal sidecar, links, file changes or limits (10,000 entries / 512 MiB) cause rejection. Never delete sidecars to bypass checks: privately copy the full failed state and diagnose with compatible software.
 
 Persistent WAL format is also rejected by checking the file header before opening SQLite, even if sidecars are absent: a read-only WAL connection can create auxiliary files. Make a stopped whole-directory private copy for manual diagnosis; never convert or edit the original merely to pass checks. Tooling supports the core's default DELETE journal mode.
 

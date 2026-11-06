@@ -1,5 +1,7 @@
 # DSH-Reforge
 
+Source-only workbench increment: [owner-confirmed task preparation and actual model-input checks](evaluation/owner-intake-v1.md#english). Inspect a supported field, choose an explicit goal, preview and submit to the current conversation. Version-bound owner prerequisites veto only the original first candidate; they do not re-rank or qualify source evidence. A zero-paid-API demo uses the actual official AgentLoop. Published alpha.2 does not include this increment; six authored workflow cases are not evidence of real task benefit.
+
 Offline applicability research: [fixed three-arm comparison](evaluation/applicability-v1.md#english) uses extra authored structured facts. Holdout wrong offers13→1; gated precision12/13, retaining9/11 previous correct offers and recovering3. Coverage drops50%→27.1%; no automatic fact extraction, downstream task-benefit claim or default rollout.
 
 [Website](https://wang1299.github.io/dsh-reforge/en/) · [Website publication status](https://github.com/wang1299/dsh-reforge/issues/116)

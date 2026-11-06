@@ -83,3 +83,15 @@ node dist/scripts/owner-input-demo.js
 合并仍以最终提交的全部门槛为准：完整check/compat、Windows/Linux × DSH 0.2.0-rc.2/0.2.1-rc.5同包CI、独立稳定SHA审查、UI与文档证据。最新远端状态直接查看[PR检查](https://github.com/wang1299/dsh-reforge/pull/134/checks)；运行中、缺失和旧提交的通过都不能算本次完成。不发布npm、Release或部署，不上传私人profile或日志。
 
 真实任务收益另行预登记新任务集、三组同模型同预算对照和新增费用授权；旧10元研究不重放。此源码流程验证的通过不结束持续的UX/效果改进目标。
+
+## English
+
+This source-only workbench increment lets the owner inspect a supported Schema field, declare prerequisites for an exact experience revision, choose an explicit goal, preview and submit to the actual current DSH conversation. Existing source/scope/feedback qualifications and ranking remain; the new rules can only veto the original first candidate. Old experiences receive no inferred metadata. Published alpha.2 is unchanged.
+
+Build source and run `node dist/scripts/owner-input-demo.js` for a fresh synthetic repository, one actual pytest source proof, the official AgentLoop with a zero-HTTP scripted adapter, a synthetic-owner native iframe bridge and a standalone panel. The bridge is not a desktop login test. Submission in a real profile uses that conversation's model and may incur its fees. Preview, turn completion, receipts and Application records do not establish task acceptance or future benefit.
+
+An exploratory pairing uses six already-visible authored workflow cases, not a blind holdout. The actual legacy selector selects in all six. The current scripted GenerateOptions notice provides in one: violations of the additional explicit confirmation rules change from5/5 to0/5, retaining the sole positive1/1. Baseline selection and current-notice boundaries differ and are stated explicitly; all six share one source proof. No real-model success, rework, time or cost improvement is claimed. Initial browser setup takes seven inputs/choices and six button/disclosure actions, plus one optional receipt refresh; this is an action count, not a user study.
+
+Main SQLite stays v9. Separate bounded schema1 metadata and an identity anchor must be backed up together. Context-only learning guards outlive receipt pruning and steering until actual turn end, without revoking older ordinary queued work. Unknown submissions never replay automatically. Actual main-rollback, live/terminated producer, corruption and real database-restart tests check recovery boundaries. Desktop,390px light/dark, standalone capability limits and explicit pre-submit rejection followed by draft-preserving re-preview were observed in the browser.
+
+Production code `ad98516` passed local full check335 tests:334 passed,0 failed,1 existing Windows symlink privilege skip; compat10/10. Later test/documentation commits have their own final-CI gate. Earlier Windows file-replacement/relay failures are retained, not counted as passes; financial code and old ledgers were not changed. Independent AI review is not GitHub approval. Final state belongs to [PR #134 checks](https://github.com/wang1299/dsh-reforge/pull/134/checks), not an older green SHA. Real Agent benefit requires a separate new-task protocol and fresh spending authorization.
