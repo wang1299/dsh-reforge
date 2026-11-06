@@ -1,0 +1,1954 @@
+{
+  "schemaVersion": 1,
+  "dataDigest": "ae6a132ac1658a218e5770989246608ed7ab9ba5b766b751123958dd017db5ea",
+  "baselinePolicyDigest": "dd49ee62eea3dbb76e0b3850661284f11af12c27fe6a37226ef21e4151ab97c3",
+  "split": "development",
+  "status": "admissible",
+  "wrongOfferCap": 13,
+  "dense": {
+    "lexicalWeight": 0,
+    "minimumScore": 0.5,
+    "minimumMargin": 0.025
+  },
+  "hybrid": {
+    "lexicalWeight": 0.15,
+    "minimumScore": 0.4,
+    "minimumMargin": 0.1
+  },
+  "denseGrid": [
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.3,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 21,
+        "wrong": 37,
+        "negativeWrong": 28,
+        "abstained": 2,
+        "positiveRecall": 0.7,
+        "precision": 0.3620689655172414,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 19,
+        "wrong": 28,
+        "negativeWrong": 21,
+        "abstained": 13,
+        "positiveRecall": 0.6333333333333333,
+        "precision": 0.40425531914893614,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 17,
+        "wrong": 20,
+        "negativeWrong": 14,
+        "abstained": 23,
+        "positiveRecall": 0.5666666666666667,
+        "precision": 0.4594594594594595,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 12,
+        "wrong": 14,
+        "negativeWrong": 10,
+        "abstained": 34,
+        "positiveRecall": 0.4,
+        "precision": 0.46153846153846156,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.4,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 20,
+        "wrong": 26,
+        "negativeWrong": 17,
+        "abstained": 14,
+        "positiveRecall": 0.6666666666666666,
+        "precision": 0.43478260869565216,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 19,
+        "wrong": 20,
+        "negativeWrong": 13,
+        "abstained": 21,
+        "positiveRecall": 0.6333333333333333,
+        "precision": 0.48717948717948717,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 17,
+        "wrong": 17,
+        "negativeWrong": 11,
+        "abstained": 26,
+        "positiveRecall": 0.5666666666666667,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 12,
+        "wrong": 12,
+        "negativeWrong": 8,
+        "abstained": 36,
+        "positiveRecall": 0.4,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.5,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 15,
+        "wrong": 12,
+        "negativeWrong": 6,
+        "abstained": 33,
+        "positiveRecall": 0.5,
+        "precision": 0.5555555555555556,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 15,
+        "wrong": 10,
+        "negativeWrong": 5,
+        "abstained": 35,
+        "positiveRecall": 0.5,
+        "precision": 0.6,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 14,
+        "wrong": 9,
+        "negativeWrong": 5,
+        "abstained": 37,
+        "positiveRecall": 0.4666666666666667,
+        "precision": 0.6086956521739131,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 10,
+        "wrong": 8,
+        "negativeWrong": 5,
+        "abstained": 42,
+        "positiveRecall": 0.3333333333333333,
+        "precision": 0.5555555555555556,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.6,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 53,
+        "positiveRecall": 0.2,
+        "precision": 0.8571428571428571,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 53,
+        "positiveRecall": 0.2,
+        "precision": 0.8571428571428571,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 5,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 54,
+        "positiveRecall": 0.16666666666666666,
+        "precision": 0.8333333333333334,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 5,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 54,
+        "positiveRecall": 0.16666666666666666,
+        "precision": 0.8333333333333334,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.7,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 4,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 56,
+        "positiveRecall": 0.13333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 4,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 56,
+        "positiveRecall": 0.13333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 3,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 57,
+        "positiveRecall": 0.1,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 3,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 57,
+        "positiveRecall": 0.1,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.8,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.8158730158730159
+      }
+    }
+  ],
+  "hybridGrid": [
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.3,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 20,
+        "wrong": 32,
+        "negativeWrong": 23,
+        "abstained": 8,
+        "positiveRecall": 0.6666666666666666,
+        "precision": 0.38461538461538464,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 19,
+        "wrong": 24,
+        "negativeWrong": 17,
+        "abstained": 17,
+        "positiveRecall": 0.6333333333333333,
+        "precision": 0.4418604651162791,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 16,
+        "wrong": 22,
+        "negativeWrong": 15,
+        "abstained": 22,
+        "positiveRecall": 0.5333333333333333,
+        "precision": 0.42105263157894735,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 13,
+        "wrong": 17,
+        "negativeWrong": 12,
+        "abstained": 30,
+        "positiveRecall": 0.43333333333333335,
+        "precision": 0.43333333333333335,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.4,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 17,
+        "wrong": 16,
+        "negativeWrong": 10,
+        "abstained": 27,
+        "positiveRecall": 0.5666666666666667,
+        "precision": 0.5151515151515151,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 17,
+        "wrong": 15,
+        "negativeWrong": 10,
+        "abstained": 28,
+        "positiveRecall": 0.5666666666666667,
+        "precision": 0.53125,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 14,
+        "wrong": 14,
+        "negativeWrong": 9,
+        "abstained": 32,
+        "positiveRecall": 0.4666666666666667,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 12,
+        "wrong": 12,
+        "negativeWrong": 8,
+        "abstained": 36,
+        "positiveRecall": 0.4,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.5,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 10,
+        "wrong": 7,
+        "negativeWrong": 5,
+        "abstained": 43,
+        "positiveRecall": 0.3333333333333333,
+        "precision": 0.5882352941176471,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 10,
+        "wrong": 7,
+        "negativeWrong": 5,
+        "abstained": 43,
+        "positiveRecall": 0.3333333333333333,
+        "precision": 0.5882352941176471,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 9,
+        "wrong": 6,
+        "negativeWrong": 4,
+        "abstained": 45,
+        "positiveRecall": 0.3,
+        "precision": 0.6,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 9,
+        "wrong": 6,
+        "negativeWrong": 4,
+        "abstained": 45,
+        "positiveRecall": 0.3,
+        "precision": 0.6,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.6,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 8,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 51,
+        "positiveRecall": 0.26666666666666666,
+        "precision": 0.8888888888888888,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 8,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 51,
+        "positiveRecall": 0.26666666666666666,
+        "precision": 0.8888888888888888,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 52,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.875,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 52,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.875,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.7,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.8,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.15,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7992063492063491
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.3,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 15,
+        "wrong": 22,
+        "negativeWrong": 12,
+        "abstained": 23,
+        "positiveRecall": 0.5,
+        "precision": 0.40540540540540543,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 14,
+        "wrong": 21,
+        "negativeWrong": 12,
+        "abstained": 25,
+        "positiveRecall": 0.4666666666666667,
+        "precision": 0.4,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 13,
+        "wrong": 21,
+        "negativeWrong": 12,
+        "abstained": 26,
+        "positiveRecall": 0.43333333333333335,
+        "precision": 0.38235294117647056,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 10,
+        "wrong": 13,
+        "negativeWrong": 9,
+        "abstained": 37,
+        "positiveRecall": 0.3333333333333333,
+        "precision": 0.43478260869565216,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.4,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 9,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 38,
+        "positiveRecall": 0.3,
+        "precision": 0.4090909090909091,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 8,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 39,
+        "positiveRecall": 0.26666666666666666,
+        "precision": 0.38095238095238093,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 8,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 39,
+        "positiveRecall": 0.26666666666666666,
+        "precision": 0.38095238095238093,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 8,
+        "wrong": 11,
+        "negativeWrong": 7,
+        "abstained": 41,
+        "positiveRecall": 0.26666666666666666,
+        "precision": 0.42105263157894735,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.5,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 11,
+        "negativeWrong": 7,
+        "abstained": 42,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3888888888888889,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 11,
+        "negativeWrong": 7,
+        "abstained": 42,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3888888888888889,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 11,
+        "negativeWrong": 7,
+        "abstained": 42,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3888888888888889,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 10,
+        "negativeWrong": 7,
+        "abstained": 43,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.4117647058823529,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.6,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 6,
+        "negativeWrong": 4,
+        "abstained": 48,
+        "positiveRecall": 0.2,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 6,
+        "negativeWrong": 4,
+        "abstained": 48,
+        "positiveRecall": 0.2,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 6,
+        "negativeWrong": 4,
+        "abstained": 48,
+        "positiveRecall": 0.2,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 6,
+        "negativeWrong": 4,
+        "abstained": 48,
+        "positiveRecall": 0.2,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.7,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 4,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 55,
+        "positiveRecall": 0.13333333333333333,
+        "precision": 0.8,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 4,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 55,
+        "positiveRecall": 0.13333333333333333,
+        "precision": 0.8,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 4,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 55,
+        "positiveRecall": 0.13333333333333333,
+        "precision": 0.8,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 4,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 55,
+        "positiveRecall": 0.13333333333333333,
+        "precision": 0.8,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.8,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.35,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 0,
+        "negativeWrong": 0,
+        "abstained": 59,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 1,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.3,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 9,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 38,
+        "positiveRecall": 0.3,
+        "precision": 0.4090909090909091,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 8,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 39,
+        "positiveRecall": 0.26666666666666666,
+        "precision": 0.38095238095238093,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 8,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 39,
+        "positiveRecall": 0.26666666666666666,
+        "precision": 0.38095238095238093,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.3,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 8,
+        "wrong": 12,
+        "negativeWrong": 7,
+        "abstained": 40,
+        "positiveRecall": 0.26666666666666666,
+        "precision": 0.4,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.4,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 40,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.35,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 40,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.35,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 40,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.35,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.4,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 12,
+        "negativeWrong": 7,
+        "abstained": 41,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3684210526315789,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.5,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 40,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.35,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 40,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.35,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 13,
+        "negativeWrong": 8,
+        "abstained": 40,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.35,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.5,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 12,
+        "negativeWrong": 7,
+        "abstained": 41,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3684210526315789,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.6,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 12,
+        "negativeWrong": 8,
+        "abstained": 41,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3684210526315789,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 12,
+        "negativeWrong": 8,
+        "abstained": 41,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3684210526315789,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 12,
+        "negativeWrong": 8,
+        "abstained": 41,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3684210526315789,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.6,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 7,
+        "wrong": 11,
+        "negativeWrong": 7,
+        "abstained": 42,
+        "positiveRecall": 0.23333333333333334,
+        "precision": 0.3888888888888889,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.7,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 3,
+        "negativeWrong": 2,
+        "abstained": 51,
+        "positiveRecall": 0.2,
+        "precision": 0.6666666666666666,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 3,
+        "negativeWrong": 2,
+        "abstained": 51,
+        "positiveRecall": 0.2,
+        "precision": 0.6666666666666666,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 3,
+        "negativeWrong": 2,
+        "abstained": 51,
+        "positiveRecall": 0.2,
+        "precision": 0.6666666666666666,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.7,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 6,
+        "wrong": 3,
+        "negativeWrong": 2,
+        "abstained": 51,
+        "positiveRecall": 0.2,
+        "precision": 0.6666666666666666,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.8,
+        "minimumMargin": 0
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 58,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.025
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 58,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.05
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 58,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    },
+    {
+      "config": {
+        "lexicalWeight": 0.55,
+        "minimumScore": 0.8,
+        "minimumMargin": 0.1
+      },
+      "metrics": {
+        "queries": 60,
+        "positives": 30,
+        "negatives": 30,
+        "correct": 1,
+        "wrong": 1,
+        "negativeWrong": 1,
+        "abstained": 58,
+        "positiveRecall": 0.03333333333333333,
+        "precision": 0.5,
+        "recallAt3": 0.9333333333333333,
+        "mrr": 0.7658730158730158
+      }
+    }
+  ],
+  "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+  "developmentVectorDigest": "b0715e4a68ad1b79a1a93a9d7c3d03fc9f1255b09c855d775a096487a941e581",
+  "sourceCommit": "705a57f2139ef92258e765d4c704154320530088",
+  "sourceDirty": false,
+  "sourceDigests": {
+    "src/embedding.ts": "030109c1c385b907a59e28274b827cf0b2fd44d64c17330b4d4539f8d04d40da",
+    "src/hybrid-retrieval.ts": "a47bf29bec082701dc693ec1eac0f10b9cd3a115678930239df27f3faa528ed7",
+    "src/hybrid-evaluation.ts": "c4f12a9b6c4da89b373fbffcd98796b2d10fb46ecd14381cfdf09cb59c80723e",
+    "src/retrieval.ts": "79248d6b7d3b4d2b7dec325f8d50117f49c73ff742e3ac1296c3671f9ed142a6",
+    "scripts/hybrid-evaluate.ts": "ea7f19e2db1903dbadce3091c9e6d87d37e1047d947fa1878d7867b5eb03ad1a",
+    "scripts/retrieval-embedding.py": "80ce4db59fe60f78ebb0abd2c929edb9b77fa40959a3a8c90c3724592683c7bd"
+  }
+}
