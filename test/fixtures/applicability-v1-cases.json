@@ -1,0 +1,3449 @@
+{
+  "schemaVersion": 4,
+  "kind": "author-synthetic-contract-applicability",
+  "experiences": [
+    {
+      "id": "http-retry-effects-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "http-retry-effects",
+      "title": "Retry replayable requests after transport failure only with safe effects",
+      "strategy": "For a transport failure, retry only if the operation is read-only or idempotent and its request body can be replayed. Never override an explicit no-retry policy.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "side_effects",
+            "oneOf": [
+              "none",
+              "idempotent"
+            ]
+          },
+          {
+            "field": "body_replayable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "failure_stage",
+            "oneOf": [
+              "transport"
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "retry_forbidden",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "http-retry-effects-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "http-retry-effects",
+      "title": "收到限流响应时遵守服务端等待时间",
+      "strategy": "当可重放且幂等的请求遇到限流时，按服务端等待时间延迟重试；禁止重试策略仍优先。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "side_effects",
+            "oneOf": [
+              "none",
+              "idempotent"
+            ]
+          },
+          {
+            "field": "body_replayable",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "failure_stage",
+            "oneOf": [
+              "rate_limit"
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "retry_forbidden",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "atomic-file-replace-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "atomic-file-replace",
+      "title": "Publish a replacement file atomically on the same filesystem",
+      "strategy": "For a local file replacement whose readers require complete versions, write a temporary sibling and atomically replace the destination on the same filesystem. An append-only contract disallows replacement.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "storage_kind",
+            "oneOf": [
+              "local_file"
+            ]
+          },
+          {
+            "field": "write_mode",
+            "oneOf": [
+              "replace"
+            ]
+          },
+          {
+            "field": "same_filesystem",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "readers_need_complete",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "append_only",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "atomic-file-replace-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "atomic-file-replace",
+      "title": "追加日志以完整记录边界持久化",
+      "strategy": "只追加的本地日志逐条写入并在要求的持久化边界刷盘，不把整个日志替换为新文件。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "storage_kind",
+            "oneOf": [
+              "local_file"
+            ]
+          },
+          {
+            "field": "write_mode",
+            "oneOf": [
+              "append"
+            ]
+          },
+          {
+            "field": "append_only",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "readers_need_complete",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bounded-queue-policy-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "title": "Apply blocking backpressure to a bounded lossless queue",
+      "strategy": "If a bounded queue must not drop items and producer waiting is allowed, block the producer when the queue fills until capacity becomes available.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "buffer_kind",
+            "oneOf": [
+              "bounded"
+            ]
+          },
+          {
+            "field": "overflow_policy",
+            "oneOf": [
+              "block"
+            ]
+          },
+          {
+            "field": "loss_allowed",
+            "oneOf": [
+              false
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "producer_must_not_wait",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bounded-queue-policy-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "title": "有界最新值队列满时丢弃最旧项",
+      "strategy": "当契约允许丢数据且只关心最新值时，队列满后移除最旧项再放入新项，避免阻塞生产者。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "buffer_kind",
+            "oneOf": [
+              "bounded"
+            ]
+          },
+          {
+            "field": "overflow_policy",
+            "oneOf": [
+              "drop_oldest"
+            ]
+          },
+          {
+            "field": "loss_allowed",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "producer_must_not_wait",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": []
+      }
+    },
+    {
+      "id": "json-field-presence-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "json-field-presence",
+      "title": "Preserve the distinction between missing and explicit null fields",
+      "strategy": "For a JSON object that preserves missing fields and allows explicit null, test property presence separately from its value. Do not coerce null to a default.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "representation",
+            "oneOf": [
+              "json_object"
+            ]
+          },
+          {
+            "field": "missing_policy",
+            "oneOf": [
+              "preserve"
+            ]
+          },
+          {
+            "field": "null_allowed",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "coerce_null_to_default",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "json-field-presence-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "json-field-presence",
+      "title": "拒绝缺失或空值的必填字段",
+      "strategy": "当JSON对象契约要求字段存在且不允许null时，分别验证缺失与空值并返回明确校验错误。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "representation",
+            "oneOf": [
+              "json_object"
+            ]
+          },
+          {
+            "field": "missing_policy",
+            "oneOf": [
+              "reject"
+            ]
+          },
+          {
+            "field": "null_allowed",
+            "oneOf": [
+              false
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "coerce_null_to_default",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "sql-join-preservation-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "title": "Keep right-side filters in the join condition when preserving unmatched left rows",
+      "strategy": "For a left join that must retain unmatched left records, place restrictions on the right relation in ON rather than a WHERE predicate that removes the null-extended rows.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "join_kind",
+            "oneOf": [
+              "left"
+            ]
+          },
+          {
+            "field": "preserve_unmatched",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "predicate_side",
+            "oneOf": [
+              "right"
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "require_matching_rows",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "sql-join-preservation-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "title": "只需要匹配行时使用内连接过滤",
+      "strategy": "当结果只需要两侧匹配的记录时，使用内连接并应用右表过滤，不承担保留未匹配左行的要求。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "join_kind",
+            "oneOf": [
+              "inner"
+            ]
+          },
+          {
+            "field": "preserve_unmatched",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "predicate_side",
+            "oneOf": [
+              "right"
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "require_matching_rows",
+            "oneOf": [
+              false
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "archive-root-containment-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "title": "Keep untrusted archive entry extraction inside the destination root",
+      "strategy": "Before extracting path-named entries from an untrusted archive, resolve each destination against the extraction root and reject escapes. Do not allow writing outside that root.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "input_trust",
+            "oneOf": [
+              "untrusted"
+            ]
+          },
+          {
+            "field": "entries_are_paths",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "operation_kind",
+            "oneOf": [
+              "extract"
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "allow_outside_root",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "archive-root-containment-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "title": "只列出压缩包目录时不写入载荷",
+      "strategy": "对不可信压缩包仅列目录时，读取有界元数据，不提取文件内容也不写入载荷。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "input_trust",
+            "oneOf": [
+              "untrusted"
+            ]
+          },
+          {
+            "field": "entries_are_paths",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "operation_kind",
+            "oneOf": [
+              "list"
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "writes_payload",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pagination-total-order-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "title": "Add a unique tie-breaker to a stable cursor pagination order",
+      "strategy": "For cursor pagination with stable ordering values and a non-unique sort key, include a unique secondary key in both ordering and cursor comparison to avoid skipping tied rows.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "pagination_kind",
+            "oneOf": [
+              "cursor"
+            ]
+          },
+          {
+            "field": "sort_unique",
+            "oneOf": [
+              false
+            ]
+          },
+          {
+            "field": "ordering_stable",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "allow_duplicate_rows",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pagination-total-order-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "title": "偏移分页遇到并发变化时使用固定快照",
+      "strategy": "当使用offset分页且数据会变化、固定快照可用时，各页读取同一快照以减少行偏移造成的重复或遗漏。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "pagination_kind",
+            "oneOf": [
+              "offset"
+            ]
+          },
+          {
+            "field": "dataset_mutates",
+            "oneOf": [
+              true
+            ]
+          },
+          {
+            "field": "snapshot_available",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "allow_duplicate_rows",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "decimal-sum-rounding-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "title": "Round decimal measurement sums only at the required final boundary",
+      "strategy": "For sums of decimal-text measurements whose contract requires final-total rounding, accumulate exact decimal values and round the total once. Do not round each sample first.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "input_representation",
+            "oneOf": [
+              "decimal_text"
+            ]
+          },
+          {
+            "field": "aggregation",
+            "oneOf": [
+              "sum"
+            ]
+          },
+          {
+            "field": "rounding_stage",
+            "oneOf": [
+              "final_total"
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "round_each_sample",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "decimal-sum-rounding-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "title": "契约要求逐项舍入时先处理每个样本",
+      "strategy": "当十进制样本求和契约明确规定逐项舍入时，先按规定精度处理每个样本再累计，不能改为只舍入总和。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "input_representation",
+            "oneOf": [
+              "decimal_text"
+            ]
+          },
+          {
+            "field": "aggregation",
+            "oneOf": [
+              "sum"
+            ]
+          },
+          {
+            "field": "rounding_stage",
+            "oneOf": [
+              "per_sample"
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "round_each_sample",
+            "oneOf": [
+              false
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "queries": [
+    {
+      "id": "http-retry-effects-literal",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "literal",
+      "text": "A transport failure interrupted this request. Decide whether replaying it is permitted by the supplied request contract.",
+      "relevantIds": [
+        "http-retry-effects-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-literal",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-literal-0.json",
+          "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb"
+        }
+      ],
+      "pairId": "http-retry-effects-single-fact-flip",
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "http-retry-effects-cross_language",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "cross_language",
+      "text": "请求在传输阶段失败了，依据任务契约判断是否可以重新发送。",
+      "relevantIds": [
+        "http-retry-effects-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-cross_language",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-cross_language-0.json",
+          "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "http-retry-effects-paraphrase",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "paraphrase",
+      "text": "The connection ended before a response arrived; avoid repeating an operation whose effects might happen twice.",
+      "relevantIds": [
+        "http-retry-effects-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-paraphrase",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-paraphrase-0.json",
+          "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "http-retry-effects-reverse_language",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "reverse_language",
+      "text": "The server rate-limited this replayable operation; respect its advertised wait before trying again.",
+      "relevantIds": [
+        "http-retry-effects-secondary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-reverse_language",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-reverse_language-0.json",
+          "sha256": "036cfc51c2675ede2e4f239dbef4343d220ae86a2fbbb8b19a6e2385c44a948e"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "http-retry-effects-missing_positive",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "missing_positive",
+      "text": "The body can be resent according to my description, but that fact is absent from the attached verified contract; investigate reconnect handling.",
+      "relevantIds": [
+        "http-retry-effects-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-missing_positive",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-missing_positive-0.json",
+          "sha256": "306c95b6d4b75f763b59e7581d58ce1007e88ba354d1f039f15b9a2fd27d85b5"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
+    },
+    {
+      "id": "http-retry-effects-low_overlap",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "low_overlap",
+      "text": "A broken wire left us without an answer; consult the documented effect and resend guarantees.",
+      "relevantIds": [
+        "http-retry-effects-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-low_overlap",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-low_overlap-0.json",
+          "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "http-retry-effects-hard_contradiction",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "hard_contradiction",
+      "text": "A transport failure interrupted this request. Decide whether replaying it is permitted by the supplied request contract.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-hard_contradiction",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-hard_contradiction-0.json",
+          "sha256": "6363f1a046dc9a65899235ae83e1ecc9dc8d0186d57df86ea85283b376bb4138"
+        }
+      ],
+      "pairId": "http-retry-effects-single-fact-flip",
+      "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
+    },
+    {
+      "id": "http-retry-effects-insufficient_context",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "insufficient_context",
+      "text": "Something failed; what should happen?",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-insufficient_context",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-insufficient_context-0.json",
+          "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
+    },
+    {
+      "id": "http-retry-effects-irrelevant_same_facts",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "irrelevant_same_facts",
+      "text": "Rename the dashboard label for transport retries without changing networking behavior.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-irrelevant_same_facts",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-irrelevant_same_facts-0.json",
+          "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb"
+        }
+      ],
+      "pairId": null,
+      "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
+    },
+    {
+      "id": "http-retry-effects-conflicting_evidence",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "conflicting_evidence",
+      "text": "A transport failure interrupted this request. Decide whether replaying it is permitted by the supplied request contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-conflicting_evidence-0.json",
+          "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb"
+        },
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-conflicting_evidence-1.json",
+          "sha256": "6363f1a046dc9a65899235ae83e1ecc9dc8d0186d57df86ea85283b376bb4138"
+        }
+      ],
+      "pairId": null,
+      "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
+    },
+    {
+      "id": "http-retry-effects-stale_evidence",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "stale_evidence",
+      "text": "A transport failure interrupted this request. Decide whether replaying it is permitted by the supplied request contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-stale_evidence",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-stale_evidence-0.json",
+          "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb"
+        }
+      ],
+      "pairId": null,
+      "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
+    },
+    {
+      "id": "http-retry-effects-no_applicable_candidate",
+      "split": "development",
+      "family": "http-retry-effects",
+      "kind": "no_applicable_candidate",
+      "text": "A transport failure interrupted this request. Decide whether replaying it is permitted by the supplied request contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "http-retry-effects-no_applicable_candidate",
+          "revision": 1,
+          "path": "contracts/http-retry-effects-no_applicable_candidate-0.json",
+          "sha256": "8c8435cf22af61b468d3e57978875258cac2364ae5034bdeb1b58f98f27bfced"
+        }
+      ],
+      "pairId": null,
+      "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
+    },
+    {
+      "id": "atomic-file-replace-literal",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "literal",
+      "text": "Publish the replacement without readers observing a partly written version; follow the attached storage contract.",
+      "relevantIds": [
+        "atomic-file-replace-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-literal",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-literal-0.json",
+          "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e"
+        }
+      ],
+      "pairId": "atomic-file-replace-single-fact-flip",
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "atomic-file-replace-cross_language",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "cross_language",
+      "text": "替换文件时读者只能看到完整旧版本或新版本，请核对存储条件。",
+      "relevantIds": [
+        "atomic-file-replace-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-cross_language",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-cross_language-0.json",
+          "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "atomic-file-replace-paraphrase",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "paraphrase",
+      "text": "Readers must see a complete generation while a writer swaps in new contents.",
+      "relevantIds": [
+        "atomic-file-replace-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-paraphrase",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-paraphrase-0.json",
+          "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "atomic-file-replace-reverse_language",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "reverse_language",
+      "text": "Persist complete log records in an append-only local stream without replacing its whole file.",
+      "relevantIds": [
+        "atomic-file-replace-secondary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-reverse_language",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-reverse_language-0.json",
+          "sha256": "d530593f701d813af459a746357bc2dc6187a3a2c5075a9ae7978cc08b21e0ee"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "atomic-file-replace-missing_positive",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "missing_positive",
+      "text": "I describe a same-volume rename, but the attached contract omits the volume relationship; preserve complete reader views.",
+      "relevantIds": [
+        "atomic-file-replace-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-missing_positive",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-missing_positive-0.json",
+          "sha256": "e64d9967d683a4e9f042fc458435cfa1d4777b582e486abc73466eaaa4272e95"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
+    },
+    {
+      "id": "atomic-file-replace-low_overlap",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "low_overlap",
+      "text": "A writer prepares the next generation out of sight before making it visible in one step.",
+      "relevantIds": [
+        "atomic-file-replace-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-low_overlap",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-low_overlap-0.json",
+          "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "atomic-file-replace-hard_contradiction",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "hard_contradiction",
+      "text": "Publish the replacement without readers observing a partly written version; follow the attached storage contract.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-hard_contradiction",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-hard_contradiction-0.json",
+          "sha256": "226df154e58e120e10c1b7606e6e463a1c89dbb6253b8dd519e8e0222a401af5"
+        }
+      ],
+      "pairId": "atomic-file-replace-single-fact-flip",
+      "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
+    },
+    {
+      "id": "atomic-file-replace-insufficient_context",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "insufficient_context",
+      "text": "The output file looks wrong.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-insufficient_context",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-insufficient_context-0.json",
+          "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
+    },
+    {
+      "id": "atomic-file-replace-irrelevant_same_facts",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "irrelevant_same_facts",
+      "text": "Change the icon for atomic file publishing; keep all disk operations unchanged.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-irrelevant_same_facts",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-irrelevant_same_facts-0.json",
+          "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e"
+        }
+      ],
+      "pairId": null,
+      "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
+    },
+    {
+      "id": "atomic-file-replace-conflicting_evidence",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "conflicting_evidence",
+      "text": "Publish the replacement without readers observing a partly written version; follow the attached storage contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-conflicting_evidence-0.json",
+          "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e"
+        },
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-conflicting_evidence-1.json",
+          "sha256": "226df154e58e120e10c1b7606e6e463a1c89dbb6253b8dd519e8e0222a401af5"
+        }
+      ],
+      "pairId": null,
+      "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
+    },
+    {
+      "id": "atomic-file-replace-stale_evidence",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "stale_evidence",
+      "text": "Publish the replacement without readers observing a partly written version; follow the attached storage contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-stale_evidence",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-stale_evidence-0.json",
+          "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e"
+        }
+      ],
+      "pairId": null,
+      "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
+    },
+    {
+      "id": "atomic-file-replace-no_applicable_candidate",
+      "split": "development",
+      "family": "atomic-file-replace",
+      "kind": "no_applicable_candidate",
+      "text": "Publish the replacement without readers observing a partly written version; follow the attached storage contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "atomic-file-replace-no_applicable_candidate",
+          "revision": 1,
+          "path": "contracts/atomic-file-replace-no_applicable_candidate-0.json",
+          "sha256": "2125f827636e2ed09cab7a47641aeee8fe79eba95cc563405f4c950f435a5893"
+        }
+      ],
+      "pairId": null,
+      "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
+    },
+    {
+      "id": "bounded-queue-policy-literal",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "literal",
+      "text": "Handle a full queue according to its supplied capacity, loss and producer-wait policy.",
+      "relevantIds": [
+        "bounded-queue-policy-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-literal",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-literal-0.json",
+          "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8"
+        }
+      ],
+      "pairId": "bounded-queue-policy-single-fact-flip",
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "bounded-queue-policy-cross_language",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "cross_language",
+      "text": "队列满后如何处理生产者？请依据容量、丢失和等待条件。",
+      "relevantIds": [
+        "bounded-queue-policy-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-cross_language",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-cross_language-0.json",
+          "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "bounded-queue-policy-paraphrase",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "paraphrase",
+      "text": "The consumer falls behind; preserve every item by making upstream work wait when allowed.",
+      "relevantIds": [
+        "bounded-queue-policy-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-paraphrase",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-paraphrase-0.json",
+          "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "bounded-queue-policy-reverse_language",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "reverse_language",
+      "text": "Only the freshest reading matters; evict old queued values and keep the producer moving.",
+      "relevantIds": [
+        "bounded-queue-policy-secondary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-reverse_language",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-reverse_language-0.json",
+          "sha256": "1c91981441bfee3ca19bb92c32a905b18faabd307433d50d2f3f203ddca250ed"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "bounded-queue-policy-missing_positive",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "missing_positive",
+      "text": "The request says every item matters, but the verified contract omits whether loss is permitted; examine the full-buffer behavior.",
+      "relevantIds": [
+        "bounded-queue-policy-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-missing_positive",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-missing_positive-0.json",
+          "sha256": "515c0c332f6faa0a34c8eac2884fc72dfa0cd354470782259d59a06a0089b8c2"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
+    },
+    {
+      "id": "bounded-queue-policy-low_overlap",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "low_overlap",
+      "text": "When downstream lags, use the documented pressure policy rather than discarding work by habit.",
+      "relevantIds": [
+        "bounded-queue-policy-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-low_overlap",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-low_overlap-0.json",
+          "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "bounded-queue-policy-hard_contradiction",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "hard_contradiction",
+      "text": "Handle a full queue according to its supplied capacity, loss and producer-wait policy.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-hard_contradiction",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-hard_contradiction-0.json",
+          "sha256": "a4debfe9ffbc9c2c1a4d70267d83b4b00df6655588437864aed43a1cc51ee19d"
+        }
+      ],
+      "pairId": "bounded-queue-policy-single-fact-flip",
+      "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
+    },
+    {
+      "id": "bounded-queue-policy-insufficient_context",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "insufficient_context",
+      "text": "The worker seems slow.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-insufficient_context",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-insufficient_context-0.json",
+          "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
+    },
+    {
+      "id": "bounded-queue-policy-irrelevant_same_facts",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "irrelevant_same_facts",
+      "text": "Reword the settings label for a full queue without touching queue scheduling.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-irrelevant_same_facts",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-irrelevant_same_facts-0.json",
+          "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
+    },
+    {
+      "id": "bounded-queue-policy-conflicting_evidence",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "conflicting_evidence",
+      "text": "Handle a full queue according to its supplied capacity, loss and producer-wait policy. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-conflicting_evidence-0.json",
+          "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8"
+        },
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-conflicting_evidence-1.json",
+          "sha256": "a4debfe9ffbc9c2c1a4d70267d83b4b00df6655588437864aed43a1cc51ee19d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
+    },
+    {
+      "id": "bounded-queue-policy-stale_evidence",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "stale_evidence",
+      "text": "Handle a full queue according to its supplied capacity, loss and producer-wait policy. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-stale_evidence",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-stale_evidence-0.json",
+          "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
+    },
+    {
+      "id": "bounded-queue-policy-no_applicable_candidate",
+      "split": "development",
+      "family": "bounded-queue-policy",
+      "kind": "no_applicable_candidate",
+      "text": "Handle a full queue according to its supplied capacity, loss and producer-wait policy. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "bounded-queue-policy-no_applicable_candidate",
+          "revision": 1,
+          "path": "contracts/bounded-queue-policy-no_applicable_candidate-0.json",
+          "sha256": "09280783ffdcee6583544ede51a9ce4156ef01a94cae77c89db3adbff854fe93"
+        }
+      ],
+      "pairId": null,
+      "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
+    },
+    {
+      "id": "json-field-presence-literal",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "literal",
+      "text": "Handle absent versus null input fields according to the supplied representation and validation contract.",
+      "relevantIds": [
+        "json-field-presence-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-literal",
+          "revision": 1,
+          "path": "contracts/json-field-presence-literal-0.json",
+          "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d"
+        }
+      ],
+      "pairId": "json-field-presence-single-fact-flip",
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "json-field-presence-cross_language",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "cross_language",
+      "text": "输入字段未提供和显式为null应怎样区分？请按附带契约处理。",
+      "relevantIds": [
+        "json-field-presence-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-cross_language",
+          "revision": 1,
+          "path": "contracts/json-field-presence-cross_language-0.json",
+          "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "json-field-presence-paraphrase",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "paraphrase",
+      "text": "An omitted property and a deliberately empty value carry different meanings in this object.",
+      "relevantIds": [
+        "json-field-presence-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-paraphrase",
+          "revision": 1,
+          "path": "contracts/json-field-presence-paraphrase-0.json",
+          "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "json-field-presence-reverse_language",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "reverse_language",
+      "text": "Validate a required JSON property whose contract disallows both omission and null.",
+      "relevantIds": [
+        "json-field-presence-secondary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-reverse_language",
+          "revision": 1,
+          "path": "contracts/json-field-presence-reverse_language-0.json",
+          "sha256": "6a1793cbc4e8c8df19224d1c7a2f4e34049b908b34216f4cad067f89a465337d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "json-field-presence-missing_positive",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "missing_positive",
+      "text": "The request distinguishes omission from null, but the verified contract does not establish whether null is allowed.",
+      "relevantIds": [
+        "json-field-presence-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-missing_positive",
+          "revision": 1,
+          "path": "contracts/json-field-presence-missing_positive-0.json",
+          "sha256": "b7d1808cbb0e451adf6d2baa368c585ab2bbe80379349047a8cfae25a0913db8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
+    },
+    {
+      "id": "json-field-presence-low_overlap",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "low_overlap",
+      "text": "Do not erase the caller distinction between leaving a property out and setting its value to nothing.",
+      "relevantIds": [
+        "json-field-presence-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-low_overlap",
+          "revision": 1,
+          "path": "contracts/json-field-presence-low_overlap-0.json",
+          "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "json-field-presence-hard_contradiction",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "hard_contradiction",
+      "text": "Handle absent versus null input fields according to the supplied representation and validation contract.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-hard_contradiction",
+          "revision": 1,
+          "path": "contracts/json-field-presence-hard_contradiction-0.json",
+          "sha256": "a5f2021f9089aa3b7780e5ac3161948498f82f2843809dc5bc17b560b9a7a72d"
+        }
+      ],
+      "pairId": "json-field-presence-single-fact-flip",
+      "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
+    },
+    {
+      "id": "json-field-presence-insufficient_context",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "insufficient_context",
+      "text": "The submitted data is strange.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-insufficient_context",
+          "revision": 1,
+          "path": "contracts/json-field-presence-insufficient_context-0.json",
+          "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
+    },
+    {
+      "id": "json-field-presence-irrelevant_same_facts",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "irrelevant_same_facts",
+      "text": "Translate the help-text labels for missing and null without changing validation.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-irrelevant_same_facts",
+          "revision": 1,
+          "path": "contracts/json-field-presence-irrelevant_same_facts-0.json",
+          "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
+    },
+    {
+      "id": "json-field-presence-conflicting_evidence",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "conflicting_evidence",
+      "text": "Handle absent versus null input fields according to the supplied representation and validation contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/json-field-presence-conflicting_evidence-0.json",
+          "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d"
+        },
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/json-field-presence-conflicting_evidence-1.json",
+          "sha256": "a5f2021f9089aa3b7780e5ac3161948498f82f2843809dc5bc17b560b9a7a72d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
+    },
+    {
+      "id": "json-field-presence-stale_evidence",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "stale_evidence",
+      "text": "Handle absent versus null input fields according to the supplied representation and validation contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-stale_evidence",
+          "revision": 1,
+          "path": "contracts/json-field-presence-stale_evidence-0.json",
+          "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
+    },
+    {
+      "id": "json-field-presence-no_applicable_candidate",
+      "split": "development",
+      "family": "json-field-presence",
+      "kind": "no_applicable_candidate",
+      "text": "Handle absent versus null input fields according to the supplied representation and validation contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "development/contracts",
+          "taskId": "json-field-presence-no_applicable_candidate",
+          "revision": 1,
+          "path": "contracts/json-field-presence-no_applicable_candidate-0.json",
+          "sha256": "ce603255420cacdf64b41921712d8299cea28b7e90ecfd4f5eb73c2eed78e72a"
+        }
+      ],
+      "pairId": null,
+      "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
+    },
+    {
+      "id": "sql-join-preservation-literal",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "literal",
+      "text": "Place this relation filter while respecting the supplied join kind and unmatched-row requirements.",
+      "relevantIds": [
+        "sql-join-preservation-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-literal",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-literal-0.json",
+          "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8"
+        }
+      ],
+      "pairId": "sql-join-preservation-single-fact-flip",
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "sql-join-preservation-cross_language",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "cross_language",
+      "text": "连接后未匹配左行必须保留，右表条件应放在哪里？以契约为准。",
+      "relevantIds": [
+        "sql-join-preservation-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-cross_language",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-cross_language-0.json",
+          "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "sql-join-preservation-paraphrase",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "paraphrase",
+      "text": "Customers without a qualifying child record must still appear after the relational restriction.",
+      "relevantIds": [
+        "sql-join-preservation-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-paraphrase",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-paraphrase-0.json",
+          "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "sql-join-preservation-reverse_language",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "reverse_language",
+      "text": "Return only records with qualifying matches on both sides; unmatched rows are unwanted.",
+      "relevantIds": [
+        "sql-join-preservation-secondary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-reverse_language",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-reverse_language-0.json",
+          "sha256": "f039a5a4df79c9e40423b6b83bfdfec54087a232bc294b26d9b1d83a5b65d87e"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "sql-join-preservation-missing_positive",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "missing_positive",
+      "text": "The request asks to keep unmatched rows, but that requirement is absent from the verified join contract.",
+      "relevantIds": [
+        "sql-join-preservation-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-missing_positive",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-missing_positive-0.json",
+          "sha256": "2a09b08d2377d432778527e90b5da332b136e51d5a4944d3e43c3e682f00190f"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
+    },
+    {
+      "id": "sql-join-preservation-low_overlap",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "low_overlap",
+      "text": "A restriction on the optional side should not erase rows whose partner does not exist.",
+      "relevantIds": [
+        "sql-join-preservation-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-low_overlap",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-low_overlap-0.json",
+          "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "sql-join-preservation-hard_contradiction",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "hard_contradiction",
+      "text": "Place this relation filter while respecting the supplied join kind and unmatched-row requirements.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-hard_contradiction",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-hard_contradiction-0.json",
+          "sha256": "04b7c3ccc42e333de6b549fe6ed0796a53cf9dfafdac05af0741af9f83feb4d8"
+        }
+      ],
+      "pairId": "sql-join-preservation-single-fact-flip",
+      "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
+    },
+    {
+      "id": "sql-join-preservation-insufficient_context",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "insufficient_context",
+      "text": "The query results look incomplete.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-insufficient_context",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-insufficient_context-0.json",
+          "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
+    },
+    {
+      "id": "sql-join-preservation-irrelevant_same_facts",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "irrelevant_same_facts",
+      "text": "Rename the query-builder label for left joins without altering generated SQL.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-irrelevant_same_facts",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-irrelevant_same_facts-0.json",
+          "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
+    },
+    {
+      "id": "sql-join-preservation-conflicting_evidence",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "conflicting_evidence",
+      "text": "Place this relation filter while respecting the supplied join kind and unmatched-row requirements. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-conflicting_evidence-0.json",
+          "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8"
+        },
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-conflicting_evidence-1.json",
+          "sha256": "04b7c3ccc42e333de6b549fe6ed0796a53cf9dfafdac05af0741af9f83feb4d8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
+    },
+    {
+      "id": "sql-join-preservation-stale_evidence",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "stale_evidence",
+      "text": "Place this relation filter while respecting the supplied join kind and unmatched-row requirements. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-stale_evidence",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-stale_evidence-0.json",
+          "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8"
+        }
+      ],
+      "pairId": null,
+      "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
+    },
+    {
+      "id": "sql-join-preservation-no_applicable_candidate",
+      "split": "holdout",
+      "family": "sql-join-preservation",
+      "kind": "no_applicable_candidate",
+      "text": "Place this relation filter while respecting the supplied join kind and unmatched-row requirements. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "sql-join-preservation-no_applicable_candidate",
+          "revision": 1,
+          "path": "contracts/sql-join-preservation-no_applicable_candidate-0.json",
+          "sha256": "b9642d0ab859f33bb4517c6f45d6a0742a126a75523a22d7e0cfa7fe89f8faf3"
+        }
+      ],
+      "pairId": null,
+      "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
+    },
+    {
+      "id": "archive-root-containment-literal",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "literal",
+      "text": "Handle entry destinations under the supplied archive operation and trust contract.",
+      "relevantIds": [
+        "archive-root-containment-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-literal",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-literal-0.json",
+          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+        }
+      ],
+      "pairId": "archive-root-containment-single-fact-flip",
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "archive-root-containment-cross_language",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "cross_language",
+      "text": "解包路径需要限制在目标根目录内，请先核对归档契约。",
+      "relevantIds": [
+        "archive-root-containment-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-cross_language",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-cross_language-0.json",
+          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "archive-root-containment-paraphrase",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "paraphrase",
+      "text": "A downloaded bundle contains names that could traverse above the chosen output folder.",
+      "relevantIds": [
+        "archive-root-containment-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-paraphrase",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-paraphrase-0.json",
+          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "archive-root-containment-reverse_language",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "reverse_language",
+      "text": "Display an untrusted archive directory listing without extracting payload files.",
+      "relevantIds": [
+        "archive-root-containment-secondary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-reverse_language",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-reverse_language-0.json",
+          "sha256": "0451ac6607cde8ddb1decf82a99307d982a858d5a51a2fd607965f7f71255435"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "archive-root-containment-missing_positive",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "missing_positive",
+      "text": "The request calls the bundle untrusted, but the verified contract omits its trust level; review extraction destinations.",
+      "relevantIds": [
+        "archive-root-containment-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-missing_positive",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-missing_positive-0.json",
+          "sha256": "2595f864d448242981635fd65d6a2360120803d92abd133835845f9074497f57"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
+    },
+    {
+      "id": "archive-root-containment-low_overlap",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "low_overlap",
+      "text": "Do not let a packaged entry choose a filesystem location beyond the selected destination.",
+      "relevantIds": [
+        "archive-root-containment-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-low_overlap",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-low_overlap-0.json",
+          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "archive-root-containment-hard_contradiction",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "hard_contradiction",
+      "text": "Handle entry destinations under the supplied archive operation and trust contract.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-hard_contradiction",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-hard_contradiction-0.json",
+          "sha256": "0972c534f91ef9c30b4c649af2dc8ba6e2bbd8ee39172e9ad90bcddc68c08931"
+        }
+      ],
+      "pairId": "archive-root-containment-single-fact-flip",
+      "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
+    },
+    {
+      "id": "archive-root-containment-insufficient_context",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "insufficient_context",
+      "text": "The archive viewer behaves oddly.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-insufficient_context",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-insufficient_context-0.json",
+          "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
+    },
+    {
+      "id": "archive-root-containment-irrelevant_same_facts",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "irrelevant_same_facts",
+      "text": "Change the archive-extraction toolbar icon without changing file writes.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-irrelevant_same_facts",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-irrelevant_same_facts-0.json",
+          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+        }
+      ],
+      "pairId": null,
+      "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
+    },
+    {
+      "id": "archive-root-containment-conflicting_evidence",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "conflicting_evidence",
+      "text": "Handle entry destinations under the supplied archive operation and trust contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-conflicting_evidence-0.json",
+          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+        },
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-conflicting_evidence-1.json",
+          "sha256": "0972c534f91ef9c30b4c649af2dc8ba6e2bbd8ee39172e9ad90bcddc68c08931"
+        }
+      ],
+      "pairId": null,
+      "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
+    },
+    {
+      "id": "archive-root-containment-stale_evidence",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "stale_evidence",
+      "text": "Handle entry destinations under the supplied archive operation and trust contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-stale_evidence",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-stale_evidence-0.json",
+          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+        }
+      ],
+      "pairId": null,
+      "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
+    },
+    {
+      "id": "archive-root-containment-no_applicable_candidate",
+      "split": "holdout",
+      "family": "archive-root-containment",
+      "kind": "no_applicable_candidate",
+      "text": "Handle entry destinations under the supplied archive operation and trust contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "archive-root-containment-no_applicable_candidate",
+          "revision": 1,
+          "path": "contracts/archive-root-containment-no_applicable_candidate-0.json",
+          "sha256": "8b9bf826ec1b89549a7cfd2119f4970a18e22055c41c8a5c4d221d1d7660c00d"
+        }
+      ],
+      "pairId": null,
+      "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
+    },
+    {
+      "id": "pagination-total-order-literal",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "literal",
+      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract.",
+      "relevantIds": [
+        "pagination-total-order-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-literal",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-literal-0.json",
+          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+        }
+      ],
+      "pairId": "pagination-total-order-single-fact-flip",
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "pagination-total-order-cross_language",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "cross_language",
+      "text": "游标分页排序键可能相同，如何避免跨页漏行？请核对排序契约。",
+      "relevantIds": [
+        "pagination-total-order-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-cross_language",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-cross_language-0.json",
+          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "pagination-total-order-paraphrase",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "paraphrase",
+      "text": "Several records share a sort value; the next-page boundary must identify a precise position.",
+      "relevantIds": [
+        "pagination-total-order-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-paraphrase",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-paraphrase-0.json",
+          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "pagination-total-order-reverse_language",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "reverse_language",
+      "text": "Offset pages drift while rows change; use the available consistent dataset snapshot.",
+      "relevantIds": [
+        "pagination-total-order-secondary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-reverse_language",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-reverse_language-0.json",
+          "sha256": "a2a665cb4bb05fdc28e63404b5a8ba9b412e14166bf83eadbb0a89a8660e5332"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "pagination-total-order-missing_positive",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "missing_positive",
+      "text": "The request mentions tied sort values, but key uniqueness is not established in the verified paging contract.",
+      "relevantIds": [
+        "pagination-total-order-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-missing_positive",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-missing_positive-0.json",
+          "sha256": "93639fb3b3ad3aeacb76e1f063a980c734f4c04846d23dd6862e5d52c7d87506"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
+    },
+    {
+      "id": "pagination-total-order-low_overlap",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "low_overlap",
+      "text": "Moving the boundary past one record must not jump over other records with the same visible ordering value.",
+      "relevantIds": [
+        "pagination-total-order-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-low_overlap",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-low_overlap-0.json",
+          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "pagination-total-order-hard_contradiction",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "hard_contradiction",
+      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-hard_contradiction",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-hard_contradiction-0.json",
+          "sha256": "6164817f3566df2fcb4765f2a6ca9354c7e5b6f038e1757bbca9e9e7d1a53153"
+        }
+      ],
+      "pairId": "pagination-total-order-single-fact-flip",
+      "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
+    },
+    {
+      "id": "pagination-total-order-insufficient_context",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "insufficient_context",
+      "text": "Some rows look duplicated.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-insufficient_context",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-insufficient_context-0.json",
+          "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
+    },
+    {
+      "id": "pagination-total-order-irrelevant_same_facts",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "irrelevant_same_facts",
+      "text": "Rewrite the pagination menu label without changing page ordering or fetches.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-irrelevant_same_facts",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-irrelevant_same_facts-0.json",
+          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+        }
+      ],
+      "pairId": null,
+      "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
+    },
+    {
+      "id": "pagination-total-order-conflicting_evidence",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "conflicting_evidence",
+      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-conflicting_evidence-0.json",
+          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+        },
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-conflicting_evidence-1.json",
+          "sha256": "6164817f3566df2fcb4765f2a6ca9354c7e5b6f038e1757bbca9e9e7d1a53153"
+        }
+      ],
+      "pairId": null,
+      "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
+    },
+    {
+      "id": "pagination-total-order-stale_evidence",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "stale_evidence",
+      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-stale_evidence",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-stale_evidence-0.json",
+          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+        }
+      ],
+      "pairId": null,
+      "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
+    },
+    {
+      "id": "pagination-total-order-no_applicable_candidate",
+      "split": "holdout",
+      "family": "pagination-total-order",
+      "kind": "no_applicable_candidate",
+      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "pagination-total-order-no_applicable_candidate",
+          "revision": 1,
+          "path": "contracts/pagination-total-order-no_applicable_candidate-0.json",
+          "sha256": "f42b44edfbf9b3cc913e692434b2963911bd861565fd9ac34e662acc50eea6d7"
+        }
+      ],
+      "pairId": null,
+      "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
+    },
+    {
+      "id": "decimal-sum-rounding-literal",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "literal",
+      "text": "Process the measurement values according to the supplied aggregation and rounding contract.",
+      "relevantIds": [
+        "decimal-sum-rounding-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-literal",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-literal-0.json",
+          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+        }
+      ],
+      "pairId": "decimal-sum-rounding-single-fact-flip",
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "decimal-sum-rounding-cross_language",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "cross_language",
+      "text": "十进制测量值累计后何时舍入？请遵循附带聚合契约。",
+      "relevantIds": [
+        "decimal-sum-rounding-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-cross_language",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-cross_language-0.json",
+          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "decimal-sum-rounding-paraphrase",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "paraphrase",
+      "text": "Small fractional readings should retain their digits until the final combined result is ready.",
+      "relevantIds": [
+        "decimal-sum-rounding-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-paraphrase",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-paraphrase-0.json",
+          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "decimal-sum-rounding-reverse_language",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "reverse_language",
+      "text": "The required result is the sum of individually rounded decimal samples, not the rounded exact total.",
+      "relevantIds": [
+        "decimal-sum-rounding-secondary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-reverse_language",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-reverse_language-0.json",
+          "sha256": "8925035098d1b2368be0037c0b5783c73df5b4fcdf3c478b3e0a5e7b7a24ca47"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "decimal-sum-rounding-missing_positive",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "missing_positive",
+      "text": "The request says to round only the total, but the verified contract omits the rounding boundary.",
+      "relevantIds": [
+        "decimal-sum-rounding-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-missing_positive",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-missing_positive-0.json",
+          "sha256": "329614c8311c450124b2fee66199164d9fd37903019810c7fedce071bc60edf9"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
+    },
+    {
+      "id": "decimal-sum-rounding-low_overlap",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "low_overlap",
+      "text": "Avoid accumulating the loss from trimming every reading before the final result is formed.",
+      "relevantIds": [
+        "decimal-sum-rounding-primary"
+      ],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-low_overlap",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-low_overlap-0.json",
+          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
+    },
+    {
+      "id": "decimal-sum-rounding-hard_contradiction",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "hard_contradiction",
+      "text": "Process the measurement values according to the supplied aggregation and rounding contract.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-hard_contradiction",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-hard_contradiction-0.json",
+          "sha256": "5682a0ae7ffeff312229d516f51dd3b05538f0f591f25663462ea50b06f096ed"
+        }
+      ],
+      "pairId": "decimal-sum-rounding-single-fact-flip",
+      "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
+    },
+    {
+      "id": "decimal-sum-rounding-insufficient_context",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "insufficient_context",
+      "text": "The measurements look unusual.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-insufficient_context",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-insufficient_context-0.json",
+          "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
+        }
+      ],
+      "pairId": null,
+      "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
+    },
+    {
+      "id": "decimal-sum-rounding-irrelevant_same_facts",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "irrelevant_same_facts",
+      "text": "Change the display caption for decimal sums without touching arithmetic.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-irrelevant_same_facts",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-irrelevant_same_facts-0.json",
+          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+        }
+      ],
+      "pairId": null,
+      "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
+    },
+    {
+      "id": "decimal-sum-rounding-conflicting_evidence",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "conflicting_evidence",
+      "text": "Process the measurement values according to the supplied aggregation and rounding contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-conflicting_evidence-0.json",
+          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+        },
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-conflicting_evidence",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-conflicting_evidence-1.json",
+          "sha256": "5682a0ae7ffeff312229d516f51dd3b05538f0f591f25663462ea50b06f096ed"
+        }
+      ],
+      "pairId": null,
+      "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
+    },
+    {
+      "id": "decimal-sum-rounding-stale_evidence",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "stale_evidence",
+      "text": "Process the measurement values according to the supplied aggregation and rounding contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-stale_evidence",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-stale_evidence-0.json",
+          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+        }
+      ],
+      "pairId": null,
+      "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
+    },
+    {
+      "id": "decimal-sum-rounding-no_applicable_candidate",
+      "split": "holdout",
+      "family": "decimal-sum-rounding",
+      "kind": "no_applicable_candidate",
+      "text": "Process the measurement values according to the supplied aggregation and rounding contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "relevantIds": [],
+      "sourceRefs": [
+        {
+          "namespace": "holdout/contracts",
+          "taskId": "decimal-sum-rounding-no_applicable_candidate",
+          "revision": 1,
+          "path": "contracts/decimal-sum-rounding-no_applicable_candidate-0.json",
+          "sha256": "375ad027752e861eadc46c91af931a28ca61fc9753209370dd69dc7cd4252e57"
+        }
+      ],
+      "pairId": null,
+      "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
+    }
+  ],
+  "sources": [
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-literal",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-literal-0.json",
+      "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-cross_language",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-cross_language-0.json",
+      "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-paraphrase",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-paraphrase-0.json",
+      "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-reverse_language",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-reverse_language-0.json",
+      "sha256": "036cfc51c2675ede2e4f239dbef4343d220ae86a2fbbb8b19a6e2385c44a948e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"rate_limit\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-missing_positive",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-missing_positive-0.json",
+      "sha256": "306c95b6d4b75f763b59e7581d58ce1007e88ba354d1f039f15b9a2fd27d85b5",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-low_overlap",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-low_overlap-0.json",
+      "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-hard_contradiction",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-hard_contradiction-0.json",
+      "sha256": "6363f1a046dc9a65899235ae83e1ecc9dc8d0186d57df86ea85283b376bb4138",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"non_idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-insufficient_context",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-insufficient_context-0.json",
+      "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
+      "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-irrelevant_same_facts",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-irrelevant_same_facts-0.json",
+      "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-conflicting_evidence-0.json",
+      "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-conflicting_evidence-1.json",
+      "sha256": "6363f1a046dc9a65899235ae83e1ecc9dc8d0186d57df86ea85283b376bb4138",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"non_idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-stale_evidence",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-stale_evidence-0.json",
+      "sha256": "c9923cd17c11efa47b4058ed83ea5c34a668d4ec4c72b0f5734b28312cc216bb",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":false}}\n "
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "http-retry-effects-no_applicable_candidate",
+      "revision": 1,
+      "path": "contracts/http-retry-effects-no_applicable_candidate-0.json",
+      "sha256": "8c8435cf22af61b468d3e57978875258cac2364ae5034bdeb1b58f98f27bfced",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"side_effects\":\"idempotent\",\"body_replayable\":true,\"failure_stage\":\"transport\",\"retry_forbidden\":true}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-literal",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-literal-0.json",
+      "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-cross_language",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-cross_language-0.json",
+      "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-paraphrase",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-paraphrase-0.json",
+      "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-reverse_language",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-reverse_language-0.json",
+      "sha256": "d530593f701d813af459a746357bc2dc6187a3a2c5075a9ae7978cc08b21e0ee",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"append\",\"same_filesystem\":true,\"readers_need_complete\":false,\"append_only\":true}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-missing_positive",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-missing_positive-0.json",
+      "sha256": "e64d9967d683a4e9f042fc458435cfa1d4777b582e486abc73466eaaa4272e95",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-low_overlap",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-low_overlap-0.json",
+      "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-hard_contradiction",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-hard_contradiction-0.json",
+      "sha256": "226df154e58e120e10c1b7606e6e463a1c89dbb6253b8dd519e8e0222a401af5",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"remote_object\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-insufficient_context",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-insufficient_context-0.json",
+      "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
+      "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-irrelevant_same_facts",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-irrelevant_same_facts-0.json",
+      "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-conflicting_evidence-0.json",
+      "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-conflicting_evidence-1.json",
+      "sha256": "226df154e58e120e10c1b7606e6e463a1c89dbb6253b8dd519e8e0222a401af5",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"remote_object\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-stale_evidence",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-stale_evidence-0.json",
+      "sha256": "0f680cc4beaa2bd2ad0e62ca35c1414f890ee372871c28072f37f2a1990a433e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":false}}\n "
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "atomic-file-replace-no_applicable_candidate",
+      "revision": 1,
+      "path": "contracts/atomic-file-replace-no_applicable_candidate-0.json",
+      "sha256": "2125f827636e2ed09cab7a47641aeee8fe79eba95cc563405f4c950f435a5893",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"storage_kind\":\"local_file\",\"write_mode\":\"replace\",\"same_filesystem\":true,\"readers_need_complete\":true,\"append_only\":true}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-literal",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-literal-0.json",
+      "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-cross_language",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-cross_language-0.json",
+      "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-paraphrase",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-paraphrase-0.json",
+      "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-reverse_language",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-reverse_language-0.json",
+      "sha256": "1c91981441bfee3ca19bb92c32a905b18faabd307433d50d2f3f203ddca250ed",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"drop_oldest\",\"loss_allowed\":true,\"producer_must_not_wait\":true}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-missing_positive",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-missing_positive-0.json",
+      "sha256": "515c0c332f6faa0a34c8eac2884fc72dfa0cd354470782259d59a06a0089b8c2",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"block\",\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-low_overlap",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-low_overlap-0.json",
+      "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-hard_contradiction",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-hard_contradiction-0.json",
+      "sha256": "a4debfe9ffbc9c2c1a4d70267d83b4b00df6655588437864aed43a1cc51ee19d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"unbounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-insufficient_context",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-insufficient_context-0.json",
+      "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
+      "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-irrelevant_same_facts",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-irrelevant_same_facts-0.json",
+      "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-conflicting_evidence-0.json",
+      "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-conflicting_evidence-1.json",
+      "sha256": "a4debfe9ffbc9c2c1a4d70267d83b4b00df6655588437864aed43a1cc51ee19d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"unbounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-stale_evidence",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-stale_evidence-0.json",
+      "sha256": "8a98731188586ce3d5f46d71bf7f97288f3f1ed99e7ffa4c4dffed3469faecf8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"block\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n "
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "bounded-queue-policy-no_applicable_candidate",
+      "revision": 1,
+      "path": "contracts/bounded-queue-policy-no_applicable_candidate-0.json",
+      "sha256": "09280783ffdcee6583544ede51a9ce4156ef01a94cae77c89db3adbff854fe93",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"buffer_kind\":\"bounded\",\"overflow_policy\":\"reject\",\"loss_allowed\":false,\"producer_must_not_wait\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-literal",
+      "revision": 1,
+      "path": "contracts/json-field-presence-literal-0.json",
+      "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-cross_language",
+      "revision": 1,
+      "path": "contracts/json-field-presence-cross_language-0.json",
+      "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-paraphrase",
+      "revision": 1,
+      "path": "contracts/json-field-presence-paraphrase-0.json",
+      "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-reverse_language",
+      "revision": 1,
+      "path": "contracts/json-field-presence-reverse_language-0.json",
+      "sha256": "6a1793cbc4e8c8df19224d1c7a2f4e34049b908b34216f4cad067f89a465337d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"reject\",\"null_allowed\":false,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-missing_positive",
+      "revision": 1,
+      "path": "contracts/json-field-presence-missing_positive-0.json",
+      "sha256": "b7d1808cbb0e451adf6d2baa368c585ab2bbe80379349047a8cfae25a0913db8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-low_overlap",
+      "revision": 1,
+      "path": "contracts/json-field-presence-low_overlap-0.json",
+      "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-hard_contradiction",
+      "revision": 1,
+      "path": "contracts/json-field-presence-hard_contradiction-0.json",
+      "sha256": "a5f2021f9089aa3b7780e5ac3161948498f82f2843809dc5bc17b560b9a7a72d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"positional_array\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-insufficient_context",
+      "revision": 1,
+      "path": "contracts/json-field-presence-insufficient_context-0.json",
+      "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
+      "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-irrelevant_same_facts",
+      "revision": 1,
+      "path": "contracts/json-field-presence-irrelevant_same_facts-0.json",
+      "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/json-field-presence-conflicting_evidence-0.json",
+      "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/json-field-presence-conflicting_evidence-1.json",
+      "sha256": "a5f2021f9089aa3b7780e5ac3161948498f82f2843809dc5bc17b560b9a7a72d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"positional_array\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n"
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-stale_evidence",
+      "revision": 1,
+      "path": "contracts/json-field-presence-stale_evidence-0.json",
+      "sha256": "7fef81310e19eac0c5483f8161346b9e35aef0c7371c71abcebb47499df7171d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":false}}\n "
+    },
+    {
+      "namespace": "development/contracts",
+      "taskId": "json-field-presence-no_applicable_candidate",
+      "revision": 1,
+      "path": "contracts/json-field-presence-no_applicable_candidate-0.json",
+      "sha256": "ce603255420cacdf64b41921712d8299cea28b7e90ecfd4f5eb73c2eed78e72a",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"json_object\",\"missing_policy\":\"preserve\",\"null_allowed\":true,\"coerce_null_to_default\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-literal",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-literal-0.json",
+      "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-cross_language",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-cross_language-0.json",
+      "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-paraphrase",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-paraphrase-0.json",
+      "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-reverse_language",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-reverse_language-0.json",
+      "sha256": "f039a5a4df79c9e40423b6b83bfdfec54087a232bc294b26d9b1d83a5b65d87e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"inner\",\"preserve_unmatched\":false,\"predicate_side\":\"right\",\"require_matching_rows\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-missing_positive",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-missing_positive-0.json",
+      "sha256": "2a09b08d2377d432778527e90b5da332b136e51d5a4944d3e43c3e682f00190f",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-low_overlap",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-low_overlap-0.json",
+      "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-hard_contradiction",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-hard_contradiction-0.json",
+      "sha256": "04b7c3ccc42e333de6b549fe6ed0796a53cf9dfafdac05af0741af9f83feb4d8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"left\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-insufficient_context",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-insufficient_context-0.json",
+      "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
+      "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-irrelevant_same_facts",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-irrelevant_same_facts-0.json",
+      "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-conflicting_evidence-0.json",
+      "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-conflicting_evidence-1.json",
+      "sha256": "04b7c3ccc42e333de6b549fe6ed0796a53cf9dfafdac05af0741af9f83feb4d8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"left\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-stale_evidence",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-stale_evidence-0.json",
+      "sha256": "6f435e650a70d6a91815bd60af56d92cc9a6d69c9b5c67e65151d9115eaf6ec8",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"left\",\"preserve_unmatched\":true,\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n "
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "sql-join-preservation-no_applicable_candidate",
+      "revision": 1,
+      "path": "contracts/sql-join-preservation-no_applicable_candidate-0.json",
+      "sha256": "b9642d0ab859f33bb4517c6f45d6a0742a126a75523a22d7e0cfa7fe89f8faf3",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"join_kind\":\"cross\",\"preserve_unmatched\":true,\"predicate_side\":\"right\",\"require_matching_rows\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-literal",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-literal-0.json",
+      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-cross_language",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-cross_language-0.json",
+      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-paraphrase",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-paraphrase-0.json",
+      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-reverse_language",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-reverse_language-0.json",
+      "sha256": "0451ac6607cde8ddb1decf82a99307d982a858d5a51a2fd607965f7f71255435",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"list\",\"allow_outside_root\":false,\"writes_payload\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-missing_positive",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-missing_positive-0.json",
+      "sha256": "2595f864d448242981635fd65d6a2360120803d92abd133835845f9074497f57",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-low_overlap",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-low_overlap-0.json",
+      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-hard_contradiction",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-hard_contradiction-0.json",
+      "sha256": "0972c534f91ef9c30b4c649af2dc8ba6e2bbd8ee39172e9ad90bcddc68c08931",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":false,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-insufficient_context",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-insufficient_context-0.json",
+      "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
+      "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-irrelevant_same_facts",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-irrelevant_same_facts-0.json",
+      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-conflicting_evidence-0.json",
+      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-conflicting_evidence-1.json",
+      "sha256": "0972c534f91ef9c30b4c649af2dc8ba6e2bbd8ee39172e9ad90bcddc68c08931",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":false,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-stale_evidence",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-stale_evidence-0.json",
+      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n "
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "archive-root-containment-no_applicable_candidate",
+      "revision": 1,
+      "path": "contracts/archive-root-containment-no_applicable_candidate-0.json",
+      "sha256": "8b9bf826ec1b89549a7cfd2119f4970a18e22055c41c8a5c4d221d1d7660c00d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"stream\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-literal",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-literal-0.json",
+      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-cross_language",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-cross_language-0.json",
+      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-paraphrase",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-paraphrase-0.json",
+      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-reverse_language",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-reverse_language-0.json",
+      "sha256": "a2a665cb4bb05fdc28e63404b5a8ba9b412e14166bf83eadbb0a89a8660e5332",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"offset\",\"sort_unique\":true,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":true,\"snapshot_available\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-missing_positive",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-missing_positive-0.json",
+      "sha256": "93639fb3b3ad3aeacb76e1f063a980c734f4c04846d23dd6862e5d52c7d87506",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-low_overlap",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-low_overlap-0.json",
+      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-hard_contradiction",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-hard_contradiction-0.json",
+      "sha256": "6164817f3566df2fcb4765f2a6ca9354c7e5b6f038e1757bbca9e9e7d1a53153",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":false,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-insufficient_context",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-insufficient_context-0.json",
+      "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
+      "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-irrelevant_same_facts",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-irrelevant_same_facts-0.json",
+      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-conflicting_evidence-0.json",
+      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-conflicting_evidence-1.json",
+      "sha256": "6164817f3566df2fcb4765f2a6ca9354c7e5b6f038e1757bbca9e9e7d1a53153",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":false,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-stale_evidence",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-stale_evidence-0.json",
+      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n "
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "pagination-total-order-no_applicable_candidate",
+      "revision": 1,
+      "path": "contracts/pagination-total-order-no_applicable_candidate-0.json",
+      "sha256": "f42b44edfbf9b3cc913e692434b2963911bd861565fd9ac34e662acc50eea6d7",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"none\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-literal",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-literal-0.json",
+      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-cross_language",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-cross_language-0.json",
+      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-paraphrase",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-paraphrase-0.json",
+      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-reverse_language",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-reverse_language-0.json",
+      "sha256": "8925035098d1b2368be0037c0b5783c73df5b4fcdf3c478b3e0a5e7b7a24ca47",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"per_sample\",\"round_each_sample\":true}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-missing_positive",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-missing_positive-0.json",
+      "sha256": "329614c8311c450124b2fee66199164d9fd37903019810c7fedce071bc60edf9",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-low_overlap",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-low_overlap-0.json",
+      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-hard_contradiction",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-hard_contradiction-0.json",
+      "sha256": "5682a0ae7ffeff312229d516f51dd3b05538f0f591f25663462ea50b06f096ed",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"concatenate\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-insufficient_context",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-insufficient_context-0.json",
+      "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
+      "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-irrelevant_same_facts",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-irrelevant_same_facts-0.json",
+      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-conflicting_evidence-0.json",
+      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-conflicting_evidence",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-conflicting_evidence-1.json",
+      "sha256": "5682a0ae7ffeff312229d516f51dd3b05538f0f591f25663462ea50b06f096ed",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"concatenate\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-stale_evidence",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-stale_evidence-0.json",
+      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n "
+    },
+    {
+      "namespace": "holdout/contracts",
+      "taskId": "decimal-sum-rounding-no_applicable_candidate",
+      "revision": 1,
+      "path": "contracts/decimal-sum-rounding-no_applicable_candidate-0.json",
+      "sha256": "375ad027752e861eadc46c91af931a28ca61fc9753209370dd69dc7cd4252e57",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"binary_bytes\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+    }
+  ]
+}
