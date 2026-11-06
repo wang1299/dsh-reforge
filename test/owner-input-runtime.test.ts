@@ -89,6 +89,7 @@ test('actual official AgentLoop receives bound facts before reference; six runti
             await assert.rejects(() => service.ownerInput.submit({ instanceId: taskPreview.instanceId, previewId: taskPreview.previewId, idempotencyKey: randomUUID() }, carrier), code('owner_rules_changed'));
             assert.equal(bank.store.ownerInputs.receipts(service.repositoryId).length, 0); assert.equal(adapter.calls.length, 0);
             assert.equal(bank.store.tasks().filter(t => t.sessionId === sessionId).length, 0);
+            assert.equal(handle.agent.status, 'idle'); assert.equal(handle.agent.inbox.nextTurn.length, 0); assert.equal(handle.agent.inbox.nextStep.length, 0);
             taskPreview = service.ownerInput.taskPreview({ path: sourcePath, property: 'state', text, goal }, carrier);
           }
           const request = { instanceId: taskPreview.instanceId, previewId: taskPreview.previewId, idempotencyKey: randomUUID() };
