@@ -2,6 +2,8 @@
 
 [Website](https://wang1299.github.io/dsh-reforge/en/) · [Website publication status](https://github.com/wang1299/dsh-reforge/issues/116)
 
+New offline research: [120-query multilingual retrieval comparison](evaluation/retrieval-v3.md#english). Dense positive offers improve from3/30 to18/30 on a60-query synthetic family holdout, with16 wrong offers still retained; hybrid reaches12/30 with18 wrong. Public synthetic vectors support scoring replay without paid APIs. This is not a default DSH feature or evidence of downstream task benefit.
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/wang1299/dsh-reforge/main/docs/assets/dsh-reforge-hero-v3.png" alt="DSH-Reforge — Fix. Verify. Reforge." width="1000" />
 </p>
