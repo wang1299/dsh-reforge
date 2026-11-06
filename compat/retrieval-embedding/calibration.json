@@ -1940,8 +1940,8 @@
     }
   ],
   "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
-  "developmentVectorDigest": "b0715e4a68ad1b79a1a93a9d7c3d03fc9f1255b09c855d775a096487a941e581",
-  "sourceCommit": "705a57f2139ef92258e765d4c704154320530088",
+  "developmentVectorDigest": "e69eb0806469328db60d1e3cd1c2441589dcc2b15a96c1a3103f9a95bbb94c42",
+  "sourceCommit": "407e4d44569188c51c9073a5a3577161a95e6c49",
   "sourceDirty": false,
   "sourceDigests": {
     "src/embedding.ts": "030109c1c385b907a59e28274b827cf0b2fd44d64c17330b4d4539f8d04d40da",
@@ -1949,6 +1949,6 @@
     "src/hybrid-evaluation.ts": "c4f12a9b6c4da89b373fbffcd98796b2d10fb46ecd14381cfdf09cb59c80723e",
     "src/retrieval.ts": "79248d6b7d3b4d2b7dec325f8d50117f49c73ff742e3ac1296c3671f9ed142a6",
     "scripts/hybrid-evaluate.ts": "ea7f19e2db1903dbadce3091c9e6d87d37e1047d947fa1878d7867b5eb03ad1a",
-    "scripts/retrieval-embedding.py": "80ce4db59fe60f78ebb0abd2c929edb9b77fa40959a3a8c90c3724592683c7bd"
+    "scripts/retrieval-embedding.py": "e007cc36028278891bad6603e83135d497616e125609c9759e02fee87ccfdf13"
   }
 }
