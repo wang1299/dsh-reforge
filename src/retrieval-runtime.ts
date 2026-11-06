@@ -25,6 +25,7 @@ export interface RetrievalAttempt {
   selectedId: string | null; selectedRevision: number | null; applicationId: string | null;
   candidatesConsidered: number; eligibleCount: number; omittedCandidates: number;
   candidates: CandidateExplanation[]; cache: CacheResult; generation: number;
+  scopeChecks?: { snapshotPasses: number; conditionPathsChecked: number | null; lifetime: 'request' | 'per-experience' };
   timings: { qualificationMs: number; lookupMs: number; buildMs: number | null; queryMs: number; selectionMs: number; totalMs: number };
 }
 export interface RetrievalStatus {
@@ -41,7 +42,7 @@ export class RetrievalRuntime {
   private bypasses = 0;
   private attempts: RetrievalAttempt[] = [];
   private omittedAttempts = 0;
-  constructor(private readonly execution: 'reuse' | 'legacy' = 'reuse') {}
+  constructor(private readonly execution: 'reuse' | 'legacy' = 'reuse', readonly scopeReads: 'request' | 'per-experience' = 'request') {}
 
   search(query: string, documents: readonly RuntimeDocument[], scopeKey: string): SearchResult {
     const lookupStart = performance.now();

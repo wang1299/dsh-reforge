@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
 import { z } from 'zod';
 import { Store } from './store.js';
-import { applicability, snapshot } from './repository.js';
+import { applicability, snapshot, requestScopeReader } from './repository.js';
 import { candidateSchema, digest, feedbackSchema, idSchema, redact, textSchema, RevisionConflict,
   type Application, type Candidate, type Evidence, type Experience, type Feedback, type Scope, type Task } from './domain.js';
 import { verifyRepair, verifyWorkspaceRepair, type VerificationPolicy } from './verification.js';
@@ -54,11 +54,15 @@ export class EvolveService {
     });
   }
   requireTask(id: string, sessionId?: string): Task {
+    return this.checkedTask(id, sessionId).task;
+  }
+  private checkedTask(id: string, sessionId?: string): { task: Task; current: ReturnType<typeof snapshot> } {
     const task = this.store.task(idSchema.parse(id));
     if (!task) throw new Error('Unknown task');
     if (sessionId !== undefined && task.sessionId !== sessionId) throw new Error('Task belongs to a different session');
-    if (task.scope.repoId !== snapshot(this.root).scope.repoId) throw new Error('Task belongs to a different repository');
-    return task;
+    const current = snapshot(this.root);
+    if (task.scope.repoId !== current.scope.repoId) throw new Error('Task belongs to a different repository');
+    return { task, current };
   }
   finish(id: string): Task {
     const task = this.requireTask(id); if (task.state === 'closed') return task;
@@ -208,10 +212,12 @@ export class EvolveService {
   select(taskId: string, mode: 'evidence-v1' | 'feedback-v1' | 'bm25-v1' = 'evidence-v1'): { application: Application | null; experience: Experience | null; reasons: string[] } {
     const started = performance.now();
     z.enum(['evidence-v1', 'feedback-v1', 'bm25-v1']).parse(mode);
-    const task = this.requireTask(taskId); if (task.state !== 'open') throw new Error('Task is closed');
+    const { task, current: taskSnapshot } = this.checkedTask(taskId); if (task.state !== 'open') throw new Error('Task is closed');
     if (this.store.applications().some((a) => a.taskId === task.id)) return { application: null, experience: null, reasons: ['already_applied_one_experience'] };
     const reasons: string[] = [];
     const bank = this.store.experiences();
+    const scopeReader = this.retrievalRuntime.scopeReads === 'request' ? requestScopeReader(this.root, taskSnapshot) : null;
+    let snapshotPasses = 1;
     const excluded: CandidateExplanation[] = [];
     const explain = (experience: Experience, reason: CandidateReason, match?: { score: number; anchors: number }, combinedScore: number | null = null, alias?: string): CandidateExplanation => ({
       id: experience.id, revision: experience.revision, title: redact(experience.title, 80), reason,
@@ -235,7 +241,10 @@ export class EvolveService {
         if (!provenance.complete) { reasons.push(experience.id + ':incomplete_fact_sources:' + provenance.reasons.join(',')); exclude(experience, 'incomplete_fact_sources'); continue; }
       }
       let current;
-      try { current = snapshot(this.root, Object.keys(experience.scope.requiredFiles)); }
+      try {
+        if (scopeReader) current = scopeReader.read(Object.keys(experience.scope.requiredFiles));
+        else { snapshotPasses++; current = snapshot(this.root, Object.keys(experience.scope.requiredFiles)); }
+      }
       catch { reasons.push(experience.id + ':missing_code_condition'); exclude(experience, 'missing_code_condition'); continue; }
       const mismatch = applicability(experience.scope, current.scope);
       if (mismatch) { reasons.push(experience.id + ':' + mismatch); exclude(experience, mismatch.startsWith('code_condition_changed:') ? 'code_condition_changed' : mismatch as CandidateReason); continue; }
@@ -284,6 +293,7 @@ export class EvolveService {
         selectedRevision: selected?.experience.revision ?? null, applicationId: application?.id ?? null,
         candidatesConsidered: considered, eligibleCount: eligible.size, omittedCandidates: Math.max(0, considered - candidates.length), candidates,
         cache: search.cache, generation: search.generation,
+        scopeChecks: { snapshotPasses, conditionPathsChecked: scopeReader?.pathsChecked() ?? null, lifetime: scopeReader ? 'request' : 'per-experience' },
         timings: { qualificationMs: qualified - started, lookupMs: search.lookupMs, buildMs: search.buildMs,
           queryMs: search.queryMs, selectionMs: completed - searched, totalMs: completed - started } });
     };

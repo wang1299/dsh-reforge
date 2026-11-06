@@ -10,6 +10,7 @@ import { panelState } from '../src/panel-api.js';
 import { EvolveService } from '../src/service.js';
 import { Store } from '../src/store.js';
 import { startPanel } from '../src/panel.js';
+import { snapshot, requestScopeReader } from '../src/repository.js';
 import { verifiedRetrievalFixture } from './retrieval-fixture.js';
 
 test('runtime exactly preserves frozen rankings through queries, eligibility changes and repository/mode switches', async () => {
@@ -74,6 +75,9 @@ test('actual service decisions match legacy while authenticated projection reads
       assert.equal(a.experience?.id, b.experience?.id); assert.equal(a.experience?.revision, b.experience?.revision); assert.deepEqual(a.reasons, b.reasons);
     }
     assert.equal(cached.service.retrievalStatus().cache.builds, 1); assert.equal(cached.service.retrievalStatus().cache.hits, 3);
+    assert.equal(cached.service.retrievalStatus().attempts[0]!.scopeChecks?.snapshotPasses, 1);
+    assert.equal(cached.service.retrievalStatus().attempts[0]!.scopeChecks?.conditionPathsChecked, 1);
+    assert.equal(legacy.service.retrievalStatus().attempts[0]!.scopeChecks?.snapshotPasses, 8);
     const selected = cached.service.retrievalStatus().attempts.find(a => a.outcome === 'selected')!;
     assert.equal(selected.candidates[0]!.id, selected.selectedId); assert.equal(selected.omittedCandidates, 2);
     const before = JSON.stringify({ tasks: cached.store.tasks(), apps: cached.store.applications(), grants: cached.store.extraction.grants(), status: cached.service.retrievalStatus() });
@@ -141,4 +145,20 @@ test('HTTP explanations require owner authentication and polling cannot choose o
     }
     assert.equal(JSON.stringify({ tasks: b.store.tasks(), apps: b.store.applications(), grants: b.store.extraction.grants(), retrieval: b.service.retrievalStatus() }), before);
   } finally { await panel.close(); b.store.close(); f.store.close(); }
+});
+
+test('request-local scope failures affect only dependent experiences and a new request rereads every condition', { timeout: 60000 }, async () => {
+  const f = await verifiedRetrievalFixture(); const b = f.createBank();
+  try {
+    const reader = requestScopeReader(f.repo, snapshot(f.repo));
+    assert.throws(() => reader.read(['missing.py']), /Missing code/);
+    assert.deepEqual(reader.read(['contract.py']).scope, snapshot(f.repo, ['contract.py']).scope);
+    assert.deepEqual(reader.read(['contract.py']).scope, snapshot(f.repo, ['contract.py']).scope); assert.equal(reader.pathsChecked(), 2);
+    const e = b.experiences[0]!;
+    b.store.putExperience({ ...e, id: randomUUID(), revision: 1, scope: { ...e.scope, requiredFiles: { 'missing.py': '0'.repeat(64) } } }, b.store.citations(e.id, 1));
+    const first = b.service.select(b.service.begin('one-good-one-missing', 'transaction rollback exception').id);
+    assert.equal(first.experience?.id, e.id);
+    await writeFile(join(f.repo, 'contract.py'), 'TRANSACTION_POLICY = "new condition"\n');
+    assert.equal(b.service.select(b.service.begin('must-reread', 'transaction rollback exception').id).experience, null);
+  } finally { b.store.close(); f.store.close(); }
 });

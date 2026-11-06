@@ -18,7 +18,7 @@ export async function verifiedRetrievalFixture(parent?: string) {
   await f.fix(); const experience = await service.verify(candidate.id);
   assert.equal(experience.status, 'source_verified'); service.finish(task.id);
   const bankIds: string[] = [];
-  const createBank = (count = 1, execution: 'reuse' | 'legacy' = 'reuse', path = ':memory:') => {
+  const createBank = (count = 1, execution: 'reuse' | 'legacy' = 'reuse', path = ':memory:', scopeReads: 'request' | 'per-experience' = execution === 'legacy' ? 'per-experience' : 'request') => {
     const target = new Store(path);
     for (const task of store.tasks()) target.putTask(task);
     for (const evidence of store.evidenceRecords()) target.putEvidence(evidence);
@@ -29,7 +29,7 @@ export async function verifiedRetrievalFixture(parent?: string) {
         title: experience.title + ' fixture' + i, reason: 'Synthetic text variant sharing one verified repair; not independent strategy evidence' };
       target.putExperience(row, store.citations(experience.id, experience.revision)); return row;
     });
-    const owner = new EvolveService(target, f.repo, policy, false, undefined, false, false, new RetrievalRuntime(execution));
+    const owner = new EvolveService(target, f.repo, policy, false, undefined, false, false, new RetrievalRuntime(execution, scopeReads));
     return { store: target, service: owner, experiences };
   };
   return { ...f, store, service, policy, input, experience, createBank };
