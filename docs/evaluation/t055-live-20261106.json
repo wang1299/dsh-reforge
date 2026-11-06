@@ -1,0 +1,3312 @@
+{
+  "schemaVersion": 1,
+  "kind": "synthetic-live-service-retrieval",
+  "modelCalls": 0,
+  "sourceCommit": "15a319342f2c73896baf395d42d0aff68a79527a",
+  "sourceDirty": false,
+  "sourceDigests": {
+    "src/service.ts": "1d4cdc500af36261d97433a24a404e9de432da7f6803c32e8bc696717733bf81",
+    "src/repository.ts": "3afbe52314c97e243c0c70603b4898970a6aee5ed8fc74227d0c47d7889a3a5c",
+    "src/retrieval-runtime.ts": "ed45ce9edbfb15ed1a57c5aa8cef37694a516c73098a4ae2ad984b8d1c5fd232",
+    "src/retrieval.ts": "79248d6b7d3b4d2b7dec325f8d50117f49c73ff742e3ac1296c3671f9ed142a6",
+    "src/retrieval-index.ts": "00ba81ab7a64212035c57d535cb1cd36b8eea0dccf9fedf730485dc11da1e380",
+    "test/retrieval-fixture.ts": "27727beaecc241e323bfc86e259be45d8e89d389b0767a6b73e99fa8dfd388ec",
+    "scripts/live-retrieval-benchmark.ts": "52b12afc99bc3faba02be6ba8bae8dfc0c0e31c67a711cbfc0c887c5a7e8aca1"
+  },
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64",
+    "osRelease": "10.0.26200",
+    "cpu": "AMD Ryzen 9 7945HX with Radeon Graphics        "
+  },
+  "workload": [
+    "transaction rollback exception",
+    "transaction rollback exception with independent acceptance checks and regression tests",
+    "rollback transaction failure restore balance",
+    "transaction",
+    "unrelated typography layout",
+    "restore balance",
+    "transaction exception rollback",
+    "修复 transaction rollback failure"
+  ],
+  "workloadDigest": "bf2e90a47d1f0626133bfdd358bc5b48b7520c3b6e3eb00d6ec82bf4cdb94a2f",
+  "method": "Three arms: original per-experience scope reads/legacy text, index-only with per-experience reads, index plus request-local reads. One cold request per arm, then two repetitions x eight queries per arm, rotating interleaved order with second-round reversal, separate identical banks, equality outside timers. Wall time surrounds actual service.select including qualification/Git/SQLite/application and diagnostics. Task creation/panel serialization excluded. Nearest-rank percentiles.",
+  "limitations": [
+    "One local run over 1/10 synthetic text variants of one independently verified repair; not production traffic or an independent strategy corpus.",
+    "Original and reuse arms keep live evidence/scope/feedback checks; full-chain improvements may be negligible or negative.",
+    "Legacy build work is included in query time; prepared index construction is separate. Cache only retains an unchanged eligible bank.",
+    "No model, provider delivery, downstream task acceptance, token cost or financial benefit was evaluated.",
+    "Sixteen warm observations per method/size are descriptive, not a robust tail-latency estimate."
+  ],
+  "results": [
+    {
+      "documents": 1,
+      "exactDecisionsAndScores": true,
+      "cold": {
+        "legacy": {
+          "wallMs": 268.5592999999999,
+          "selectedVariant": 0,
+          "selectedRevision": 1,
+          "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+          "textScores": [
+            0.5651619032971262
+          ],
+          "combinedScores": [
+            0.5456133323079884
+          ],
+          "cache": "legacy",
+          "timings": {
+            "qualificationMs": 267.10390000000007,
+            "lookupMs": 0,
+            "buildMs": null,
+            "queryMs": 0.2997000000004846,
+            "selectionMs": 0.48870000000079017,
+            "totalMs": 267.96850000000086
+          },
+          "scopeChecks": {
+            "snapshotPasses": 2,
+            "conditionPathsChecked": null,
+            "lifetime": "per-experience"
+          }
+        },
+        "indexOnly": {
+          "wallMs": 268.83370000000014,
+          "selectedVariant": 0,
+          "selectedRevision": 1,
+          "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+          "textScores": [
+            0.5651619032971262
+          ],
+          "combinedScores": [
+            0.5456133323079884
+          ],
+          "cache": "cold",
+          "timings": {
+            "qualificationMs": 267.9975999999997,
+            "lookupMs": 0.06549999999970169,
+            "buildMs": 0.3546999999998661,
+            "queryMs": 0.13610000000062428,
+            "selectionMs": 0.1756999999997788,
+            "totalMs": 268.7386999999999
+          },
+          "scopeChecks": {
+            "snapshotPasses": 2,
+            "conditionPathsChecked": null,
+            "lifetime": "per-experience"
+          }
+        },
+        "reuse": {
+          "wallMs": 140.53189999999995,
+          "selectedVariant": 0,
+          "selectedRevision": 1,
+          "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+          "textScores": [
+            0.5651619032971262
+          ],
+          "combinedScores": [
+            0.5456133323079884
+          ],
+          "cache": "cold",
+          "timings": {
+            "qualificationMs": 140.22609999999986,
+            "lookupMs": 0.013400000000729051,
+            "buildMs": 0.05929999999989377,
+            "queryMs": 0.018399999999928696,
+            "selectionMs": 0.12550000000010186,
+            "totalMs": 140.44650000000001
+          },
+          "scopeChecks": {
+            "snapshotPasses": 1,
+            "conditionPathsChecked": 1,
+            "lifetime": "request"
+          }
+        }
+      },
+      "legacy": {
+        "samples": 16,
+        "p50Ms": 283.65250000000015,
+        "p95Ms": 340.0753999999997,
+        "meanMs": 286.73525000000006,
+        "qualificationP50Ms": 283.2929000000004,
+        "queryP50Ms": 0.04919999999947322
+      },
+      "indexOnly": {
+        "samples": 16,
+        "p50Ms": 286.859800000002,
+        "p95Ms": 331.5589,
+        "meanMs": 291.6175374999998,
+        "qualificationP50Ms": 286.5506999999998,
+        "queryP50Ms": 0.03570000000036089
+      },
+      "reuse": {
+        "samples": 16,
+        "p50Ms": 151.57220000000234,
+        "p95Ms": 192.82430000000022,
+        "meanMs": 151.10984374999998,
+        "qualificationP50Ms": 150.26919999999882,
+        "queryP50Ms": 0.031200000001263106
+      },
+      "p50ReductionPercent": 46.56412335516089,
+      "p95ReductionPercent": 43.29954474801754,
+      "cache": {
+        "documents": 1,
+        "builds": 1,
+        "hits": 16,
+        "bypasses": 0
+      },
+      "samples": [
+        {
+          "repetition": 0,
+          "queryIndex": 0,
+          "legacy": {
+            "wallMs": 264.66979999999967,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 264.321100000001,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.0485000000007858,
+              "selectionMs": 0.19950000000062573,
+              "totalMs": 264.5733
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 265.3940999999995,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 265.0583999999999,
+              "lookupMs": 0.015800000001036096,
+              "buildMs": 0,
+              "queryMs": 0.03659999999945285,
+              "selectionMs": 0.1911999999992986,
+              "totalMs": 265.3073999999997
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 129.97979999999916,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 129.71450000000004,
+              "lookupMs": 0.013399999999819556,
+              "buildMs": 0,
+              "queryMs": 0.03299999999944703,
+              "selectionMs": 0.131600000000617,
+              "totalMs": 129.89600000000064
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 1,
+          "indexOnly": {
+            "wallMs": 281.2464,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 280.8590000000004,
+              "lookupMs": 0.01569999999992433,
+              "buildMs": 0,
+              "queryMs": 0.03800000000046566,
+              "selectionMs": 0.16019999999844003,
+              "totalMs": 281.079099999999
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 131.04179999999906,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 130.75,
+              "lookupMs": 0.012299999998504063,
+              "buildMs": 0,
+              "queryMs": 0.03230000000075961,
+              "selectionMs": 0.15719999999964784,
+              "totalMs": 130.95479999999952
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 262.71480000000156,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 262.3689000000013,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.07420000000092841,
+              "selectionMs": 0.1756999999997788,
+              "totalMs": 262.6220000000012
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 2,
+          "reuse": {
+            "wallMs": 136.18169999999918,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 135.9379000000008,
+              "lookupMs": 0.012600000000020373,
+              "buildMs": 0,
+              "queryMs": 0.02959999999984575,
+              "selectionMs": 0.1110000000007858,
+              "totalMs": 136.09460000000036
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 276.6918999999998,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 276.3923999999988,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.06149999999979627,
+              "selectionMs": 0.13059999999859428,
+              "totalMs": 276.58969999999863
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 305.5203999999994,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 305.1958000000013,
+              "lookupMs": 0.020399999999426655,
+              "buildMs": 0,
+              "queryMs": 0.03800000000046566,
+              "selectionMs": 0.15960000000086438,
+              "totalMs": 305.437100000001
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 3,
+          "legacy": {
+            "wallMs": 270.2327000000005,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 269.85599999999977,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.04919999999947322,
+              "selectionMs": 0.19139999999970314,
+              "totalMs": 270.10479999999916
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 280.98179999999957,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 280.7634999999991,
+              "lookupMs": 0.03719999999884749,
+              "buildMs": 0,
+              "queryMs": 0.035499999999956344,
+              "selectionMs": 0.03570000000036089,
+              "totalMs": 280.8757999999998
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 154.71980000000076,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 154.52160000000003,
+              "lookupMs": 0.019700000000739237,
+              "buildMs": 0,
+              "queryMs": 0.04199999999946158,
+              "selectionMs": 0.03229999999894062,
+              "totalMs": 154.6178
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 4,
+          "indexOnly": {
+            "wallMs": 323.1869999999999,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 322.97040000000015,
+              "lookupMs": 0.0169000000005326,
+              "buildMs": 0,
+              "queryMs": 0.030999999999039574,
+              "selectionMs": 0.0441000000009808,
+              "totalMs": 323.0653000000002
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 158.17669999999998,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 157.95329999999922,
+              "lookupMs": 0.009599999999409192,
+              "buildMs": 0,
+              "queryMs": 0.023499999999330612,
+              "selectionMs": 0.04609999999956926,
+              "totalMs": 158.03489999999874
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 317.78130000000056,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 317.5443000000014,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.05130000000099244,
+              "selectionMs": 0.052999999999883585,
+              "totalMs": 317.65040000000045
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 5,
+          "reuse": {
+            "wallMs": 157.69490000000042,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "b230fb4cf58fbdf06dd3eb2f191d1a3918af7a58697e8f2ca8a7c13c065777e7",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 157.4908000000014,
+              "lookupMs": 0.010500000000320142,
+              "buildMs": 0,
+              "queryMs": 0.02410000000054424,
+              "selectionMs": 0.032799999999042484,
+              "totalMs": 157.5601999999999
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 340.0753999999997,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "b230fb4cf58fbdf06dd3eb2f191d1a3918af7a58697e8f2ca8a7c13c065777e7",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 339.8221999999987,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.06559999999990396,
+              "selectionMs": 0.03960000000006403,
+              "totalMs": 339.9305999999997
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 287.6785999999993,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "b230fb4cf58fbdf06dd3eb2f191d1a3918af7a58697e8f2ca8a7c13c065777e7",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 287.34940000000097,
+              "lookupMs": 0.015900000000328873,
+              "buildMs": 0,
+              "queryMs": 0.029700000000957516,
+              "selectionMs": 0.06459999999970023,
+              "totalMs": 287.46590000000106
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 6,
+          "legacy": {
+            "wallMs": 310.91359999999986,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 310.47700000000077,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.047599999999874854,
+              "selectionMs": 0.16379999999844586,
+              "totalMs": 310.6911999999993
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 308.41189999999915,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 308.02430000000095,
+              "lookupMs": 0.015600000000631553,
+              "buildMs": 0,
+              "queryMs": 0.03799999999864667,
+              "selectionMs": 0.1826999999993859,
+              "totalMs": 308.2633000000005
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 148.22969999999987,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 147.86149999999907,
+              "lookupMs": 0.009400000000823638,
+              "buildMs": 0,
+              "queryMs": 0.0272000000004482,
+              "selectionMs": 0.16349999999874854,
+              "totalMs": 148.0639999999985
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 7,
+          "indexOnly": {
+            "wallMs": 295.04049999999916,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 294.5139999999992,
+              "lookupMs": 0.01689999999871361,
+              "buildMs": 0,
+              "queryMs": 0.20430000000123982,
+              "selectionMs": 0.1389999999992142,
+              "totalMs": 294.8777000000009
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 151.57220000000234,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 150.26919999999882,
+              "lookupMs": 0.012300000002142042,
+              "buildMs": 0,
+              "queryMs": 0.04170000000158325,
+              "selectionMs": 1.0885999999991327,
+              "totalMs": 151.41469999999754
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 283.65250000000015,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 283.2929000000004,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.05549999999857391,
+              "selectionMs": 0.13780000000042492,
+              "totalMs": 283.4892
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 0,
+          "legacy": {
+            "wallMs": 289.2344000000012,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 288.8695000000007,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.0419000000001688,
+              "selectionMs": 0.15309999999954016,
+              "totalMs": 289.06730000000243
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 162.45409999999902,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 161.96979999999894,
+              "lookupMs": 0.020000000000436557,
+              "buildMs": 0,
+              "queryMs": 0.037599999999656575,
+              "selectionMs": 0.24439999999958673,
+              "totalMs": 162.27679999999964
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 331.5589,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 331.0066000000006,
+              "lookupMs": 0.038800000002083834,
+              "buildMs": 0,
+              "queryMs": 0.03739999999743304,
+              "selectionMs": 0.2466999999996915,
+              "totalMs": 331.33539999999994
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 1,
+          "indexOnly": {
+            "wallMs": 298.03359999999884,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 297.60050000000047,
+              "lookupMs": 0.015899999998509884,
+              "buildMs": 0,
+              "queryMs": 0.03570000000036089,
+              "selectionMs": 0.1974999999983993,
+              "totalMs": 297.85269999999946
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 285.087099999997,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 284.63690000000133,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.046399999999266583,
+              "selectionMs": 0.22780000000057044,
+              "totalMs": 284.91400000000067
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 156.28600000000006,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 155.85540000000037,
+              "lookupMs": 0.012200000001030276,
+              "buildMs": 0,
+              "queryMs": 0.031200000001263106,
+              "selectionMs": 0.21020000000135042,
+              "totalMs": 156.11189999999988
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 2,
+          "reuse": {
+            "wallMs": 167.5096999999987,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 167.09270000000106,
+              "lookupMs": 0.011099999999714782,
+              "buildMs": 0,
+              "queryMs": 0.033100000000558794,
+              "selectionMs": 0.18180000000211294,
+              "totalMs": 167.32140000000072
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 299.7445000000007,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 299.33810000000085,
+              "lookupMs": 0.014899999998306157,
+              "buildMs": 0,
+              "queryMs": 0.03409999999712454,
+              "selectionMs": 0.1993000000002212,
+              "totalMs": 299.58910000000105
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 283.9902000000002,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 283.59189999999944,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.04079999999885331,
+              "selectionMs": 0.18920000000071013,
+              "totalMs": 283.8237999999983
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 3,
+          "legacy": {
+            "wallMs": 291.01030000000173,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 290.670100000003,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.051800000001094304,
+              "selectionMs": 0.05610000000160653,
+              "totalMs": 290.780700000003
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 140.40149999999994,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 140.196899999999,
+              "lookupMs": 0.01089999999749125,
+              "buildMs": 0,
+              "queryMs": 0.02479999999923166,
+              "selectionMs": 0.026799999999639113,
+              "totalMs": 140.2622999999985
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 280.08439999999973,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 279.8185999999987,
+              "lookupMs": 0.020099999997910345,
+              "buildMs": 0,
+              "queryMs": 0.03810000000157743,
+              "selectionMs": 0.034599999999045394,
+              "totalMs": 279.91489999999976
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 4,
+          "indexOnly": {
+            "wallMs": 278.6679000000004,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 278.4578999999976,
+              "lookupMs": 0.012500000000727596,
+              "buildMs": 0,
+              "queryMs": 0.02600000000165892,
+              "selectionMs": 0.030600000001868466,
+              "totalMs": 278.52869999999893
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 278.8718999999983,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 278.6211000000003,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.04340000000229338,
+              "selectionMs": 0.03080000000045402,
+              "totalMs": 278.6977000000006
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 192.82430000000022,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "440d8aba56d6287d68dea550e9018f20e4b86d589e0bd4343706d2cb50b2133f",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 192.54190000000017,
+              "lookupMs": 0.01299999999901047,
+              "buildMs": 0,
+              "queryMs": 0.02779999999984284,
+              "selectionMs": 0.037599999999656575,
+              "totalMs": 192.6234000000004
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 5,
+          "reuse": {
+            "wallMs": 152.10480000000098,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "b230fb4cf58fbdf06dd3eb2f191d1a3918af7a58697e8f2ca8a7c13c065777e7",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 151.77560000000085,
+              "lookupMs": 0.012499999997089617,
+              "buildMs": 0,
+              "queryMs": 0.032799999997223495,
+              "selectionMs": 0.08849999999802094,
+              "totalMs": 151.91209999999774
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 286.859800000002,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "b230fb4cf58fbdf06dd3eb2f191d1a3918af7a58697e8f2ca8a7c13c065777e7",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 286.5506999999998,
+              "lookupMs": 0.018600000003061723,
+              "buildMs": 0,
+              "queryMs": 0.03540000000066357,
+              "selectionMs": 0.03830000000016298,
+              "totalMs": 286.6461999999992
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 273.0584999999992,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "b230fb4cf58fbdf06dd3eb2f191d1a3918af7a58697e8f2ca8a7c13c065777e7",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 272.80219999999827,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.03770000000076834,
+              "selectionMs": 0.029699999999138527,
+              "totalMs": 272.8712999999989
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 6,
+          "legacy": {
+            "wallMs": 284.7527000000009,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 284.375,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.06589999999778229,
+              "selectionMs": 0.16820000000006985,
+              "totalMs": 284.61139999999796
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 135.7449000000015,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 135.42280000000028,
+              "lookupMs": 0.010099999999511056,
+              "buildMs": 0,
+              "queryMs": 0.02750000000014552,
+              "selectionMs": 0.15120000000024447,
+              "totalMs": 135.61349999999948
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 274.0023999999976,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 273.63560000000143,
+              "lookupMs": 0.017400000000634464,
+              "buildMs": 0,
+              "queryMs": 0.027299999997921987,
+              "selectionMs": 0.1849999999976717,
+              "totalMs": 273.8673999999992
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 7,
+          "indexOnly": {
+            "wallMs": 269.46840000000157,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 269.14390000000276,
+              "lookupMs": 0.013200000001234002,
+              "buildMs": 0,
+              "queryMs": 0.037899999999353895,
+              "selectionMs": 0.1415999999990163,
+              "totalMs": 269.33899999999994
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 275.02690000000075,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 274.03139999999985,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.06149999999979627,
+              "selectionMs": 0.1728000000002794,
+              "totalMs": 274.2675999999992
+            },
+            "scopeChecks": {
+              "snapshotPasses": 2,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 142.83559999999852,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 142.53909999999814,
+              "lookupMs": 0.013100000000122236,
+              "buildMs": 0,
+              "queryMs": 0.03410000000076252,
+              "selectionMs": 0.12329999999928987,
+              "totalMs": 142.71229999999923
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "documents": 10,
+      "exactDecisionsAndScores": true,
+      "cold": {
+        "legacy": {
+          "wallMs": 1561.6520000000019,
+          "selectedVariant": null,
+          "selectedRevision": null,
+          "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+          "textScores": [
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007
+          ],
+          "combinedScores": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "cache": "legacy",
+          "timings": {
+            "qualificationMs": 1554.7561999999998,
+            "lookupMs": 0,
+            "buildMs": null,
+            "queryMs": 6.664800000002288,
+            "selectionMs": 0.11799999999857391,
+            "totalMs": 1561.543099999999
+          },
+          "scopeChecks": {
+            "snapshotPasses": 11,
+            "conditionPathsChecked": null,
+            "lifetime": "per-experience"
+          }
+        },
+        "indexOnly": {
+          "wallMs": 1458.4487000000008,
+          "selectedVariant": null,
+          "selectedRevision": null,
+          "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+          "textScores": [
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007
+          ],
+          "combinedScores": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "cache": "cold",
+          "timings": {
+            "qualificationMs": 1457.829600000001,
+            "lookupMs": 0.04589999999734573,
+            "buildMs": 0.27779999999984284,
+            "queryMs": 0.06649999999717693,
+            "selectionMs": 0.1069999999999709,
+            "totalMs": 1458.3313999999991
+          },
+          "scopeChecks": {
+            "snapshotPasses": 11,
+            "conditionPathsChecked": null,
+            "lifetime": "per-experience"
+          }
+        },
+        "reuse": {
+          "wallMs": 137.34820000000036,
+          "selectedVariant": null,
+          "selectedRevision": null,
+          "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+          "textScores": [
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007
+          ],
+          "combinedScores": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "cache": "cold",
+          "timings": {
+            "qualificationMs": 137.03399999999965,
+            "lookupMs": 0.01779999999780557,
+            "buildMs": 0.12230000000272412,
+            "queryMs": 0.0239000000001397,
+            "selectionMs": 0.06190000000060536,
+            "totalMs": 137.2622999999985
+          },
+          "scopeChecks": {
+            "snapshotPasses": 1,
+            "conditionPathsChecked": 1,
+            "lifetime": "request"
+          }
+        }
+      },
+      "legacy": {
+        "samples": 16,
+        "p50Ms": 1556.7896000000037,
+        "p95Ms": 1709.9807999999975,
+        "meanMs": 1565.989831249999,
+        "qualificationP50Ms": 1556.3503000000055,
+        "queryP50Ms": 0.10850000000209548
+      },
+      "indexOnly": {
+        "samples": 16,
+        "p50Ms": 1542.8898999999947,
+        "p95Ms": 1711.3489000000045,
+        "meanMs": 1567.4301812500007,
+        "qualificationP50Ms": 1542.204500000007,
+        "queryP50Ms": 0.04899999999906868
+      },
+      "reuse": {
+        "samples": 16,
+        "p50Ms": 142.95639999999548,
+        "p95Ms": 171.27769999999873,
+        "meanMs": 146.2367124999978,
+        "qualificationP50Ms": 142.6313000000082,
+        "queryP50Ms": 0.04039999999804422
+      },
+      "p50ReductionPercent": 90.81723053648385,
+      "p95ReductionPercent": 89.98364776961245,
+      "cache": {
+        "documents": 10,
+        "builds": 1,
+        "hits": 16,
+        "bypasses": 0
+      },
+      "samples": [
+        {
+          "repetition": 0,
+          "queryIndex": 0,
+          "legacy": {
+            "wallMs": 1468.9565000000002,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1468.5181000000011,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.1007000000026892,
+              "selectionMs": 0.08239999999932479,
+              "totalMs": 1468.7028999999966
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1534.9824999999983,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1534.743300000002,
+              "lookupMs": 0.018499999998311978,
+              "buildMs": 0,
+              "queryMs": 0.037899999995715916,
+              "selectionMs": 0.05719999999564607,
+              "totalMs": 1534.8585999999996
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 135.83640000000014,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 135.55600000000413,
+              "lookupMs": 0.011899999997694977,
+              "buildMs": 0,
+              "queryMs": 0.04130000000441214,
+              "selectionMs": 0.07809999999881256,
+              "totalMs": 135.68940000000293
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 1,
+          "indexOnly": {
+            "wallMs": 1491.274900000004,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1490.9084999999977,
+              "lookupMs": 0.023799999995389953,
+              "buildMs": 0,
+              "queryMs": 0.04609999999956926,
+              "selectionMs": 0.10759999999572756,
+              "totalMs": 1491.089399999997
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 142.35379999999714,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 142.02100000000064,
+              "lookupMs": 0.022199999999429565,
+              "buildMs": 0,
+              "queryMs": 0.09120000000257278,
+              "selectionMs": 0.08920000000216532,
+              "totalMs": 142.226800000004
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 1461.0849999999991,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1460.7693999999974,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.09520000000338769,
+              "selectionMs": 0.06769999999960419,
+              "totalMs": 1460.934199999996
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 2,
+          "reuse": {
+            "wallMs": 150.94689999999537,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 150.64570000000094,
+              "lookupMs": 0.03020000000105938,
+              "buildMs": 0,
+              "queryMs": 0.04599999999481952,
+              "selectionMs": 0.062300000005052425,
+              "totalMs": 150.7873000000036
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 1552.3815000000031,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1552.0707000000039,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.09429999999701977,
+              "selectionMs": 0.05610000000160653,
+              "totalMs": 1552.2228000000032
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1501.1512999999977,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1500.7001000000018,
+              "lookupMs": 0.03650000000197906,
+              "buildMs": 0,
+              "queryMs": 0.06609999999636784,
+              "selectionMs": 0.1463000000003376,
+              "totalMs": 1500.9519
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 3,
+          "legacy": {
+            "wallMs": 1561.8318999999974,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1561.3308000000034,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.19870000000082655,
+              "selectionMs": 0.06790000000182772,
+              "totalMs": 1561.599900000001
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1622.4556000000011,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1621.9712999999974,
+              "lookupMs": 0.02419999999983702,
+              "buildMs": 0,
+              "queryMs": 0.04959999999846332,
+              "selectionMs": 0.12069999999948777,
+              "totalMs": 1622.168399999995
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 148.69059999999445,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 148.33699999999953,
+              "lookupMs": 0.01569999999628635,
+              "buildMs": 0,
+              "queryMs": 0.040000000000873115,
+              "selectionMs": 0.06489999999757856,
+              "totalMs": 148.46029999999882
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 4,
+          "indexOnly": {
+            "wallMs": 1633.3822999999975,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1633.0801999999967,
+              "lookupMs": 0.023600000000442378,
+              "buildMs": 0,
+              "queryMs": 0.0341000000044005,
+              "selectionMs": 0.04809999999997672,
+              "totalMs": 1633.1884999999966
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 142.27419999999984,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 141.98029999999562,
+              "lookupMs": 0.014900000001944136,
+              "buildMs": 0,
+              "queryMs": 0.030599999998230487,
+              "selectionMs": 0.047899999997753184,
+              "totalMs": 142.07539999999426
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 1578.1682,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1577.753499999999,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.13180000000284053,
+              "selectionMs": 0.06130000000121072,
+              "totalMs": 1577.9487999999983
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 5,
+          "reuse": {
+            "wallMs": 138.21639999999752,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "76c1f7761b633f15d3295e5eeaca5fcf2b11df4916c617c6f7c92eb5444dfb82",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 137.85669999999664,
+              "lookupMs": 0.02049999999871943,
+              "buildMs": 0,
+              "queryMs": 0.04040000000532018,
+              "selectionMs": 0.07540000000153668,
+              "totalMs": 137.99459999999817
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 1541.800000000003,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "76c1f7761b633f15d3295e5eeaca5fcf2b11df4916c617c6f7c92eb5444dfb82",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1541.3237000000008,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.09380000000237487,
+              "selectionMs": 0.0478000000002794,
+              "totalMs": 1541.467500000006
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1536.7239000000045,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "76c1f7761b633f15d3295e5eeaca5fcf2b11df4916c617c6f7c92eb5444dfb82",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1536.337099999997,
+              "lookupMs": 0.026400000002468005,
+              "buildMs": 0,
+              "queryMs": 0.04899999999906868,
+              "selectionMs": 0.0812999999980093,
+              "totalMs": 1536.4962999999989
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 6,
+          "legacy": {
+            "wallMs": 1590.2692000000025,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1589.8731999999945,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.09809999999561114,
+              "selectionMs": 0.06309999999939464,
+              "totalMs": 1590.0357999999978
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1553.4179999999978,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1553.020700000001,
+              "lookupMs": 0.026200000000244472,
+              "buildMs": 0,
+              "queryMs": 0.041799999999057036,
+              "selectionMs": 0.08350000000064028,
+              "totalMs": 1553.1745999999985
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 138.73630000000412,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 138.39489999999932,
+              "lookupMs": 0.013500000000931323,
+              "buildMs": 0,
+              "queryMs": 0.03629999999975553,
+              "selectionMs": 0.06739999999990687,
+              "totalMs": 138.51410000000033
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 7,
+          "indexOnly": {
+            "wallMs": 1647.962099999997,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1647.4812999999995,
+              "lookupMs": 0.02500000000145519,
+              "buildMs": 0,
+              "queryMs": 0.06410000000323635,
+              "selectionMs": 0.07669999999779975,
+              "totalMs": 1647.6500000000015
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 171.27769999999873,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 170.90759999999864,
+              "lookupMs": 0.015100000004167669,
+              "buildMs": 0,
+              "queryMs": 0.04809999999997672,
+              "selectionMs": 0.06369999999878928,
+              "totalMs": 171.0373000000036
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "legacy": {
+            "wallMs": 1691.9818999999989,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1691.4775999999983,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.12520000000222353,
+              "selectionMs": 0.06169999999838183,
+              "totalMs": 1691.6667000000016
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 0,
+          "legacy": {
+            "wallMs": 1709.9807999999975,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1709.5973000000013,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.088900000002468,
+              "selectionMs": 0.05610000000160653,
+              "totalMs": 1709.7450000000026
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 157.79780000000028,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 157.45349999999598,
+              "lookupMs": 0.01269999999931315,
+              "buildMs": 0,
+              "queryMs": 0.05500000000029104,
+              "selectionMs": 0.052999999999883585,
+              "totalMs": 157.5760999999984
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1711.3489000000045,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1710.89160000001,
+              "lookupMs": 0.028400000010151416,
+              "buildMs": 0,
+              "queryMs": 0.04909999998926651,
+              "selectionMs": 0.08509999999660067,
+              "totalMs": 1711.0566000000035
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 1,
+          "indexOnly": {
+            "wallMs": 1618.7603999999992,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1618.2708999999886,
+              "lookupMs": 0.024099999995087273,
+              "buildMs": 0,
+              "queryMs": 0.053899999998975545,
+              "selectionMs": 0.08869999999296851,
+              "totalMs": 1618.4400999999925
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 1643.5399999999936,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1643.0657999999967,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.13899999999557622,
+              "selectionMs": 0.07860000000800937,
+              "totalMs": 1643.2860000000073
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 147.4423999999999,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 147.10370000000694,
+              "lookupMs": 0.022299999996903352,
+              "buildMs": 0,
+              "queryMs": 0.04260000000067521,
+              "selectionMs": 0.05700000000069849,
+              "totalMs": 147.22759999999835
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 2,
+          "reuse": {
+            "wallMs": 144.23639999999432,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 143.890699999989,
+              "lookupMs": 0.023600000000442378,
+              "buildMs": 0,
+              "queryMs": 0.054799999998067506,
+              "selectionMs": 0.052700000000186265,
+              "totalMs": 144.0237999999954
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1565.7679000000062,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1565.306500000006,
+              "lookupMs": 0.02350000001024455,
+              "buildMs": 0,
+              "queryMs": 0.043399999995017424,
+              "selectionMs": 0.0545000000129221,
+              "totalMs": 1565.4298000000126
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 1615.056700000001,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1614.4300000000076,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.23820000000705477,
+              "selectionMs": 0.11229999999341089,
+              "totalMs": 1614.787400000001
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 3,
+          "legacy": {
+            "wallMs": 1568.332699999999,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1567.9642000000022,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.07660000000032596,
+              "selectionMs": 0.05060000000230502,
+              "totalMs": 1568.093399999998
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 140.46430000000692,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 140.14079999999376,
+              "lookupMs": 0.013899999990826473,
+              "buildMs": 0,
+              "queryMs": 0.03280000000086147,
+              "selectionMs": 0.07340000000840519,
+              "totalMs": 140.2630000000063
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1531.0674,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1530.6909999999916,
+              "lookupMs": 0.033000000010360964,
+              "buildMs": 0,
+              "queryMs": 0.038100000005215406,
+              "selectionMs": 0.06329999999434222,
+              "totalMs": 1530.8275999999896
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 4,
+          "indexOnly": {
+            "wallMs": 1554.863200000007,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1554.3257000000012,
+              "lookupMs": 0.020099999994272366,
+              "buildMs": 0,
+              "queryMs": 0.11160000000381842,
+              "selectionMs": 0.07899999999790452,
+              "totalMs": 1554.5385999999999
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 1556.7896000000037,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1556.3503000000055,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.10850000000209548,
+              "selectionMs": 0.08650000000488944,
+              "totalMs": 1556.547000000006
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 145.69550000000163,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "27cc7b3be42be28c394e1375618c0f5f8fae54255a61dfd1d61a1a7c75a8126b",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 145.40409999999974,
+              "lookupMs": 0.012000000002444722,
+              "buildMs": 0,
+              "queryMs": 0.0283999999955995,
+              "selectionMs": 0.042899999985820614,
+              "totalMs": 145.48889999999665
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 5,
+          "reuse": {
+            "wallMs": 137.6143999999913,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "76c1f7761b633f15d3295e5eeaca5fcf2b11df4916c617c6f7c92eb5444dfb82",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 137.32140000000072,
+              "lookupMs": 0.013200000001234002,
+              "buildMs": 0,
+              "queryMs": 0.029999999998835847,
+              "selectionMs": 0.04750000000058208,
+              "totalMs": 137.4137000000046
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1540.4208999999973,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "76c1f7761b633f15d3295e5eeaca5fcf2b11df4916c617c6f7c92eb5444dfb82",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1539.8944999999949,
+              "lookupMs": 0.03269999999611173,
+              "buildMs": 0,
+              "queryMs": 0.05899999999382999,
+              "selectionMs": 0.12119999999413267,
+              "totalMs": 1540.110799999995
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 1484.3422999999893,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "76c1f7761b633f15d3295e5eeaca5fcf2b11df4916c617c6f7c92eb5444dfb82",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1483.75499999999,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.18110000000160653,
+              "selectionMs": 0.07790000000386499,
+              "totalMs": 1484.0163999999932
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 6,
+          "legacy": {
+            "wallMs": 1502.4621000000043,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1501.8784999999916,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.12759999999252614,
+              "selectionMs": 0.11860000000160653,
+              "totalMs": 1502.1276999999973
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 155.24789999998757,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 154.83259999999427,
+              "lookupMs": 0.015899999998509884,
+              "buildMs": 0,
+              "queryMs": 0.033799999990151264,
+              "selectionMs": 0.06329999999434222,
+              "totalMs": 154.9475999999995
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          },
+          "indexOnly": {
+            "wallMs": 1542.8898999999947,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1542.204500000007,
+              "lookupMs": 0.11910000001080334,
+              "buildMs": 0,
+              "queryMs": 0.08359999999811407,
+              "selectionMs": 0.16599999999743886,
+              "totalMs": 1542.578800000003
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 7,
+          "indexOnly": {
+            "wallMs": 1492.4137000000046,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1492.0523000000103,
+              "lookupMs": 0.028200000000651926,
+              "buildMs": 0,
+              "queryMs": 0.04820000000472646,
+              "selectionMs": 0.07030000000668224,
+              "totalMs": 1492.2018000000098
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "legacy": {
+            "wallMs": 1528.858899999992,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1528.2985999999946,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.1177999999927124,
+              "selectionMs": 0.1678000000101747,
+              "totalMs": 1528.5868000000046
+            },
+            "scopeChecks": {
+              "snapshotPasses": 11,
+              "conditionPathsChecked": null,
+              "lifetime": "per-experience"
+            }
+          },
+          "reuse": {
+            "wallMs": 142.95639999999548,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "9dfb561fc930671f132194212d1d5f357e98473e1e73eba2954d517df28904d6",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 142.6313000000082,
+              "lookupMs": 0.02059999998891726,
+              "buildMs": 0,
+              "queryMs": 0.04039999999804422,
+              "selectionMs": 0.05890000000363216,
+              "totalMs": 142.75310000000172
+            },
+            "scopeChecks": {
+              "snapshotPasses": 1,
+              "conditionPathsChecked": 1,
+              "lifetime": "request"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -80,6 +80,8 @@ test('actual service decisions match legacy while authenticated projection reads
     assert.equal(legacy.service.retrievalStatus().attempts[0]!.scopeChecks?.snapshotPasses, 8);
     const selected = cached.service.retrievalStatus().attempts.find(a => a.outcome === 'selected')!;
     assert.equal(selected.candidates[0]!.id, selected.selectedId); assert.equal(selected.omittedCandidates, 2);
+    assert.equal(selected.candidates[1]!.combinedScore, selected.candidates[0]!.combinedScore);
+    assert.equal(selected.candidates[1]!.reason, 'lower_rank', 'equal-score ID tie-break must not claim a strictly lower score');
     const before = JSON.stringify({ tasks: cached.store.tasks(), apps: cached.store.applications(), grants: cached.store.extraction.grants(), status: cached.service.retrievalStatus() });
     const first = panelState(cached.service).retrieval; first.attempts[0]!.candidates.length = 0;
     assert.deepEqual(panelState(cached.service).retrieval, cached.service.retrievalStatus());

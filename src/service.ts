@@ -282,7 +282,7 @@ export class EvolveService {
       for (const match of original) {
         if (candidates.length >= 5) break;
         if (match.id === selected?.experience.id) continue;
-        candidates.push(explain(eligible.get(match.id)!.experience, match.reason ?? 'lower_combined_score', match,
+        candidates.push(explain(eligible.get(match.id)!.experience, match.reason ?? 'lower_rank', match,
           ranked.find(row => row.experience.id === match.id)?.score ?? null));
       }
       for (const row of excluded) if (candidates.length < 5) candidates.push(row);
