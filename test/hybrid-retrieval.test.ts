@@ -21,8 +21,12 @@ test('rank diagnostics can credit zero-score ties even while post-gate recall is
   const result = hybridMetrics([{ id: 'q', family: 'test', kind: 'literal', query: 'test', relevantIds: ['b'], ineligibleIds: [], ...selection, candidates }]);
   assert.equal(result.positiveRecall, 0); assert.equal(result.recallAt3, 1); assert.equal(result.mrr, 0.5);
 });
-test('calibration accesses only development requests and retains the full preregistered grid', async () => {
-  const corpus = parseHybridCorpus(await readFile('test/fixtures/retrieval-v3-cases.json'));
+test('calibration accesses only development requests and retains the full preregistered grid', () => {
+  const corpus = { schemaVersion: 3 as const, kind: 'author-curated-synthetic-relevance' as const, experiences:
+    (['development', 'holdout'] as const).flatMap(split => ['a', 'b'].map(id => ({ id: split + id, revision: 1 as const,
+      split, family: split, title: 'alpha', strategy: 'beta' }))),
+    queries: (['development', 'holdout'] as const).map(split => ({ id: split + 'q', split, family: split,
+      kind: 'literal' as const, text: 'unmatched', relevantIds: [], ineligibleIds: [], rationale: 'Invented split-boundary test.' })) };
   const port = { embed(input: { namespace: string }) { assert(input.namespace.startsWith('development/')); return [1, 0]; } };
   const result = calibrateHybrid(corpus, port);
   assert.equal(result.denseGrid.length, 24); assert.equal(result.hybridGrid.length, 72);
