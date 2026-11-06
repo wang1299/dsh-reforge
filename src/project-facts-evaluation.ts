@@ -77,6 +77,7 @@ export function evaluateProjectFacts(c: ProjectFactCorpus, partition: 'developme
   sourcePort: (q: ProjectFactQuery) => ContractSourcePort) {
   const bank = c.experiences.filter(e => e.split === partition); const rows = Object.fromEntries(projectFactArms.map(a => [a, [] as ProjectFactRow[]])) as Record<(typeof projectFactArms)[number], ProjectFactRow[]>;
   const extraction: { id: string; state: string; bindingVerified: boolean; problems: readonly string[]; checked: number; agreement: number }[] = [];
+  const byField = Object.fromEntries(projectFactPolicy.fields.map(field => [field, { queries: 0, projected: 0, agree: 0 }]));
   for (const q of c.queries.filter(q => q.split === partition)) {
     const expected = projectQueryBinding(q); const request = { ...expected, path: q.source.path, property: q.targetProperty,
       sha256: q.source.binding === 'stale' ? '0'.repeat(64) : digest(q.source.content) };
@@ -100,6 +101,10 @@ export function evaluateProjectFacts(c: ProjectFactCorpus, partition: 'developme
     // Reference labels are used only after all five decisions, for measurement.
     extraction.push({ id: q.id, state: auto.state, bindingVerified: auto.bindingVerified, problems: auto.context.problems,
       checked: auto.observations.length, agreement: auto.observations.filter(o => o.value === q.manualFacts[o.field]).length });
+    for (const field of projectFactPolicy.fields) {
+      const count = byField[field]!; count.queries++; const observation = auto.observations.find(o => o.field === field);
+      if (observation) { count.projected++; if (observation.value === q.manualFacts[field]) count.agree++; }
+    }
   }
   const correctIds = (items: ProjectFactRow[]) => new Set(items.filter(r => r.selected && r.relevantIds.includes(r.selected)).map(r => r.id));
   const changes = (before: ProjectFactRow[], after: ProjectFactRow[]) => {
@@ -123,7 +128,7 @@ export function evaluateProjectFacts(c: ProjectFactCorpus, partition: 'developme
       explicitGoalVsAutomatic: changes(rows.auto_facts, rows.auto_facts_goal), automaticVsManualWithGoal: changes(rows.manual_facts_goal, rows.auto_facts_goal) },
     extraction: { queries: extraction.length, bound: extraction.filter(r => r.bindingVerified).length, supported: extraction.filter(r => r.state === 'confirmed').length,
       factsChecked: extraction.reduce((n, r) => n + r.checked, 0), factsAgree: extraction.reduce((n, r) => n + r.agreement, 0),
-      unknownReasons: Object.fromEntries([...new Set(extraction.flatMap(r => r.problems))].map(reason => [reason, extraction.filter(r => r.problems.includes(reason)).length])), rows: extraction },
+      byField, unknownReasons: Object.fromEntries([...new Set(extraction.flatMap(r => r.problems))].map(reason => [reason, extraction.filter(r => r.problems.includes(reason)).length])), rows: extraction },
     limitations: ['Author-visible synthetic schema/artifact holdout within a previously seen JSON presence/null domain, not external blind data.',
       'Target property and explicit goal are extra caller inputs; same-text controlled flips are not improved language understanding.',
       'Manual reference facts are independently validated extra information and share source integrity gates; unsupported auto facts remain unknown.',

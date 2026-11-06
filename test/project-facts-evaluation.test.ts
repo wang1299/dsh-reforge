@@ -41,6 +41,7 @@ test('toy five-arm comparison isolates unsupported facts, explicit goals and the
   for (const arm of ['manual_facts', 'auto_facts', 'auto_facts_goal', 'manual_facts_goal']) assert(report.groups[arm]!.rows.filter(r => ['toy-missing', 'toy-stale'].includes(r.id)).every(r => r.selected === null));
   assert.deepEqual(report.contributions.explicitGoalVsAutomatic.lost, ['toy-no-goal']);
   assert.equal(report.extraction.factsAgree, report.extraction.factsChecked);
+  for (const count of Object.values(report.extraction.byField)) assert.deepEqual(count, { queries: 6, projected: 3, agree: 3 });
 });
 test('toy labels and rationale affect measurements only, never rankings or decisions', () => {
   const f = toy(); const before = evaluateProjectFacts(f.c, 'development', f.vectors, f.port);
