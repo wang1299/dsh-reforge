@@ -1,5 +1,7 @@
 # DSH-Reforge
 
+Offline applicability research: [fixed three-arm comparison](evaluation/applicability-v1.md#english) uses extra authored structured facts. Holdout wrong offers13→1; gated precision12/13, retaining9/11 previous correct offers and recovering3. Coverage drops50%→27.1%; no automatic fact extraction, downstream task-benefit claim or default rollout.
+
 [Website](https://wang1299.github.io/dsh-reforge/en/) · [Website publication status](https://github.com/wang1299/dsh-reforge/issues/116)
 
 New offline research: [120-query multilingual retrieval comparison](evaluation/retrieval-v3.md#english). Dense positive offers improve from3/30 to18/30 on a60-query synthetic family holdout, with16 wrong offers still retained; hybrid reaches12/30 with18 wrong. Public synthetic vectors support scoring replay without paid APIs. This is not a default DSH feature or evidence of downstream task benefit.
