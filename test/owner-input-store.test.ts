@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
@@ -103,4 +103,19 @@ test('a real main transaction rollback does not undo a sidecar binding or create
     assert.equal(owner.marker(item.marker.messageId)!.taskId, bound.id); // Controller must project this orphan as unknown, never replay it.
     assert.throws(() => owner.bind(repoId, item.marker.messageId, task(), 2, null), isCode('owner_binding_conflict'));
   } finally { owner.close(); main.close(); }
+});
+
+test('foreign repository, missing half after restart and mismatched identity are unavailable for every read', () => {
+  const dir = directory(); const path = join(dir, 'owner.sqlite'); const anchor = join(dir, 'owner.identity.json');
+  const owner = new OwnerInputStore(path); const item = reservation(); const bound = task();
+  owner.reserve(item.receipt, item.marker); owner.bind(repoId, item.marker.messageId, bound, 1, null); owner.close();
+  const foreign = new OwnerInputStore(path);
+  assert.throws(() => foreign.snapshot('b'.repeat(64)), isCode('owner_configuration_unavailable')); foreign.close();
+  renameSync(path, path + '.saved'); const missing = new OwnerInputStore(path);
+  for (const read of [() => missing.snapshot(repoId), () => missing.marker(item.marker.messageId), () => missing.classification(bound)]) assert.throws(read, isCode('owner_configuration_unavailable'));
+  missing.close(); renameSync(path + '.saved', path); renameSync(anchor, anchor + '.saved');
+  const noAnchor = new OwnerInputStore(path); assert.throws(() => noAnchor.snapshot(repoId), isCode('owner_configuration_unavailable')); noAnchor.close();
+  renameSync(anchor + '.saved', anchor);
+  const identity = JSON.parse(readFileSync(anchor, 'utf8')) as Record<string, unknown>; identity.storeId = randomUUID(); writeFileSync(anchor, JSON.stringify(identity));
+  const mismatch = new OwnerInputStore(path); assert.throws(() => mismatch.marker(item.marker.messageId), isCode('owner_configuration_unavailable')); mismatch.close();
 });
