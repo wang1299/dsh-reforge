@@ -40,3 +40,24 @@ export function applicability(experience: Scope, current: Scope): string | null 
   }
   return null;
 }
+
+/** One synchronous selection's fresh view. Never retain this reader between requests. */
+export function requestScopeReader(root: string, current: ReturnType<typeof snapshot>) {
+  const hashes = new Map<string, string>(); const missing = new Set<string>(); let pathsChecked = 0;
+  return {
+    read(requiredFiles: string[]): ReturnType<typeof snapshot> {
+      const files = Object.fromEntries(requiredFiles.map(path => {
+        if (missing.has(path)) throw new Error('Missing code condition');
+        if (!hashes.has(path)) {
+          pathsChecked++;
+          try { hashes.set(path, digest(readFileSync(safeFile(root, path)))); }
+          catch { missing.add(path); throw new Error('Missing code condition'); }
+        }
+        return [path, hashes.get(path)!];
+      }));
+      return { root: current.root, commit: current.commit, scope: {
+        repoId: current.scope.repoId, dependencyDigest: current.scope.dependencyDigest, requiredFiles: files } };
+    },
+    pathsChecked: (): number => pathsChecked,
+  };
+}

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createContext, Script } from 'node:vm';
 import { randomUUID } from 'node:crypto';
 import { renderPanel } from '../src/panel-view.js';
+import type { RetrievalStatus } from '../src/retrieval-runtime.js';
 
 // A small DOM port exercises the shipped client, including real event callbacks.
 // Layout, native controls and accessibility are separately checked in a browser.
@@ -68,6 +69,28 @@ test('a pending save locks editing, blocks duplicate submissions and keeps the c
   assert.equal(b.posts.length, 1); assert.equal(b.get('detail').hidden, false); assert.equal(b.control('处理策略'), strategy);
   release(); await request;
   assert.match(b.get('message').textContent, /已保存/); assert.equal(save.getAttribute('aria-busy'), 'false'); assert.equal(strategy.disabled, false);
+});
+
+test('workbench explains selected and abstained attempts as text, survives polling and performs no writes', async () => {
+  const b = browser();
+  const data: RetrievalStatus = { version: 1, lifetime: 'service-instance', policy: 'bm25-v1', omittedAttempts: 3,
+    cache: { documents: 1, builds: 1, hits: 1, bypasses: 0 }, attempts: [{
+      taskId: 'target', mode: 'evidence-v1', completedAt: '2026-11-06T00:00:00Z', outcome: 'selected', selectedId: 'experience-one', selectedRevision: 1,
+      applicationId: 'application-one', candidatesConsidered: 1, eligibleCount: 1, omittedCandidates: 0,
+      candidates: [{ id: 'experience-one', revision: 1, title: '<img src=x onerror=alert(1)>', reason: 'original_text', textScore: 0.5, combinedScore: 0.5, anchors: 2,
+        titleTerms: ['rollback'], strategyTerms: ['<script>'] }], cache: 'hit', generation: 1,
+      timings: { qualificationMs: 100, lookupMs: 1, buildMs: 0, queryMs: 2, selectionMs: 1, totalMs: 104 },
+    }] };
+  (b.current as typeof b.current & { retrieval: RetrievalStatus }).retrieval = data;
+  await b.run('refresh()'); await b.run("showView('uses')");
+  const root = b.get('retrieval-history'); assert.match(root.textContent, /已选中参考/); assert.match(root.textContent, /送达、采用和结果仍需分别核对/);
+  assert.match(root.textContent, /<img src=x/); assert.equal(b.descendants(root).some(e => e.tag === 'img' || e.tag === 'script'), false);
+  assert.match(root.textContent, /复用相同合格库/); assert.match(b.get('retrieval-summary').textContent, /更早的 3 条/);
+  const fold = b.descendants(root).find(e => e.tag === 'details')!; fold.open = true;
+  data.attempts[0]!.timings.totalMs = 105; await b.run('refresh()');
+  assert.equal(b.descendants(root).find(e => e.tag === 'details')!.open, true);
+  data.attempts[0]!.outcome = 'abstained'; data.attempts[0]!.candidates[0]!.reason = 'code_condition_changed'; await b.run('refresh()');
+  assert.match(root.textContent, /本次未选中/); assert.match(root.textContent, /相关代码已变化/); assert.equal(b.posts.length, 0);
 });
 
 test('an acknowledged write followed by an offline read preserves the draft and warns that the record must be checked', async () => {

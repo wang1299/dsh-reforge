@@ -1,0 +1,1935 @@
+{
+  "schemaVersion": 1,
+  "kind": "synthetic-live-service-retrieval",
+  "modelCalls": 0,
+  "sourceCommit": "42375f0b7fb7b76922369e4bd119b3bdb4d7b1c6",
+  "sourceDirty": false,
+  "sourceDigests": {
+    "src/service.ts": "e8a0e00cbc77c398f8ffb9b77738a8446d4674a585333b1290a38b417a18c8f1",
+    "src/retrieval-runtime.ts": "248596ff59a60ca0c5bff701b00332ba13d86c34f1840cfc6c881e97f2032312",
+    "src/retrieval.ts": "79248d6b7d3b4d2b7dec325f8d50117f49c73ff742e3ac1296c3671f9ed142a6",
+    "src/retrieval-index.ts": "00ba81ab7a64212035c57d535cb1cd36b8eea0dccf9fedf730485dc11da1e380",
+    "test/retrieval-fixture.ts": "59447591a395b4b6c595ba9a4272ba21fc3a24fe74b8559ce6fd993cab677168",
+    "scripts/live-retrieval-benchmark.ts": "db951fbc346874f4600b02292d57aff9e0336a53ae7942f98cb9ddd7441e7ff2"
+  },
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64",
+    "osRelease": "10.0.26200",
+    "cpu": "AMD Ryzen 9 7945HX with Radeon Graphics        "
+  },
+  "workload": [
+    "transaction rollback exception",
+    "transaction rollback exception with independent acceptance checks and regression tests",
+    "rollback transaction failure restore balance",
+    "transaction",
+    "unrelated typography layout",
+    "restore balance",
+    "transaction exception rollback",
+    "修复 transaction rollback failure"
+  ],
+  "workloadDigest": "bf2e90a47d1f0626133bfdd358bc5b48b7520c3b6e3eb00d6ec82bf4cdb94a2f",
+  "method": "One cold request per method, then two repetitions x eight queries per method, interleaved order, separate identical banks, equality outside timers. Wall time surrounds the actual service.select including qualification/Git/SQLite/application and diagnostics. Task creation and panel serialization are excluded. Nearest-rank percentiles.",
+  "limitations": [
+    "One local run over 1/10 synthetic text variants of one independently verified repair; not production traffic or an independent strategy corpus.",
+    "Original and reuse arms keep live evidence/scope/feedback checks; full-chain improvements may be negligible or negative.",
+    "Legacy build work is included in query time; prepared index construction is separate. Cache only retains an unchanged eligible bank.",
+    "No model, provider delivery, downstream task acceptance, token cost or financial benefit was evaluated.",
+    "Sixteen warm observations per method/size are descriptive, not a robust tail-latency estimate."
+  ],
+  "results": [
+    {
+      "documents": 1,
+      "exactDecisionsAndScores": true,
+      "cold": {
+        "legacy": {
+          "wallMs": 271.4881000000005,
+          "selectedVariant": 0,
+          "selectedRevision": 1,
+          "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+          "textScores": [
+            0.5651619032971262
+          ],
+          "combinedScores": [
+            0.5456133323079884
+          ],
+          "cache": "legacy",
+          "timings": {
+            "qualificationMs": 270.08699999999953,
+            "lookupMs": 0,
+            "buildMs": null,
+            "queryMs": 0.2977000000000771,
+            "selectionMs": 0.5074000000004162,
+            "totalMs": 270.9830000000002
+          }
+        },
+        "reuse": {
+          "wallMs": 269.90319999999974,
+          "selectedVariant": 0,
+          "selectedRevision": 1,
+          "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+          "textScores": [
+            0.5651619032971262
+          ],
+          "combinedScores": [
+            0.5456133323079884
+          ],
+          "cache": "cold",
+          "timings": {
+            "qualificationMs": 268.77040000000034,
+            "lookupMs": 0.25240000000030705,
+            "buildMs": 0.474699999999757,
+            "queryMs": 0.13069999999970605,
+            "selectionMs": 0.16780000000017026,
+            "totalMs": 269.8054000000002
+          }
+        }
+      },
+      "legacy": {
+        "samples": 16,
+        "p50Ms": 292.40780000000086,
+        "p95Ms": 319.6954999999998,
+        "meanMs": 290.83603125000013,
+        "qualificationP50Ms": 292.0553,
+        "queryP50Ms": 0.05040000000008149
+      },
+      "reuse": {
+        "samples": 16,
+        "p50Ms": 291.0478000000003,
+        "p95Ms": 328.41560000000027,
+        "meanMs": 292.9338499999996,
+        "qualificationP50Ms": 290.65869999999995,
+        "queryP50Ms": 0.040600000000267755
+      },
+      "p50ReductionPercent": 0.4651038720583256,
+      "p95ReductionPercent": -2.727626757336421,
+      "cache": {
+        "documents": 1,
+        "builds": 1,
+        "hits": 16,
+        "bypasses": 0
+      },
+      "samples": [
+        {
+          "repetition": 0,
+          "queryIndex": 0,
+          "legacy": {
+            "wallMs": 294.78709999999955,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 294.40859999999975,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.05769999999938591,
+              "selectionMs": 0.20049999999991996,
+              "totalMs": 294.6722
+            }
+          },
+          "reuse": {
+            "wallMs": 275.5572000000002,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 275.15079999999944,
+              "lookupMs": 0.021499999999832653,
+              "buildMs": 0,
+              "queryMs": 0.040600000000267755,
+              "selectionMs": 0.23699999999917054,
+              "totalMs": 275.4573999999993
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 1,
+          "legacy": {
+            "wallMs": 319.6954999999998,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 319.2353999999996,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.07690000000002328,
+              "selectionMs": 0.18920000000071013,
+              "totalMs": 319.5056999999997
+            }
+          },
+          "reuse": {
+            "wallMs": 319.0823999999993,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 318.7071999999989,
+              "lookupMs": 0.018299999999726424,
+              "buildMs": 0,
+              "queryMs": 0.05680000000029395,
+              "selectionMs": 0.17849999999998545,
+              "totalMs": 318.96529999999984
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 2,
+          "legacy": {
+            "wallMs": 289.6987000000008,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 289.3281999999999,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.05799999999908323,
+              "selectionMs": 0.16610000000036962,
+              "totalMs": 289.5589999999993
+            }
+          },
+          "reuse": {
+            "wallMs": 324.27690000000075,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 323.90700000000106,
+              "lookupMs": 0.023099999998521525,
+              "buildMs": 0,
+              "queryMs": 0.04680000000007567,
+              "selectionMs": 0.1790000000000873,
+              "totalMs": 324.16359999999986
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 3,
+          "legacy": {
+            "wallMs": 268.0588000000007,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "090c0d51630f4d306dfbab3641ecfce8066f234e95eadb402e2855ae2c18da89",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 267.83799999999974,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.03930000000036671,
+              "selectionMs": 0.035499999999956344,
+              "totalMs": 267.9184000000005
+            }
+          },
+          "reuse": {
+            "wallMs": 292.21370000000024,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "090c0d51630f4d306dfbab3641ecfce8066f234e95eadb402e2855ae2c18da89",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 291.77859999999964,
+              "lookupMs": 0.021600000000034925,
+              "buildMs": 0,
+              "queryMs": 0.04140000000006694,
+              "selectionMs": 0.22899999999935972,
+              "totalMs": 292.0756999999994
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 4,
+          "legacy": {
+            "wallMs": 290.07960000000094,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "090c0d51630f4d306dfbab3641ecfce8066f234e95eadb402e2855ae2c18da89",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 289.84929999999986,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.04309999999895808,
+              "selectionMs": 0.054200000000491855,
+              "totalMs": 289.9516999999996
+            }
+          },
+          "reuse": {
+            "wallMs": 298.4280999999992,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "090c0d51630f4d306dfbab3641ecfce8066f234e95eadb402e2855ae2c18da89",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 298.14520000000084,
+              "lookupMs": 0.027700000000550062,
+              "buildMs": 0,
+              "queryMs": 0.043900000000576256,
+              "selectionMs": 0.04799999999886495,
+              "totalMs": 298.27050000000054
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 5,
+          "legacy": {
+            "wallMs": 296.6762999999992,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "a18b2dd4b4fcd6a7e382714b3413cdcb7f626fb813d1d0066ff6b1b78c9805ec",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 296.398799999999,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.06149999999979627,
+              "selectionMs": 0.03780000000006112,
+              "totalMs": 296.52160000000003
+            }
+          },
+          "reuse": {
+            "wallMs": 270.45180000000073,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "a18b2dd4b4fcd6a7e382714b3413cdcb7f626fb813d1d0066ff6b1b78c9805ec",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 270.1870999999992,
+              "lookupMs": 0.048800000000483124,
+              "buildMs": 0,
+              "queryMs": 0.04110000000036962,
+              "selectionMs": 0.03570000000036089,
+              "totalMs": 270.3189999999995
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 6,
+          "legacy": {
+            "wallMs": 309.08860000000095,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 308.6719000000012,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.05859999999847787,
+              "selectionMs": 0.21119999999973516,
+              "totalMs": 308.95280000000093
+            }
+          },
+          "reuse": {
+            "wallMs": 291.0478000000003,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 290.65869999999995,
+              "lookupMs": 0.042099999998754356,
+              "buildMs": 0,
+              "queryMs": 0.04020000000127766,
+              "selectionMs": 0.18280000000049768,
+              "totalMs": 290.9290000000001
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 7,
+          "legacy": {
+            "wallMs": 293.0095000000001,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 292.65090000000055,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.07259999999951106,
+              "selectionMs": 0.16380000000026484,
+              "totalMs": 292.8896000000004
+            }
+          },
+          "reuse": {
+            "wallMs": 328.41560000000027,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 327.8184000000001,
+              "lookupMs": 0.027599999999438296,
+              "buildMs": 0,
+              "queryMs": 0.19989999999961583,
+              "selectionMs": 0.20459999999911815,
+              "totalMs": 328.253999999999
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 0,
+          "legacy": {
+            "wallMs": 278.41469999999936,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 278.0613000000012,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.05190000000038708,
+              "selectionMs": 0.1889000000010128,
+              "totalMs": 278.3051000000014
+            }
+          },
+          "reuse": {
+            "wallMs": 273.5207999999984,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 273.1134000000002,
+              "lookupMs": 0.02930000000014843,
+              "buildMs": 0,
+              "queryMs": 0.052700000000186265,
+              "selectionMs": 0.18370000000140863,
+              "totalMs": 273.3816000000006
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 1,
+          "legacy": {
+            "wallMs": 265.1136999999999,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 264.6849000000002,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.046399999999266583,
+              "selectionMs": 0.21639999999933934,
+              "totalMs": 264.95050000000083
+            }
+          },
+          "reuse": {
+            "wallMs": 302.85399999999936,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 302.54589999999916,
+              "lookupMs": 0.011999999998806743,
+              "buildMs": 0,
+              "queryMs": 0.0316000000002532,
+              "selectionMs": 0.13079999999899883,
+              "totalMs": 302.72209999999905
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 2,
+          "legacy": {
+            "wallMs": 292.40780000000086,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 292.0553,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.03569999999672291,
+              "selectionMs": 0.16419999999925494,
+              "totalMs": 292.2573000000011
+            }
+          },
+          "reuse": {
+            "wallMs": 279.67079999999805,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "da820676d05e5f8a62e665ee65831ab03838756084aadf337a9ee77c57c44bee",
+            "textScores": [
+              0.5872882848119438
+            ],
+            "combinedScores": [
+              0.5611017993683607
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 279.2447999999986,
+              "lookupMs": 0.01540000000022701,
+              "buildMs": 0,
+              "queryMs": 0.043900000000576256,
+              "selectionMs": 0.20929999999862048,
+              "totalMs": 279.5177999999996
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 3,
+          "legacy": {
+            "wallMs": 305.10919999999896,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "090c0d51630f4d306dfbab3641ecfce8066f234e95eadb402e2855ae2c18da89",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 304.84879999999976,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.04590000000098371,
+              "selectionMs": 0.04229999999733991,
+              "totalMs": 304.9395999999979
+            }
+          },
+          "reuse": {
+            "wallMs": 280.9702999999972,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "090c0d51630f4d306dfbab3641ecfce8066f234e95eadb402e2855ae2c18da89",
+            "textScores": [
+              0.3113288333112608
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 280.7042000000001,
+              "lookupMs": 0.014599999998608837,
+              "buildMs": 0,
+              "queryMs": 0.03499999999985448,
+              "selectionMs": 0.04890000000159489,
+              "totalMs": 280.8058999999994
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 4,
+          "legacy": {
+            "wallMs": 290.0642999999982,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "090c0d51630f4d306dfbab3641ecfce8066f234e95eadb402e2855ae2c18da89",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 289.7534999999989,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.05529999999998836,
+              "selectionMs": 0.06130000000121072,
+              "totalMs": 289.8744000000006
+            }
+          },
+          "reuse": {
+            "wallMs": 297.3686000000016,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "090c0d51630f4d306dfbab3641ecfce8066f234e95eadb402e2855ae2c18da89",
+            "textScores": [
+              0
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 297.1667000000016,
+              "lookupMs": 0.017100000000937143,
+              "buildMs": 0,
+              "queryMs": 0.023400000001856824,
+              "selectionMs": 0.038199999999051215,
+              "totalMs": 297.2487000000001
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 5,
+          "legacy": {
+            "wallMs": 293.78540000000066,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "a18b2dd4b4fcd6a7e382714b3413cdcb7f626fb813d1d0066ff6b1b78c9805ec",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 293.5583000000006,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.03719999999884749,
+              "selectionMs": 0.02779999999984284,
+              "totalMs": 293.62590000000273
+            }
+          },
+          "reuse": {
+            "wallMs": 285.77400000000125,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "a18b2dd4b4fcd6a7e382714b3413cdcb7f626fb813d1d0066ff6b1b78c9805ec",
+            "textScores": [
+              0.3652261267751422
+            ],
+            "combinedScores": [
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 285.54599999999846,
+              "lookupMs": 0.016499999997904524,
+              "buildMs": 0,
+              "queryMs": 0.02899999999863212,
+              "selectionMs": 0.04340000000229338,
+              "totalMs": 285.6378000000004
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 6,
+          "legacy": {
+            "wallMs": 299.1268999999993,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 298.7644,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.05040000000008149,
+              "selectionMs": 0.1694999999999709,
+              "totalMs": 298.9873000000007
+            }
+          },
+          "reuse": {
+            "wallMs": 296.9955999999984,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "03b18c8fe2ae6343776162722e2f5c4e268ea40896884464d989d8f0021b9b1c",
+            "textScores": [
+              0.5651619032971262
+            ],
+            "combinedScores": [
+              0.5456133323079884
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 296.53830000000016,
+              "lookupMs": 0.02410000000236323,
+              "buildMs": 0,
+              "queryMs": 0.034599999999045394,
+              "selectionMs": 0.23800000000119326,
+              "totalMs": 296.83880000000136
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 7,
+          "legacy": {
+            "wallMs": 268.26040000000285,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 267.87049999999726,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.0433999999986554,
+              "selectionMs": 0.19989999999961583,
+              "totalMs": 268.1157999999996
+            }
+          },
+          "reuse": {
+            "wallMs": 270.3139999999985,
+            "selectedVariant": 0,
+            "selectedRevision": 1,
+            "reasonsDigest": "f6e20bd369a90f90d8ca74d0ea41ddeaf246d20a3b325667354d0c818736e4dd",
+            "textScores": [
+              0.45876746521530054
+            ],
+            "combinedScores": [
+              0.47113722565071037
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 269.9313000000002,
+              "lookupMs": 0.011399999999412103,
+              "buildMs": 0,
+              "queryMs": 0.03619999999864376,
+              "selectionMs": 0.21849999999903957,
+              "totalMs": 270.1994999999988
+            }
+          }
+        }
+      ]
+    },
+    {
+      "documents": 10,
+      "exactDecisionsAndScores": true,
+      "cold": {
+        "legacy": {
+          "wallMs": 1491.6872000000003,
+          "selectedVariant": null,
+          "selectedRevision": null,
+          "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+          "textScores": [
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007
+          ],
+          "combinedScores": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "cache": "legacy",
+          "timings": {
+            "qualificationMs": 1483.3215999999993,
+            "lookupMs": 0,
+            "buildMs": null,
+            "queryMs": 8.20390000000043,
+            "selectionMs": 0.07439999999769498,
+            "totalMs": 1491.6034
+          }
+        },
+        "reuse": {
+          "wallMs": 1539.2870999999977,
+          "selectedVariant": null,
+          "selectedRevision": null,
+          "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+          "textScores": [
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007,
+            0.17367035094595007
+          ],
+          "combinedScores": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "cache": "cold",
+          "timings": {
+            "qualificationMs": 1538.7261999999973,
+            "lookupMs": 0.027099999999336433,
+            "buildMs": 0.2632999999987078,
+            "queryMs": 0.06529999999838765,
+            "selectionMs": 0.09829999999783468,
+            "totalMs": 1539.1849999999977
+          }
+        }
+      },
+      "legacy": {
+        "samples": 16,
+        "p50Ms": 1476.963399999997,
+        "p95Ms": 1560.5208999999995,
+        "meanMs": 1478.9938437500002,
+        "qualificationP50Ms": 1476.486399999998,
+        "queryP50Ms": 0.10760000000300352
+      },
+      "reuse": {
+        "samples": 16,
+        "p50Ms": 1491.2644999999902,
+        "p95Ms": 1619.4055999999982,
+        "meanMs": 1500.3581000000008,
+        "qualificationP50Ms": 1490.8686000000016,
+        "queryP50Ms": 0.045100000003003515
+      },
+      "p50ReductionPercent": -0.968277209847801,
+      "p95ReductionPercent": -3.7734002793553545,
+      "cache": {
+        "documents": 10,
+        "builds": 1,
+        "hits": 16,
+        "bypasses": 0
+      },
+      "samples": [
+        {
+          "repetition": 0,
+          "queryIndex": 0,
+          "legacy": {
+            "wallMs": 1560.5208999999995,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1560.2196000000004,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.0918999999994412,
+              "selectionMs": 0.05609999999796855,
+              "totalMs": 1560.3701
+            }
+          },
+          "reuse": {
+            "wallMs": 1539.1425000000017,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1538.8568999999989,
+              "lookupMs": 0.02170000000114669,
+              "buildMs": 0,
+              "queryMs": 0.05830000000059954,
+              "selectionMs": 0.07070000000021537,
+              "totalMs": 1539.0112999999983
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 1,
+          "legacy": {
+            "wallMs": 1498.3846000000012,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1498.0463999999993,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.10559999999895808,
+              "selectionMs": 0.08499999999912689,
+              "totalMs": 1498.2399000000005
+            }
+          },
+          "reuse": {
+            "wallMs": 1619.4055999999982,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1619.1310000000012,
+              "lookupMs": 0.020099999997910345,
+              "buildMs": 0,
+              "queryMs": 0.04830000000220025,
+              "selectionMs": 0.07290000000284635,
+              "totalMs": 1619.2750000000015
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 2,
+          "legacy": {
+            "wallMs": 1476.963399999997,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1476.486399999998,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.18790000000444707,
+              "selectionMs": 0.11779999999998836,
+              "totalMs": 1476.7952000000041
+            }
+          },
+          "reuse": {
+            "wallMs": 1522.5485000000044,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1522.2602999999945,
+              "lookupMs": 0.020399999993969686,
+              "buildMs": 0,
+              "queryMs": 0.04469999999855645,
+              "selectionMs": 0.06190000000060536,
+              "totalMs": 1522.3896999999997
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 3,
+          "legacy": {
+            "wallMs": 1488.3809000000037,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70594e8b3f58f53c05dd6328078b35e774a750c7e33b34774bd3635377ac0672",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1488.0255000000034,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.12299999999959255,
+              "selectionMs": 0.052700000000186265,
+              "totalMs": 1488.2037000000055
+            }
+          },
+          "reuse": {
+            "wallMs": 1529.9493999999977,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70594e8b3f58f53c05dd6328078b35e774a750c7e33b34774bd3635377ac0672",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1529.4956999999995,
+              "lookupMs": 0.020400000001245644,
+              "buildMs": 0,
+              "queryMs": 0.045100000003003515,
+              "selectionMs": 0.08140000000275904,
+              "totalMs": 1529.6871000000028
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 4,
+          "legacy": {
+            "wallMs": 1460.4122000000061,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70594e8b3f58f53c05dd6328078b35e774a750c7e33b34774bd3635377ac0672",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1460.0498000000007,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.07500000000436557,
+              "selectionMs": 0.04020000000309665,
+              "totalMs": 1460.1664999999994
+            }
+          },
+          "reuse": {
+            "wallMs": 1453.157299999999,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70594e8b3f58f53c05dd6328078b35e774a750c7e33b34774bd3635377ac0672",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1452.7875000000058,
+              "lookupMs": 0.02500000000145519,
+              "buildMs": 0,
+              "queryMs": 0.04469999999855645,
+              "selectionMs": 0.07690000000002328,
+              "totalMs": 1452.9374000000025
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 5,
+          "legacy": {
+            "wallMs": 1480.9933999999994,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "54276061d45712481529f01a6307b2382849b705fee94609caf5fb42d8a4ff9f",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1480.5797999999995,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.12369999999646097,
+              "selectionMs": 0.06270000000222353,
+              "totalMs": 1480.7690000000002
+            }
+          },
+          "reuse": {
+            "wallMs": 1500.964199999995,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "54276061d45712481529f01a6307b2382849b705fee94609caf5fb42d8a4ff9f",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1500.6702000000005,
+              "lookupMs": 0.014699999999720603,
+              "buildMs": 0,
+              "queryMs": 0.042199999996228144,
+              "selectionMs": 0.04989999999816064,
+              "totalMs": 1500.7796000000017
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 6,
+          "legacy": {
+            "wallMs": 1462.089399999997,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1461.4743999999992,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.18370000000140863,
+              "selectionMs": 0.08050000000366708,
+              "totalMs": 1461.741200000004
+            }
+          },
+          "reuse": {
+            "wallMs": 1501.5440999999992,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1501.097600000001,
+              "lookupMs": 0.020900000003166497,
+              "buildMs": 0,
+              "queryMs": 0.04590000000462169,
+              "selectionMs": 0.08269999999902211,
+              "totalMs": 1501.2499000000025
+            }
+          }
+        },
+        {
+          "repetition": 0,
+          "queryIndex": 7,
+          "legacy": {
+            "wallMs": 1477.2186999999976,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1476.839899999999,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.10420000000158325,
+              "selectionMs": 0.0529000000024098,
+              "totalMs": 1476.999100000001
+            }
+          },
+          "reuse": {
+            "wallMs": 1512.4631000000008,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1511.964,
+              "lookupMs": 0.024900000003981404,
+              "buildMs": 0,
+              "queryMs": 0.057800000002316665,
+              "selectionMs": 0.10699999999633292,
+              "totalMs": 1512.1570999999967
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 0,
+          "legacy": {
+            "wallMs": 1446.8758000000016,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1446.484199999999,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.11009999999805586,
+              "selectionMs": 0.05069999999977881,
+              "totalMs": 1446.6468999999997
+            }
+          },
+          "reuse": {
+            "wallMs": 1495.925700000007,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1495.5528999999951,
+              "lookupMs": 0.01929999999993015,
+              "buildMs": 0,
+              "queryMs": 0.039700000001175795,
+              "selectionMs": 0.07290000000648433,
+              "totalMs": 1495.688000000002
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 1,
+          "legacy": {
+            "wallMs": 1452.6863999999987,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1452.2724999999991,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.08269999999902211,
+              "selectionMs": 0.09320000000298023,
+              "totalMs": 1452.4500000000044
+            }
+          },
+          "reuse": {
+            "wallMs": 1455.1913000000059,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1454.6765999999989,
+              "lookupMs": 0.02080000000569271,
+              "buildMs": 0,
+              "queryMs": 0.046699999998963904,
+              "selectionMs": 0.10319999999774154,
+              "totalMs": 1454.850999999995
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 2,
+          "legacy": {
+            "wallMs": 1474.4706000000006,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1473.8698000000004,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.1794000000008964,
+              "selectionMs": 0.09219999999913853,
+              "totalMs": 1474.145700000001
+            }
+          },
+          "reuse": {
+            "wallMs": 1484.1520000000019,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177,
+              0.18706320643079177
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1483.7744999999995,
+              "lookupMs": 0.029699999999138527,
+              "buildMs": 0,
+              "queryMs": 0.049600000005739275,
+              "selectionMs": 0.08570000000327127,
+              "totalMs": 1483.9423000000024
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 3,
+          "legacy": {
+            "wallMs": 1455.512999999999,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70594e8b3f58f53c05dd6328078b35e774a750c7e33b34774bd3635377ac0672",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1455.1646000000037,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.07529999999678694,
+              "selectionMs": 0.042100000006030314,
+              "totalMs": 1455.2843000000066
+            }
+          },
+          "reuse": {
+            "wallMs": 1478.618300000002,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70594e8b3f58f53c05dd6328078b35e774a750c7e33b34774bd3635377ac0672",
+            "textScores": [
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937,
+              0.06812290131524937
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1478.2468000000008,
+              "lookupMs": 0.02419999999983702,
+              "buildMs": 0,
+              "queryMs": 0.04320000000006985,
+              "selectionMs": 0.0625,
+              "totalMs": 1478.3804000000018
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 4,
+          "legacy": {
+            "wallMs": 1490.0037000000011,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70594e8b3f58f53c05dd6328078b35e774a750c7e33b34774bd3635377ac0672",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1489.549800000008,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.10760000000300352,
+              "selectionMs": 0.0580000000045402,
+              "totalMs": 1489.7179000000033
+            }
+          },
+          "reuse": {
+            "wallMs": 1481.993300000002,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70594e8b3f58f53c05dd6328078b35e774a750c7e33b34774bd3635377ac0672",
+            "textScores": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1481.6771999999983,
+              "lookupMs": 0.030300000013085082,
+              "buildMs": 0,
+              "queryMs": 0.03719999999157153,
+              "selectionMs": 0.04709999999613501,
+              "totalMs": 1481.7953000000052
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 5,
+          "legacy": {
+            "wallMs": 1481.607799999998,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "54276061d45712481529f01a6307b2382849b705fee94609caf5fb42d8a4ff9f",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1481.0839000000124,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.14600000000791624,
+              "selectionMs": 0.06930000000284053,
+              "totalMs": 1481.3020000000106
+            }
+          },
+          "reuse": {
+            "wallMs": 1491.2644999999902,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "54276061d45712481529f01a6307b2382849b705fee94609caf5fb42d8a4ff9f",
+            "textScores": [
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922,
+              0.08512042432855922
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1490.8686000000016,
+              "lookupMs": 0.026600000011967495,
+              "buildMs": 0,
+              "queryMs": 0.03970000000845175,
+              "selectionMs": 0.06070000000181608,
+              "totalMs": 1490.9976999999926
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 6,
+          "legacy": {
+            "wallMs": 1507.0455999999976,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1506.6116000000038,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.069999999992433,
+              "selectionMs": 0.06409999998868443,
+              "totalMs": 1506.748099999997
+            }
+          },
+          "reuse": {
+            "wallMs": 1485.3281000000134,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007,
+              0.17367035094595007
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1484.9669999999896,
+              "lookupMs": 0.02019999999902211,
+              "buildMs": 0,
+              "queryMs": 0.04819999999017455,
+              "selectionMs": 0.06160000000090804,
+              "totalMs": 1485.0999999999913
+            }
+          }
+        },
+        {
+          "repetition": 1,
+          "queryIndex": 7,
+          "legacy": {
+            "wallMs": 1450.7351000000053,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "legacy",
+            "timings": {
+              "qualificationMs": 1450.2907000000123,
+              "lookupMs": 0,
+              "buildMs": null,
+              "queryMs": 0.11069999999017455,
+              "selectionMs": 0.08759999999892898,
+              "totalMs": 1450.4915000000037
+            }
+          },
+          "reuse": {
+            "wallMs": 1454.0816999999952,
+            "selectedVariant": null,
+            "selectedRevision": null,
+            "reasonsDigest": "70f5ac2d02cddf29f6e90de10834d02bb4090395ae38a470e41bfad4f3693538",
+            "textScores": [
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957,
+              0.12054504645061957
+            ],
+            "combinedScores": [
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            "cache": "hit",
+            "timings": {
+              "qualificationMs": 1453.6398999999947,
+              "lookupMs": 0.023700000005192123,
+              "buildMs": 0,
+              "queryMs": 0.05709999999089632,
+              "selectionMs": 0.08990000000630971,
+              "totalMs": 1453.813599999994
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # DSH-Reforge 产品需求 v0.2
 
+T055（2026-11-06）：将已逐项验证等价的BM25索引接入实际选择服务；每次资格检查保持，合格库变化重建缓存。同次请求共用新读取的仓库/依赖与条件路径视图，跨请求重新读取。工作台显示本次运行的有界选择/拒绝依据，读页面不选择或写库。设计见[ADR048](decisions/048-live-retrieval-index-and-diagnostics.md)、[ADR049](decisions/049-request-local-scope-read.md)，实际链路测量与验收见[T055](tasks/T055-live-retrieval.md)。实验候选仍仅离线，实际提速以完整服务链实测为准，不新增模型费用。
+
 T053（2026-11-05）：按用户要求建立可复查的量化改进，先完成零模型调用的冻结检索评测、正文覆盖候选、选择解释和可复用索引性能对照。设计见[ADR047](decisions/047-retrieval-evaluation-v2.md)，实际结果见[T053](tasks/T053-retrieval-evaluation.md)。候选不替换默认 DSH 策略，离线召回不表示真实任务收益；旧经验、授权及财务账本保持。
 
 T052（2026-11-05）：用户确认T051的Sites地址在普通浏览器也不可访问，按[ADR046](decisions/046-github-pages-fallback.md)增加同仓库GitHub Pages公开入口、根/子路径适配与检查。实际发布与访问必须核验后再更新仓库Website，回执见[T052](tasks/T052-github-pages.md)及Issue #116；不从平台部署成功推导用户可打开。

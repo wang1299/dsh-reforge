@@ -78,6 +78,7 @@
     "retrieval-benchmark": "tsc && node dist/scripts/retrieval-benchmark.js",
     "retrieval:evaluate": "tsc && node dist/scripts/retrieval-evaluate.js",
     "retrieval:performance": "tsc && node dist/scripts/retrieval-performance.js",
+    "retrieval:live-benchmark": "tsc && node dist/scripts/live-retrieval-benchmark.js",
     "feedback-evaluation": "tsc && node dist/scripts/feedback-evaluation.js",
     "compat:matrix": "npm run build && node scripts/dsh-matrix.mjs"
   },
