@@ -5,6 +5,7 @@ export const ownerGoalLabels: Record<(typeof ownerGoals)[number], string> = { re
 const errors: Record<string, string> = {
   owner_source_unconfirmed: '无法确认字段事实。请检查字段名称和受支持的 .schema.json 文件；复杂组合或引用目前保留为未知。',
   owner_source_changed: '来源文件在预览后已变化，请重新检查文件并预览。',
+  owner_rules_changed: '经验适用条件在预览后已更新，本次未提交。请重新预览后确认。',
   owner_preview_expired: '预览已过期、已消费或来自旧连接，请核对回执后重新准备。',
   owner_sharing_disabled: '当前未允许模型共享。请在本机核对插件配置，文件预览仍可使用。',
   owner_conversation_required: '请从当前对话的“经验”页提交。此入口可核对文件和管理条件。',

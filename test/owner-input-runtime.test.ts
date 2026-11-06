@@ -55,7 +55,7 @@ test('actual official AgentLoop receives bound facts before reference; six runti
   const runtime = new Map(preregistered.cases.filter(c => c.stage === 'runtime').map(c => [c.id, c]));
   const paired: { id: string; expectedProvided: boolean; legacySelectorSelected: boolean; currentNoticeProvided: boolean }[] = [];
   try {
-    for (const scenario of ['repair_matches', 'ui_goal', 'documentation_goal', 'contradictory_facts', 'source_changes_after_submit', 'experience_revision_changed', 'duplicate_submit', 'existing_conversation_defaults', 'request_model_changed']) {
+    for (const scenario of ['repair_matches', 'ui_goal', 'documentation_goal', 'contradictory_facts', 'source_changes_after_submit', 'experience_revision_changed', 'duplicate_submit', 'existing_conversation_defaults', 'request_model_changed', 'rules_changed_before_submit']) {
       await t.test(scenario, async () => {
         schema(f.repo); const bank = f.createBank(); const service = new EvolveService(bank.store, f.repo, f.policy, false, undefined, true);
         const ctx = new Context(); const adapter = new InspectAdapter(scenario === 'existing_conversation_defaults'); let release!: () => void; let holdAdmission = false;
@@ -80,8 +80,17 @@ test('actual official AgentLoop receives bound facts before reference; six runti
             expectedGlobal: 0, expectedRule: 0, fields: ['field_nullable'], allowedGoals: ['repair_behavior'] });
           if (scenario === 'contradictory_facts') schema(f.repo, true);
           const goal = scenario === 'ui_goal' ? 'present_ui' : scenario === 'documentation_goal' ? 'generate_docs' : 'repair_behavior';
-          const taskPreview = service.ownerInput.taskPreview({ path: sourcePath, property: 'state', text, goal }, carrier);
+          let taskPreview = service.ownerInput.taskPreview({ path: sourcePath, property: 'state', text, goal }, carrier);
           holdAdmission = true;
+          if (scenario === 'rules_changed_before_submit') {
+            const nextSource = service.ownerInput.sourcePreview({ path: sourcePath, property: 'state' });
+            service.ownerInput.declare({ previewId: nextSource.previewId, experienceId: exp.id, experienceRevision: exp.revision,
+              expectedGlobal: 1, expectedRule: 1, fields: ['field_nullable'], allowedGoals: ['repair_behavior'] });
+            await assert.rejects(() => service.ownerInput.submit({ instanceId: taskPreview.instanceId, previewId: taskPreview.previewId, idempotencyKey: randomUUID() }, carrier), code('owner_rules_changed'));
+            assert.equal(bank.store.ownerInputs.receipts(service.repositoryId).length, 0); assert.equal(adapter.calls.length, 0);
+            assert.equal(bank.store.tasks().filter(t => t.sessionId === sessionId).length, 0);
+            taskPreview = service.ownerInput.taskPreview({ path: sourcePath, property: 'state', text, goal }, carrier);
+          }
           const request = { instanceId: taskPreview.instanceId, previewId: taskPreview.previewId, idempotencyKey: randomUUID() };
           const submitted = await service.ownerInput.submit(request, carrier); assert.equal(submitted.phase, 'submitted');
           if (scenario === 'source_changes_after_submit') schema(f.repo, true);
@@ -104,8 +113,8 @@ test('actual official AgentLoop receives bound facts before reference; six runti
           assert.equal(adapter.calls.length, scenario === 'existing_conversation_defaults' ? 2 : 1, 'An actual GenerateOptions is required; idle alone is insufficient');
           const first = notices(adapter.calls.at(-1)!); const ownerNotice = first.find(s => s.startsWith('DSH-Reforge owner-confirmed'));
           assert.ok(ownerNotice); assert.ok(first.indexOf(text) < first.indexOf(ownerNotice));
-          const provided = first.some(s => s.includes('Restore the original balance before raising'));
-          const expected = ['repair_matches', 'duplicate_submit', 'existing_conversation_defaults'].includes(scenario); assert.equal(provided, expected);
+          const provided = ownerNotice.includes('Restore the original balance before raising');
+          const expected = ['repair_matches', 'duplicate_submit', 'existing_conversation_defaults', 'rules_changed_before_submit'].includes(scenario); assert.equal(provided, expected);
           const frozen = runtime.get(scenario);
           if (frozen) {
             const baseline = f.createBank();

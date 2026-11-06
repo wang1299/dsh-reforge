@@ -123,7 +123,13 @@ export class OwnerTaskInput {
       const marker: OwnerMarker = { schemaVersion: 1, repoId: this.repoId, requestId: receipt.id, previewId: p.id, messageId: message.id,
         hostRunId: this.instanceId, ownerPid: process.pid, sessionId: carrier.sessionId, scopeKey: carrier.scopeKey, requestDigest: digest(p.task.text),
         mode: this.service.automatic.enabled ? 'automatic' : 'context_only', taskId: null, taskIdentity: null, turn: null, createdAt: now };
-      const reserved = this.store.reserve(receipt, marker); this.previews.delete(p.id);
+      let reserved: ReturnType<typeof this.store.reserve>;
+      try { reserved = this.store.reserve(receipt, marker); }
+      catch (error) {
+        // This CAS is checked inside reserve before either insert, never after send.
+        if (error instanceof RevisionConflict) throw new OwnerInputError('owner_rules_changed'); throw error;
+      }
+      this.previews.delete(p.id);
       if (!reserved.fresh) return this.receipt(reserved.receipt);
       try {
         message.send();

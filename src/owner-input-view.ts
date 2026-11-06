@@ -64,7 +64,7 @@ export function installOwnerInput(root: HTMLElement, port: {
       tell('已取得提交回执 ' + receipt.id.slice(0, 8) + '。回执和回合结束均不代表任务验收通过。');
     } catch (error) {
       const code = (error as { code?: unknown })?.code;
-      const denied = typeof code === 'string' && ['owner_source_changed', 'owner_preview_expired', 'owner_sharing_disabled', 'owner_conversation_changed',
+      const denied = typeof code === 'string' && ['owner_source_changed', 'owner_rules_changed', 'owner_preview_expired', 'owner_sharing_disabled', 'owner_conversation_changed',
         'owner_repository_mismatch', 'owner_model_changed', 'owner_conversation_busy', 'owner_conversation_required', 'owner_message_limit', 'owner_receipt_limit', 'conflict'].includes(code);
       if (denied) {
         consumed = false; prepared = null; requestId = null; confirmation.hidden = true;
