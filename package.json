@@ -81,6 +81,7 @@
     "retrieval:live-benchmark": "tsc && node dist/scripts/live-retrieval-benchmark.js",
     "retrieval:hybrid": "tsc && node dist/scripts/hybrid-evaluate.js",
     "retrieval:applicability": "tsc && node dist/scripts/applicability-evaluate.js",
+    "panel:demo": "tsc && node dist/scripts/inspector-demo.js",
     "feedback-evaluation": "tsc && node dist/scripts/feedback-evaluation.js",
     "compat:matrix": "npm run build && node scripts/dsh-matrix.mjs"
   },

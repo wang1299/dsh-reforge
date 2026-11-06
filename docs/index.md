@@ -16,6 +16,7 @@
 | 理解证据边界和后续收益 | [产品需求](product.md)、[真实模型小规模试验](evaluation/real-model-pilot.md)、[早期评价](development/T008c-acceptance.md) |
 | 复查检索改进数字与选择原因 | [冻结检索评测、逐条解释与性能报告](evaluation/retrieval-v2.md) |
 | 查看实际选择原因与完整链路耗时 | [工作台选择依据、缓存失效与三组测量](evaluation/live-retrieval.md) |
+| 搜索一次参考运行，直接查看结论与候选 | [检查器截图、交互对照与零费用演示](evaluation/reference-inspector.md) |
 | 比较跨语言关键词、向量与混合检索 | [120条合成评测、错误与可重放向量](evaluation/retrieval-v3.md) |
 | 了解哪些经验应拒选及其代价 | [有依据的条件、三态判断与96条对照](evaluation/applicability-v1.md) |
 | 参与试用或报告问题 | [外部试用](community/pilot.md)、[问题表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)、[安全报告](../SECURITY.md) |
