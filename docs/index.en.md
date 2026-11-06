@@ -4,6 +4,8 @@ Developer evaluation: [frozen retrieval comparison, per-query explanations and i
 
 Live integration: [bounded workbench decisions and three-arm service-chain measurements](evaluation/live-retrieval.md#english). Every request rechecks eligibility; the text policy is unchanged.
 
+Multilingual prototype: [120-query BM25/dense/hybrid comparison and complete errors](evaluation/retrieval-v3.md#english). Local vectors improve synthetic positive recall but retain substantial wrong offers; default DSH is unchanged.
+
 Actual results: [automatic learning and all pilot metrics](evaluation/t049-20261104/README.md). The real-model automatic path passed; both retrieval arms abstained on held-out tasks, so no memory-treatment effect was measured.
 
 [中文](index.md) · [Version and release status](release-status.md)

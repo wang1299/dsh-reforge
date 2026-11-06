@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+  "license": "apache-2.0",
+  "dimension": 384,
+  "maxTokens": 128,
+  "pooling": "attention-mask-mean/l2/round7",
+  "files": [
+    { "path": "onnx/model_quint8_avx2.onnx", "bytes": 118453870, "sha256": "98a01d88b7de996cdea58c32ca71208c09968d143798814b2ea09d3439dc334f" },
+    { "path": "tokenizer.json", "bytes": 9081518, "sha256": "2c3387be76557bd40970cec13153b3bbf80407865484b209e655e5e4729076b8" },
+    { "path": "config.json", "bytes": 645, "gitBlobSha1": "c06d5b49495f044e6380e68a60538be17a6bd5d1" },
+    { "path": "sentence_bert_config.json", "bytes": 53, "gitBlobSha1": "5fd10429389515d3e5cccdeda08cae5fea1ae82e" },
+    { "path": "special_tokens_map.json", "bytes": 239, "gitBlobSha1": "2ea7ad0e45a9d1d1591782ba7e29a703d0758831" },
+    { "path": "1_Pooling/config.json", "bytes": 190, "gitBlobSha1": "d1514c3162bbe87b343f565fadc62e6c06f04f03" }
+  ]
+}

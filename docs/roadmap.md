@@ -1,5 +1,7 @@
 # 路线与实际状态
 
+2026-11-06最新源码研究：[T055实际链路与选择依据](evaluation/live-retrieval.md)及[T056多语言离线对照](evaluation/retrieval-v3.md)。T056的60查询任务族留出，dense正确提供3/30→18/30，但仍误选16/60，hybrid弱于dense；不切默认策略。新困难负例/外部标签与拒选、真实任务收益仍待后续，#114保持开放；alpha.2公开制品不包含这些未发行源码增量。
+
 当前读者入口见[文档导航](index.md)、[版本状态](release-status.md)与[T046 八项补齐](tasks/T046-public-readiness.md)。2026-11-05，alpha.2 npm和GitHub Release已公开并完成制品核验。以下任务表保留早期阶段与历史分支，不作为当前发行清单。
 
 最新：T047同款可运行工程/中英文导航、T048配置/诊断/备份恢复已合并；[T049真实合成自动闭环](evaluation/t049-20261104/README.md)通过，收益效果未测到（两检索均拒选）。[T050](tasks/T050-alpha2-release.md)已核验精确alpha.2公开制品；可变标签单独记录。下一项为[#114检索覆盖与更有区分度的试验](https://github.com/wang1299/dsh-reforge/issues/114)。公开[外部试用#112](https://github.com/wang1299/dsh-reforge/issues/112)参与仍为0，等待真实反馈；不把维护者或脚本计入人数。

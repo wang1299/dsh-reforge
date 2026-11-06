@@ -1,5 +1,7 @@
 # DSH-Reforge 架构总纲 v0.2
 
+2026-11-06：独立离线多语言向量/混合原型见[ADR050](decisions/050-offline-multilingual-hybrid.md)与[完整结果](evaluation/retrieval-v3.md)。EmbeddingPort只读取绑定模型/文本/版本/命名空间的合成向量，不接默认DSH/Store；可选ML依赖与权重仅忽略目录。检索召回改善伴随高误选，不能推导来源资格或后续任务收益。
+
 2026-11-04当前增量：owner setup/被动doctor/整目录备份恢复见[ADR042](decisions/042-owner-operations.md)，不改变插件v9。真实模型试验以[ADR043](decisions/043-real-model-pilot.md)的独立固定财务schema2和冻结计划保护新增10元授权；不读写历史财务账本，不授予生产模型权限。受限真实自动闭环已通过、两检索均拒选的全部结果见[T049](evaluation/t049-20261104/README.md)。精确发行契约见[ADR044](decisions/044-alpha2-release.md)，实际公开状态见[版本状态](release-status.md)。以下早期缺口/版本为注明阶段的历史快照。
 
 T041 展示增量（[ADR040](decisions/040-experience-workbench.md)）：共享面板仅从现有 `panelState` 只读汇总概览，参考页展示全部已保存应用及其精确版本；最新反馈决定“尚未确认”计数。概览、库、参考、进度四标签保留草稿与轮询。原生客户端注册 `conversation.view`，用实际 sessionId 查询现有 info，按 session key 重建隔离 iframe，卸载取消迟到响应。未授权会话不挂载内容；owner 主面板/配置页入口沿用原边界。HTTP/RPC、SQLite v9 和核心生命周期不变。
