@@ -50,7 +50,7 @@ node dist/scripts/benefit-study-preflight.js prepare
 
 每次在本仓库`.probe-work/t061-study-preparation/run-*`创建新合成工程和`preparation.json`；旧目录不覆盖。输出记录fixture/method/实现摘要、运行时版本、3份来源、23项控制运行及18个脚本请求。源文件和实际编译入口在起始/结束必须一致；这只是准备入口的记录，不等于live全部运行依赖冻结。入口只接受prepare，没有live/认证/付费实现，测试还禁用fetch确认本轮不联网；AST筛选是本合成工程的受限函数准入，不是通用不可信代码沙箱。
 
-v1.1题目摘要：`89b3f295621c2430ff449917ec4064c8b50efaf5799180e46939f5ddb6b1f602`。原v1数据摘要25dbf559…保留在历史回执/归档，不覆盖。[完整有界合成回执](benefit-preparation-v1.1.json)对应实际准备代码`f0a85cf`，方法摘要`884c10dc93632dd55d2657b491a022e2739edb1f89444bd9e0819d886e995ca5`。本机Node24.19.0/Python3.10.11/开发SDK0.2.0-rc.2；另一宿主图和平台由各自矩阵验收。实际检查/审查见[T061](../tasks/T061-benefit-preparation.md)，不能沿用T060的绿灯。
+v1.1题目摘要：`89b3f295621c2430ff449917ec4064c8b50efaf5799180e46939f5ddb6b1f602`。原v1数据摘要25dbf559…保留在历史回执/归档，不覆盖。[完整有界合成回执](benefit-preparation-v1.1.json)对应实际准备代码`f0a85cf`，方法摘要`884c10dc93632dd55d2657b491a022e2739edb1f89444bd9e0819d886e995ca5`。本机Node24.19.0/Python3.10.11/开发SDK0.2.0-rc.2；完整check341项（340通过、0失败、1项旧symlink权限跳过）、compat10/10通过。另一宿主图和平台由各自矩阵验收。实际检查/审查见[T061](../tasks/T061-benefit-preparation.md)，不能沿用T060的绿灯。
 
 真实执行还缺有限修复回合、冻结的当前模型/候选包/执行依赖、独立新费用账本、当前官方价格核对和新增预算授权。本入口不能使用已完成的T049十元授权；本次未读旧profile/学习库/凭据/财务记录，不发布npm、Release或官网。
 
