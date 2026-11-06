@@ -43,7 +43,7 @@ function NativeView({ connection, layout, inSettings = false, sessionId }: Face 
       if (pending.size >= 16) { refuse('请求较多，请等待当前操作完成后再试。'); return; }
       if (request.method === 'POST') writes.add(request.id);
       pending.add(request.id);
-      void connection.rpc.call(channel, 'dsh-reforge-request', { repositoryId: info.repositoryId, path: request.path, method: request.method, ...(request.data === undefined ? {} : { data: request.data }) }, abort.signal)
+      void connection.rpc.call(channel, 'dsh-reforge-request', { repositoryId: info.repositoryId, ...(sessionId ? { sessionId } : {}), path: request.path, method: request.method, ...(request.data === undefined ? {} : { data: request.data }) }, abort.signal)
         .then(result => {
           if (!live || event.source !== target.contentWindow) return;
           target.contentWindow?.postMessage({ channel: session, id: request.id, ok: result.ok, ...(result.ok ? { value: result.value } : { message: result.error.message }) }, '*');
@@ -55,7 +55,7 @@ function NativeView({ connection, layout, inSettings = false, sessionId }: Face 
     target.srcdoc = renderPanel(nonce, { channel: session, parentOrigin: window.location.origin });
     const stopTheme = watchNativeTheme(target, session);
     return () => { live = false; abort.abort(); stopTheme(); window.removeEventListener('message', listener); };
-  }, [connection, info]);
+  }, [connection, info, sessionId]);
   return h('section', { style: { width: '100%', height: '100%', minHeight: 400, display: 'flex', flexDirection: 'column' } },
     h('header', { style: { padding: '8px 12px', display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', font: 'inherit', color: 'var(--dsw-alias-label-secondary)' } },
       !inSettings && h('button', { type: 'button', style: { font: 'inherit', padding: '6px 10px', borderRadius: 8, border: '1px solid var(--dsw-alias-border-l3)', color: 'var(--dsw-alias-label-primary)', background: 'var(--dsw-alias-bg-layer-2)', cursor: 'pointer' }, onClick: () => layout.selectPanel(null) }, '← 返回对话'),

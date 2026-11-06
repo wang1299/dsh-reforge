@@ -14,6 +14,7 @@ import { correctionEvidence, factProvenance, validateCitations, verificationEvid
 import { EvidenceJobs } from './evidence-jobs.js';
 import { ExtractionJobs, extractionMaterial } from './extraction.js';
 import { modelFailureReasons, type ExtractionJob, type ExtractionPolicy } from './extraction-domain.js';
+import { OwnerTaskInput } from './owner-task-input.js';
 
 function cleanCandidate(value: unknown): Candidate {
   const item = candidateSchema.parse(value);
@@ -33,6 +34,7 @@ export class EvolveService {
   readonly jobs: EvidenceJobs;
   readonly extraction: ExtractionJobs;
   readonly automatic: AutomaticLearning;
+  readonly ownerInput: OwnerTaskInput;
   private readonly repoId: string;
   constructor(readonly store: Store, readonly root: string, readonly policy: VerificationPolicy, backgroundVerification = false, extractionPolicy?: ExtractionPolicy, private readonly modelSharingAllowed = false, automaticLearning = false, private readonly retrievalRuntime = new RetrievalRuntime()) {
     if (automaticLearning && (!policy.trusted || !backgroundVerification || !extractionPolicy || !modelSharingAllowed)) throw new Error('Automatic learning requires explicit execution, background verification, sharing and extraction authorization');
@@ -40,8 +42,17 @@ export class EvolveService {
     this.repoId = snapshot(root).scope.repoId;
     this.extraction = new ExtractionJobs(store, root, extractionPolicy, automaticLearning);
     this.automatic = new AutomaticLearning(this, automaticLearning);
+    this.ownerInput = new OwnerTaskInput(this);
   }
   begin(sessionId: string, summary: string): Task {
+    this.store.assertOwnerSessionLearningAllowed(this.repoId, sessionId);
+    return this.createTask(sessionId, summary);
+  }
+  /** Host-owned context-only entry; does not grant learning or background execution. */
+  beginOwnerContext(sessionId: string, summary: string): Task {
+    return this.createTask(sessionId, redact(summary, 256));
+  }
+  private createTask(sessionId: string, summary: string): Task {
     z.string().min(1).max(128).parse(sessionId); textSchema.parse(summary);
     return this.store.transaction(() => {
       this.store.automatic.lock(this.repoId);
@@ -66,6 +77,10 @@ export class EvolveService {
   }
   finish(id: string): Task {
     const task = this.requireTask(id); if (task.state === 'closed') return task;
+    if (this.store.ownerInputs.classification(task) === 'context_only') {
+      const closed = { ...task, state: 'closed' as const }; this.store.putTask(closed); return closed;
+    }
+    this.store.assertLearningAllowed(task);
     const automatic = this.store.automatic.forTask(id);
     if (automatic && automatic.state !== 'queued') throw new Error('Automatic capture closes from the host boundary');
     const closed = { ...task, state: 'closed' as const };
@@ -76,6 +91,7 @@ export class EvolveService {
   /** Owner-only append recovery. This queues work and never executes pytest or a model. */
   recoverEvidence(taskId: string, expectedJobId: string): ReturnType<EvidenceJobs['recover']> {
     const task = this.requireTask(taskId); if (task.state !== 'closed') throw new Error('Recovery requires a closed task');
+    this.store.assertLearningAllowed(task);
     const policy = this.extraction.policy;
     if (!policy) throw new Error('Recovery requires the original extraction policy');
     return this.store.transaction(() => {
@@ -94,6 +110,7 @@ export class EvolveService {
   /** Owner-only fresh authorization. Unknown attempts and their grants are immutable. */
   reauthorizeExtraction(taskId: string, expectedJobId: string): ExtractionJob {
     const task = this.requireTask(taskId); const policy = this.extraction.policy;
+    this.store.assertLearningAllowed(task);
     if (task.state !== 'closed' || !policy || !this.policy.trusted || !this.modelSharingAllowed) throw new Error('Reauthorization requires a closed task and current owner execution/model-sharing authorization');
     return this.store.transaction(() => {
       this.store.lockTask(task.id);
@@ -127,6 +144,7 @@ export class EvolveService {
   }
   correction(taskId: string, note: string): Evidence {
     const task = this.requireTask(taskId); if (task.state !== 'open') throw new Error('Task is closed');
+    this.store.assertLearningAllowed(task);
     const evidence = correctionEvidence(task, redact(textSchema.parse(note)));
     this.store.transaction(() => {
       this.store.putEvidence(evidence);
@@ -136,6 +154,7 @@ export class EvolveService {
   }
   propose(taskId: string, input: unknown, inputCitations: unknown = []): Experience {
     const task = this.requireTask(taskId); const item = cleanCandidate(input);
+    this.store.assertLearningAllowed(task);
     const current = snapshot(this.root, item.requiredFiles);
     const result: Experience = {
       schemaVersion: 1, id: randomUUID(), revision: 1, sourceTaskId: task.id,
@@ -153,6 +172,7 @@ export class EvolveService {
   linkEvidence(id: string, expectedRevision: number, input: unknown): Experience {
     return this.store.transaction(() => {
       const old = this.requireExperience(id);
+      this.store.assertLearningAllowed(this.requireTask(old.sourceTaskId));
       if (old.revision !== expectedRevision) throw new RevisionConflict();
       const citations = validateCitations(this.store, old, input);
       const normalized = (items: typeof citations): string => JSON.stringify([...items].sort((a, b) => a.factIndex - b.factIndex || a.evidenceId.localeCompare(b.evidenceId)));
@@ -169,6 +189,7 @@ export class EvolveService {
     const experience = this.requireExperience(experienceId); const revision = experience.revision;
     if (expectedRevision !== undefined && revision !== expectedRevision) throw new RevisionConflict();
     const task = this.requireTask(experience.sourceTaskId);
+    this.store.assertLearningAllowed(task);
     if (experience.status === 'disabled') throw new Error('Disabled experience must be revised before verification');
     const current = snapshot(this.root, Object.keys(experience.scope.requiredFiles));
     if (applicability(experience.scope, current.scope)) throw new Error('Candidate scope changed; revise before verification');
@@ -274,14 +295,19 @@ export class EvolveService {
         ...(match.evidence ? { evidence: match.evidence } : {}) });
     }
     ranked.sort((a, b) => b.score - a.score || a.experience.id.localeCompare(b.experience.id));
-    const selected = ranked[0];
+    const originalTop = ranked[0];
+    const ownerReason = originalTop ? this.ownerInput.veto(task, originalTop.experience) : null;
+    const selected = ownerReason ? undefined : originalTop;
+    if (ownerReason && originalTop) reasons.push(originalTop.experience.id + ':' + ownerReason);
     const record = (application: Application | null): void => {
       const candidates: CandidateExplanation[] = [];
       if (selected) candidates.push(explain(selected.experience, selected.evidence ? 'owner_accepted_context' : 'original_text',
         { score: selected.textScore, anchors: selected.anchors }, selected.score, selected.evidence?.summary));
+      else if (originalTop && ownerReason) candidates.push(explain(originalTop.experience, ownerReason,
+        { score: originalTop.textScore, anchors: originalTop.anchors }, originalTop.score, originalTop.evidence?.summary));
       for (const match of original) {
         if (candidates.length >= 5) break;
-        if (match.id === selected?.experience.id) continue;
+        if (match.id === originalTop?.experience.id) continue;
         candidates.push(explain(eligible.get(match.id)!.experience, match.reason ?? 'lower_rank', match,
           ranked.find(row => row.experience.id === match.id)?.score ?? null));
       }

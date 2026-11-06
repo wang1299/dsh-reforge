@@ -18,6 +18,7 @@ export class EvidenceJobs {
     acceptanceDir: this.policy.acceptanceDir, regressionPath: this.policy.regressionPath, timeoutMs: this.policy.timeoutMs,
     backgroundVerification: this.backgroundVerification })); }
   enqueue(task: Task): LearningJob {
+    this.store.assertLearningAllowed(task);
     const old = this.store.learning.forTask(task.id); if (old) return old;
     const current = snapshot(this.root);
     const segment = this.store.automatic.forTask(task.id);
@@ -48,6 +49,7 @@ export class EvidenceJobs {
     const task = this.store.task(job.input.taskId);
     if (!task || task.state !== 'closed' || task.scope.repoId !== job.input.repoId
       || digest(JSON.stringify(task)) !== job.input.taskDigest) throw new Error('Invalid closed task');
+    this.store.assertLearningAllowed(task);
     const segment = this.store.automatic.forTask(task.id);
     if (segment ? !segment.base || !segment.fixed || segment.repoId !== this.repoId || job.input.snapshotDigest !== automaticProofDigest(segment)
       || segment.base.commit !== job.input.baseCommit || segment.fixed.commit !== job.input.fixCommit : job.input.snapshotDigest !== undefined) throw new InvalidSource();
@@ -63,6 +65,7 @@ export class EvidenceJobs {
     return proofs; // Frozen insertion order; a clock rollback cannot hide a later negative report.
   }
   recover(task: Task, expectedJobId: string, validateExtraction: () => void): LearningJob {
+    this.store.assertLearningAllowed(task);
     const old = this.store.learning.job(expectedJobId);
     if (!old || old.input.taskId !== task.id || old.input.repoId !== this.repoId) throw new Error('Recovery source does not belong to task');
     return this.store.learning.appendRecovery(old.id, () => {
