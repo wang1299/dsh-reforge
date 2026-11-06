@@ -1,5 +1,7 @@
 # DSH-Reforge 产品需求 v0.2
 
+T061（2026-11-06）：为下一轮真实收益验证预先固定6项新合成任务、3份独立来源证明和36项三组计划；外部验收检验原始/参考/错误修复，实际脚本AgentLoop核对经验输入。预检零HTTP，不读旧授权/凭据，不把参考答案或送达当真实模型效果；设计见[ADR055](decisions/055-new-task-benefit-study-preparation.md)，真实执行需新预算与独立审查。
+
 T060（2026-11-06）：真实工作台按“任务/文件/属性/目标→预览→owner确认提交当前对话”组织，在模型前绑定实际消息/任务身份并检查owner明确声明的经验条件。旧经验不自动补条件，原SQLite v9及授权保持；新增独立有界owner元数据与不可自动重放的回执。设计/验收见[ADR054](decisions/054-owner-task-input-and-live-conditions.md)，真实模型收益仍另验。
 
 T059（2026-11-06）：从明确绑定的有限draft-07工程Schema读取字段必填/可空/声明类型，单独检查owner明确任务目标；不支持/过期保持未知，不从可选/default推断应用行为。新工件留出对照分离人工事实、自动获取与额外目标的贡献，源码入口解释来源和缺项；正常DSH接入与真实收益仍分开验收，见[ADR053](decisions/053-project-schema-facts-and-goals.md)。
