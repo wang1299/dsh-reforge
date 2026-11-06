@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { cosine, embeddingTextDigest, snapshotEmbeddingPort } from '../src/embedding.js';
 import { hybridSelection, rankHybrid } from '../src/hybrid-retrieval.js';
-import { calibrateHybrid, calibrationGrid, parseHybridCorpus, validateHybridCorpus } from '../src/hybrid-evaluation.js';
+import { calibrateHybrid, calibrationGrid, hybridMetrics, parseHybridCorpus, validateHybridCorpus } from '../src/hybrid-evaluation.js';
 
 const binding = { modelDigest: 'a'.repeat(64), corpusDigest: 'b'.repeat(64), dimension: 2 };
 const snapshot = () => ({ schemaVersion: 1, ...binding, split: 'development',
@@ -14,6 +14,12 @@ test('cosine is normalized, including negative direction; invalid vectors fail e
   assert.equal(cosine([1, 0], [-3, 0]), -1);
   assert.equal(cosine([1e200, 0], [1e200, 0]), 1);
   for (const vector of [[], [0, 0], [NaN, 1], [Infinity, 0], [1]]) assert.throws(() => cosine(vector, [1, 0]));
+});
+test('rank diagnostics can credit zero-score ties even while post-gate recall is zero', () => {
+  const candidates = ['a', 'b', 'c'].map(id => ({ id, score: 0, lexical: 0, dense: 0 }));
+  const selection = hybridSelection(candidates, { minimumScore: 0.3, minimumMargin: 0, lexicalWeight: 0 });
+  const result = hybridMetrics([{ id: 'q', family: 'test', kind: 'literal', query: 'test', relevantIds: ['b'], ineligibleIds: [], ...selection, candidates }]);
+  assert.equal(result.positiveRecall, 0); assert.equal(result.recallAt3, 1); assert.equal(result.mrr, 0.5);
 });
 test('calibration accesses only development requests and retains the full preregistered grid', async () => {
   const corpus = parseHybridCorpus(await readFile('test/fixtures/retrieval-v3-cases.json'));

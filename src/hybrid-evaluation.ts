@@ -115,7 +115,9 @@ export function evaluateHybrid(corpus: HybridCorpus, partition: 'development' | 
       negativeSemantic: hybridMetrics(rows.filter(r => ['hard_negative', 'unrelated_context', 'ambiguous'].includes(r.kind))),
       negativeEligibility: hybridMetrics(rows.filter(r => ['stale', 'other_repo'].includes(r.kind))), rows }]));
   return { schemaVersion: 1, split: partition, dataDigest: frozenHybridCorpusDigest, baselinePolicyDigest: retrievalPolicyDigest,
-    config, groups, scoringMilliseconds: prepared.timing, timingBoundary: 'one local rank pass per arm; precomputed vectors; excludes embedding and loading',
+    config, groups, scoringMilliseconds: prepared.timing,
+    timingBoundary: 'one local rank pass per arm; precomputed vectors; excludes embedding/loading; dense arm also computes unused BM25 for diagnostics, not optimized standalone vector latency',
+    rankingMetricBoundary: 'Recall@3/MRR use all eligible candidates before score/margin gates, including zero-score/ID ties; positiveRecall measures correct offers after gates',
     limitations: ['Author-visible synthetic relevance labels, not external human blind labels.',
       'Eligibility labels are declared; stale/foreign probes do not demonstrate semantic rejection.',
       'Retrieval quality is not downstream task improvement, cost saving or source verification.',
