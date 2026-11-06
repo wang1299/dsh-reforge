@@ -47,6 +47,8 @@ DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-veri
 
 后续源码已将等价BM25索引及请求内读取优化接入实际选择服务，工作台可查看本次运行的选择/拒绝依据。[完整服务链三组测量](docs/evaluation/live-retrieval.md)保留索引单独优化的无收益结果与冷请求：本机10条合成变体的选择P50为1556.79→142.96ms；不是模型或线上收益，尚未发行至npm。
 
+新增[120条跨语言合成检索对照](docs/evaluation/retrieval-v3.md)：本地向量在60条任务族留出中将正确提供从3/30提高到18/30，但仍误选16/60；混合方案为12/30、误选18/60。公开合成向量支持零付费评分重放；原型仅离线，不能当作真实任务收益或默认策略上线依据。
+
 ## 演示视频：保存失败，也不丢输入
 
 **亲自运行同款工程：** [examples/customer-form](examples/customer-form/README.md) 提供原始代码、补丁、外部验收和回归测试。运行 `npm run example:customer-form`，无需 Key 或 DSH，实际核对失败、修复和经验入库。[第一次配置与验证](docs/getting-started/quickstart.md)将体验、只读配置与学习授权串起来。
