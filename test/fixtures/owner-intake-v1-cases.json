@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "kind": "author-synthetic-owner-intake-workflow",
+  "note": "Protocol/actual-input probes, not blind retrieval accuracy, real users or Agent task success. Runtime cases share a real synthetic pytest proof.",
+  "cases": [
+    {
+      "id": "repair_matches",
+      "stage": "runtime",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "provided",
+      "rationale": "One source-qualified reminder and explicit owner rule match; actual provider input must contain the bound facts before reference."
+    },
+    {
+      "id": "ui_goal",
+      "stage": "runtime",
+      "goal": "present_ui",
+      "source": "matching",
+      "expected": "abstained",
+      "rationale": "The same textual repair cue has an explicit UI goal; owner rule permits repair only."
+    },
+    {
+      "id": "documentation_goal",
+      "stage": "runtime",
+      "goal": "generate_docs",
+      "source": "matching",
+      "expected": "abstained",
+      "rationale": "Documentation goal must not receive the repair reminder."
+    },
+    {
+      "id": "contradictory_facts",
+      "stage": "runtime",
+      "goal": "repair_behavior",
+      "source": "contradiction",
+      "expected": "abstained",
+      "rationale": "A fresh, confirmed nullable fact contradicts the owner's prerequisite; no fallback candidate."
+    },
+    {
+      "id": "source_changes_after_submit",
+      "stage": "runtime",
+      "goal": "repair_behavior",
+      "source": "changed_after_submit",
+      "expected": "abstained",
+      "rationale": "A real user task can run, but stale preview bytes supply neither trusted facts nor experience."
+    },
+    {
+      "id": "duplicate_submit",
+      "stage": "idempotency",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "one_submission",
+      "rationale": "Two identical submit requests must yield one message/task/application, never two model wakes."
+    },
+    {
+      "id": "goal_missing",
+      "stage": "pre_submit",
+      "goal": null,
+      "source": "matching",
+      "expected": "blocked",
+      "rationale": "Unknown goal is not a submitted task or a retrieval true negative."
+    },
+    {
+      "id": "unsupported_schema",
+      "stage": "pre_submit",
+      "goal": "repair_behavior",
+      "source": "unsupported",
+      "expected": "blocked",
+      "rationale": "AllOf outside the frozen projector remains unknown; do not remove constraints to make it pass."
+    },
+    {
+      "id": "source_changes_before_submit",
+      "stage": "pre_submit",
+      "goal": "repair_behavior",
+      "source": "changed_before_submit",
+      "expected": "blocked",
+      "rationale": "Changed preview bytes require a new preview, without waking the agent."
+    },
+    {
+      "id": "wrong_session",
+      "stage": "pre_submit",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "blocked",
+      "rationale": "An intact preview for session A cannot authorize B."
+    },
+    {
+      "id": "foreign_workspace",
+      "stage": "pre_submit",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "blocked",
+      "rationale": "The session cwd must still match the configured repository at confirmation."
+    },
+    {
+      "id": "non_owner_peer",
+      "stage": "pre_submit",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "blocked",
+      "rationale": "Payload cannot self-assert the authenticated owner."
+    },
+    {
+      "id": "sharing_disabled",
+      "stage": "pre_submit",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "blocked",
+      "rationale": "File preview may work, but submission cannot bypass existing sharing permission."
+    },
+    {
+      "id": "busy_or_pending_inbox",
+      "stage": "pre_submit",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "blocked",
+      "rationale": "Do not wake or merge pending/unknown inbox work."
+    },
+    {
+      "id": "experience_revision_changed",
+      "stage": "runtime",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "abstained",
+      "rationale": "Stale owner condition revision cannot transfer to another experience version; source qualification also remains required."
+    },
+    {
+      "id": "restart_unknown_submission",
+      "stage": "recovery",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "not_replayed",
+      "rationale": "Previous-instance uncertain receipts remain unknown; new confirmation does not replay the old message."
+    },
+    {
+      "id": "rule_config_unavailable",
+      "stage": "recovery",
+      "goal": "repair_behavior",
+      "source": "matching",
+      "expected": "abstained",
+      "rationale": "Corrupt/foreign owner metadata must not silently bypass configured gates or reset data."
+    },
+    {
+      "id": "legacy_default_unchanged",
+      "stage": "default",
+      "goal": null,
+      "source": "not_configured",
+      "expected": "legacy_behavior",
+      "rationale": "Without rules or prepared owner input, existing source/scope/feedback selection and data remain unchanged."
+    }
+  ]
+}
