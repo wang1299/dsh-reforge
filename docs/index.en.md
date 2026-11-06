@@ -1,5 +1,7 @@
 # DSH-Reforge documentation
 
+Next benefit-study preparation: [six new task contracts, independent controls and actual scripted memory exposure](evaluation/benefit-preparation-v1.md#english). Zero HTTP, no real-model repair or benefit result; a new live runner and spending authorization remain required.
+
 Source-only task flow: [inspect file facts, declare version-specific prerequisites, preview and submit the current task](evaluation/owner-intake-v1.md#english). Includes an actual AgentLoop zero-paid-API harness, bounded recovery and explicit limits; it is separate from the published alpha.2 package and real task-benefit evaluation.
 
 Project facts: [real-file preview, explicit goals and complete five-arm comparison](evaluation/project-facts-v1.md#english). Supports32/48 inputs;96/96 agreement is conditional on successful projection. Wrong offers9→0 with extra target/goal inputs, correct offers7→11 while coverage falls33.3%→22.9%; not default DSH or Agent benefit.
