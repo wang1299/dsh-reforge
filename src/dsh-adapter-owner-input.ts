@@ -41,13 +41,13 @@ export function dshOwnerCarrier(ctx: Context, service: EvolveService, sessionId:
   };
   return { sessionId, scopeKey, assertReady,
     async exclusive<T>(operation: () => T): Promise<T> {
-      assertReady();
+      assertReady(); let entered = false;
       try {
         return await agent.runMaintenance(async signal => {
-          maintenanceSignal = signal;
+          entered = true; maintenanceSignal = signal;
           try { assertReady(); return operation(); } finally { maintenanceSignal = null; }
         });
-      } catch (error) { if (error instanceof OwnerInputError) throw error; throw new OwnerInputError('owner_conversation_unavailable'); }
+      } catch (error) { if (error instanceof OwnerInputError) throw error; throw new OwnerInputError(entered ? 'owner_submission_unknown' : 'owner_conversation_busy'); }
     },
     message(text) {
       if (!maintenanceSignal) throw new OwnerInputError('owner_admission_required');

@@ -17,7 +17,7 @@ import type {} from '@deepseek-ai/dsh-client-connection';
 import { mountNative, nativeHandler } from './native-rpc.js';
 import { browserOwner } from './dsh-adapter-rpc.js';
 import { legacyMessageKind } from './legacy.js';
-import { dshOwnerCarrier, ownerAgentScope } from './dsh-owner-input.js';
+import { dshOwnerCarrier, ownerAgentScope } from './dsh-adapter-owner-input.js';
 import type { OwnerTaskCarrier } from './owner-task-input.js';
 
 declare module '@deepseek-ai/dsh-llm' {

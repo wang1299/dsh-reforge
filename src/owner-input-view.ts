@@ -62,7 +62,15 @@ export function installOwnerInput(root: HTMLElement, port: {
     try {
       const receipt = await port.request('/api/owner-input/submit', 'POST', body) as Receipt;
       tell('已取得提交回执 ' + receipt.id.slice(0, 8) + '。回执和回合结束均不代表任务验收通过。');
-    } catch (error) { tell('提交结果待核对，草稿已保留。请刷新下方回执；本页不会重新发送。' + errorMessage(error)); }
+    } catch (error) {
+      const code = (error as { code?: unknown })?.code;
+      const denied = typeof code === 'string' && ['owner_source_changed', 'owner_preview_expired', 'owner_sharing_disabled', 'owner_conversation_changed',
+        'owner_repository_mismatch', 'owner_model_changed', 'owner_conversation_busy', 'owner_conversation_required', 'owner_message_limit', 'owner_receipt_limit', 'conflict'].includes(code);
+      if (denied) {
+        consumed = false; prepared = null; requestId = null; confirmation.hidden = true;
+        tell('本次在提交前已被拦截，没有发送任务。草稿已保留，请核对后重新预览；不会自动发送。' + errorMessage(error));
+      } else tell('提交结果待核对，草稿已保留。请刷新下方回执；本页不会重新发送。' + errorMessage(error));
+    }
     await read();
   }), 'primary');
   const save = control('保存所选适用条件', () => run(async () => {
@@ -110,8 +118,9 @@ export function installOwnerInput(root: HTMLElement, port: {
     finally { busy = false; lock(); if (restoreRuleFocus) { experience.focus(); restoreRuleFocus = false; } }
   }
   function invalidate(sourceChanged = false) {
-    if (consumed) return; prepared = null; requestId = null; confirmation.hidden = true;
-    if (sourceChanged) { source = null; facts.replaceChildren(); }
+    if (sourceChanged) { source = null; declarationExperience = null; facts.replaceChildren(); }
+    if (consumed) { tell('当前编辑不会改变已经提交的任务；来源变化后需要重新核对。'); lock(); return; }
+    prepared = null; requestId = null; confirmation.hidden = true;
     tell('输入已变更，请重新预览后提交。'); lock();
   }
   path.oninput = () => invalidate(true); property.oninput = () => invalidate(true); text.oninput = () => invalidate(); goal.onchange = () => invalidate();

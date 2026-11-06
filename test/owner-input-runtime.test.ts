@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Context } from '@deepseek-ai/cordis';
@@ -14,7 +14,7 @@ import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt';
 import { ToolRuntime } from '@deepseek-ai/dsh-tools';
 import { EvolveService } from '../src/service.js';
 import { bindDsh } from '../src/dsh.js';
-import { dshOwnerCarrier } from '../src/dsh-owner-input.js';
+import { dshOwnerCarrier } from '../src/dsh-adapter-owner-input.js';
 import { OwnerInputError } from '../src/owner-input-domain.js';
 import { verifiedRetrievalFixture } from './retrieval-fixture.js';
 import type { OwnerTaskCarrier } from '../src/owner-task-input.js';
@@ -51,6 +51,9 @@ const code = (value: string) => (error: unknown) => error instanceof OwnerInputE
 
 test('actual official AgentLoop receives bound facts before reference; six runtime cases plus duplicate use one shared pytest proof', { timeout: 120000 }, async t => {
   mkdirSync(parent, { recursive: true }); const f = await verifiedRetrievalFixture(parent);
+  const preregistered = JSON.parse(readFileSync(fileURLToPath(new URL('../../test/fixtures/owner-intake-v1-cases.json', import.meta.url)), 'utf8')) as { cases: { id: string; stage: string; expected: string }[] };
+  const runtime = new Map(preregistered.cases.filter(c => c.stage === 'runtime').map(c => [c.id, c]));
+  const paired: { id: string; expectedProvided: boolean; legacySelectorSelected: boolean; currentNoticeProvided: boolean }[] = [];
   try {
     for (const scenario of ['repair_matches', 'ui_goal', 'documentation_goal', 'contradictory_facts', 'source_changes_after_submit', 'experience_revision_changed', 'duplicate_submit', 'existing_conversation_defaults', 'request_model_changed']) {
       await t.test(scenario, async () => {
@@ -93,6 +96,7 @@ test('actual official AgentLoop receives bound facts before reference; six runti
             await assert.rejects(() => service.ownerInput.submit({ ...request, idempotencyKey: randomUUID() }, carrier));
           }
           release(); await handle.agent.whenIdle();
+          if (scenario === 'duplicate_submit') await assert.rejects(() => service.ownerInput.submit({ ...request, idempotencyKey: randomUUID() }, carrier), code('owner_preview_expired'));
           if (scenario === 'request_model_changed') {
             assert.equal(adapter.calls.length, 0, 'A changed actual request must stop before the adapter');
             assert.equal(service.ownerInput.state(carrier).receipts[0]!.phase, 'unknown'); return;
@@ -102,6 +106,17 @@ test('actual official AgentLoop receives bound facts before reference; six runti
           assert.ok(ownerNotice); assert.ok(first.indexOf(text) < first.indexOf(ownerNotice));
           const provided = first.some(s => s.includes('Restore the original balance before raising'));
           const expected = ['repair_matches', 'duplicate_submit', 'existing_conversation_defaults'].includes(scenario); assert.equal(provided, expected);
+          const frozen = runtime.get(scenario);
+          if (frozen) {
+            const baseline = f.createBank();
+            try {
+              if (scenario === 'experience_revision_changed') {
+                const old = baseline.experiences[0]!; baseline.store.putExperience({ ...old, revision: 2 }, baseline.store.citations(old.id, old.revision));
+              }
+              const task = baseline.service.begin('baseline-' + scenario, text); const selected = baseline.service.select(task.id);
+              paired.push({ id: scenario, expectedProvided: frozen.expected === 'provided', legacySelectorSelected: !!selected.experience, currentNoticeProvided: provided });
+            } finally { baseline.store.close(); }
+          }
           const task = bank.store.tasks().find(task => task.sessionId === sessionId)!;
           assert.ok(task); assert.equal(task.state, 'closed'); assert.equal(bank.store.ownerInputs.classification(task), 'context_only');
           assert.equal(bank.store.applications().filter(a => a.taskId === task.id).length, expected ? 1 : 0);
@@ -114,6 +129,15 @@ test('actual official AgentLoop receives bound facts before reference; six runti
         } finally { release(); await handle.dispose(); await ctx.fiber.dispose(); }
       });
     }
+    assert.equal(runtime.size, 6); assert.equal(paired.length, 6);
+    const legacyViolations = paired.filter(p => !p.expectedProvided && p.legacySelectorSelected).length;
+    const currentViolations = paired.filter(p => !p.expectedProvided && p.currentNoticeProvided).length;
+    const retained = paired.filter(p => p.expectedProvided && p.legacySelectorSelected && p.currentNoticeProvided).length;
+    assert.equal(legacyViolations, 5); assert.equal(currentViolations, 0); assert.equal(retained, 1);
+    t.diagnostic(JSON.stringify({ kind: 'author_visible_owner_rule_workflow_pairing', cases: paired, legacyConfirmationRuleViolations: legacyViolations,
+      currentConfirmationRuleViolations: currentViolations, correctPositiveRetained: retained, positiveDenominator: 1,
+      negativeDenominator: 5, baselineBoundary: 'actual legacy service selector, not provider delivery', currentBoundary: 'actual scripted GenerateOptions notice',
+      sharedSourceProofs: 1, blindHoldout: false, realModelBenefit: false, paidHttpCalls: 0 }));
   } finally { f.store.close(); }
 });
 
@@ -178,7 +202,7 @@ test('actual carrier blocks missing goal, unsupported/changed source, foreign se
     const p = prepare(); let release!: () => void; const hold = a.agent.runMaintenance(async () => new Promise<void>(resolve => { release = resolve; }));
     try {
       assert.equal(a.agent.status, 'idle'); assert.equal(a.agent.inbox.nextTurn.length, 0);
-      await assert.rejects(() => service.ownerInput.submit(request(p), carrier()), code('owner_conversation_unavailable'));
+      await assert.rejects(() => service.ownerInput.submit(request(p), carrier()), code('owner_conversation_busy'));
     } finally { release(); await hold; }
     assert.equal(adapter.calls.length, 0); assert.equal(store.ownerInputs.receipts(service.repositoryId).length, 0);
     assert.equal(store.tasks().length, 0); assert.equal(store.learning.jobs().length, 0);

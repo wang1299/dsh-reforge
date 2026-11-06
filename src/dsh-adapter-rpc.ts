@@ -9,6 +9,7 @@ import { panelRequest } from './panel-api.js';
 import { ownerInputRequest } from './owner-input-api.js';
 import { OwnerInputError } from './owner-input-domain.js';
 import type { OwnerTaskCarrier } from './owner-task-input.js';
+import { ownerInputErrorMessage } from './owner-input-copy.js';
 
 export const nativePrefix = 'dsh-reforge-';
 const infoSchema = z.object({ sessionId: z.string().min(1).max(200).optional() }).strict();
@@ -71,7 +72,7 @@ export function nativeHandler(service: EvolveService, operator: PeerScope, activ
       if (reply.status !== 200) return fail(reply.status === 409 ? 'conflict' : 'not_found', reply.status === 409 ? '经验版本已变化，请载入最新记录后再保存。' : '操作不可用。');
       return { ok: true, value: reply.value };
     } catch (error) {
-      if (error instanceof OwnerInputError) return fail(error.code, '未提交或状态尚未确认。请核对当前对话、来源文件和操作状态；未知结果请勿重新发送。');
+      if (error instanceof OwnerInputError) return fail(error.code, ownerInputErrorMessage(error.code));
       return fail(error instanceof RevisionConflict ? 'conflict' : 'invalid', error instanceof RevisionConflict ? '经验版本已变化，请载入最新记录后再保存。' : '未完成操作，请核对内容、来源与当前版本。');
     }
   };

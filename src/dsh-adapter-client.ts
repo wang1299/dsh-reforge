@@ -46,7 +46,7 @@ function NativeView({ connection, layout, inSettings = false, sessionId }: Face 
       void connection.rpc.call(channel, 'dsh-reforge-request', { repositoryId: info.repositoryId, ...(sessionId ? { sessionId } : {}), path: request.path, method: request.method, ...(request.data === undefined ? {} : { data: request.data }) }, abort.signal)
         .then(result => {
           if (!live || event.source !== target.contentWindow) return;
-          target.contentWindow?.postMessage({ channel: session, id: request.id, ok: result.ok, ...(result.ok ? { value: result.value } : { message: result.error.message }) }, '*');
+          target.contentWindow?.postMessage({ channel: session, id: request.id, ok: result.ok, ...(result.ok ? { value: result.value } : { message: result.error.message, code: result.error.code }) }, '*');
         }).catch(() => {
           if (live) target.contentWindow?.postMessage({ channel: session, id: request.id, ok: false, message: request.method === 'POST' ? '保存回执中断，请刷新核对结果；不会自动重试。' : 'DSH 连接中断，请稍后刷新。' }, '*');
         }).finally(() => { pending.delete(request.id); });

@@ -6,6 +6,7 @@ import { renderPanel } from './panel-view.js';
 import { panelRequest } from './panel-api.js';
 import { ownerInputRequest } from './owner-input-api.js';
 import { OwnerInputError } from './owner-input-domain.js';
+import { ownerInputErrorMessage } from './owner-input-copy.js';
 
 async function body(request: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = []; let size = 0;
@@ -37,7 +38,7 @@ export async function startPanel(service: EvolveService): Promise<{ url: string;
       const value = request.method === 'POST' ? await body(request) : undefined;
       const reply = await ownerInputRequest(service, path, request.method ?? 'GET', value) ?? panelRequest(service, path, request.method ?? 'GET', value); send(reply.status, reply.value);
     } catch (error) { send(error instanceof RevisionConflict ? 409 : 400, { error: error instanceof OwnerInputError
-      ? '未完成操作，请核对来源、当前对话与提交状态。' : redact(error instanceof Error ? error.message : 'Invalid request', 1000),
+      ? ownerInputErrorMessage(error.code) : redact(error instanceof Error ? error.message : 'Invalid request', 1000),
       ...(error instanceof OwnerInputError ? { code: error.code } : {}) }); }
   }
   await new Promise<void>((resolveStart, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolveStart); });
