@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import { Store } from '../src/store.js';
 import { EvolveService } from '../src/service.js';
 import { OwnerInputError, type OwnerReceipt } from '../src/owner-input-domain.js';
@@ -40,6 +41,35 @@ test('a new epoch neither executes nor preempts a live old owner reservation; th
     assert.equal((await second.ownerInput.submit(reserved.request, c.port)).id, reserved.receipt.id);
     await assert.rejects(() => second.ownerInput.submit({ ...reserved.request, idempotencyKey: randomUUID() }, c.port), isCode('owner_preview_expired'));
     assert.equal(c.sent.length, 1); second.ownerInput.end(c.port.sessionId, 1);
+  } finally { store.close(); }
+});
+
+test('an actually exited owner process recovers only its known context task as unknown, preserving unrelated open work', { timeout: 30000 }, async () => {
+  mkdirSync(parent, { recursive: true }); const f = await fixture(parent); source(f.repo); const path = join(f.home, 'dead-owner', 'evolve.sqlite');
+  const initial = new Store(path); const setup = new EvolveService(initial, f.repo, policy(f.acceptance), false, undefined, true);
+  const unrelated = setup.begin('unrelated-old-work', 'Existing ordinary task, not owned by this intake'); initial.close();
+  const code = `import { Store } from ${JSON.stringify(new URL('../src/store.js', import.meta.url).href)};
+import { EvolveService } from ${JSON.stringify(new URL('../src/service.js', import.meta.url).href)};
+import { randomUUID } from 'node:crypto';
+const [root,path,acceptance]=process.argv.slice(1); const store=new Store(path);
+const service=new EvolveService(store,root,{trusted:false,python:'python',acceptanceDir:acceptance,regressionPath:'tests',timeoutMs:1000},false,undefined,true);
+let message;const carrier={sessionId:'recovery',scopeKey:'f'.repeat(64),assertReady(){},async exclusive(fn){return fn();},message(text){const id=randomUUID();return{id,send(){message={id,text};}};}};
+const p=service.ownerInput.taskPreview({path:'contract.schema.json',property:'state',text:'database transaction rollback exception',goal:'repair_behavior'},carrier);
+const request={instanceId:p.instanceId,previewId:p.previewId,idempotencyKey:randomUUID()};const receipt=await service.ownerInput.submit(request,carrier);
+service.ownerInput.admit(carrier.sessionId,carrier.scopeKey,1,[message]);const marker=store.ownerInputs.marker(message.id);
+process.stdout.write(JSON.stringify({pid:process.pid,request,receiptId:receipt.id,taskId:marker.taskId,messageId:message.id}));
+store.close(); // Simulated crash: do not invoke the plugin's normal unload lifecycle.
+`;
+  const child = JSON.parse(execFileSync(process.execPath, ['--input-type=module', '-e', code, f.repo, path, f.acceptance],
+    { encoding: 'utf8', windowsHide: true, maxBuffer: 8192 })) as { pid: number; receiptId: string; taskId: string; messageId: string; request: { instanceId: string; previewId: string; idempotencyKey: string } };
+  assert.throws(() => process.kill(child.pid, 0), (error: unknown) => (error as NodeJS.ErrnoException).code === 'ESRCH');
+  const store = new Store(path); const resumed = new EvolveService(store, f.repo, policy(f.acceptance), false, undefined, true); const c = carrier();
+  try {
+    assert.equal(store.task(child.taskId)!.state, 'open'); assert.equal(store.ownerInputs.receipt(resumed.repositoryId, child.receiptId)!.phase, 'bound');
+    resumed.ownerInput.recover(); assert.equal(store.task(child.taskId)!.state, 'closed'); assert.equal(store.task(unrelated.id)!.state, 'open');
+    const receipt = store.ownerInputs.receipt(resumed.repositoryId, child.receiptId)!; assert.equal(receipt.phase, 'unknown'); assert.equal(receipt.reason, 'interrupted_process');
+    assert.equal((await resumed.ownerInput.submit(child.request, c.port)).phase, 'unknown'); assert.equal(c.sent.length, 0);
+    assert.equal(store.learning.jobs().length, 0); assert.equal(store.extraction.jobs().length, 0);
   } finally { store.close(); }
 });
 
