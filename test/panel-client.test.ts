@@ -123,9 +123,11 @@ test('decision inspector filters locally and preserves a chosen older attempt th
   const clear = b.descendants(b.get('retrieval-history')).find(e => e.tag === 'button' && e.textContent === '清除筛选')!;
   await clear.onclick!(); assert.equal(b.rows().length, 3); assert.match(b.selected().textContent, /Older/); assert.equal(b.posts.length, 0);
 });
-test('evicted decisions fall back within retained scope and recover an owned row focus', async () => {
+for (const focus of ['row', 'candidate', 'summary'] as const) test(`evicted decisions recover an owned ${focus} focus within retained scope`, async () => {
   const b = decisionFixture(); await b.run('refresh()'); await b.run("showView('uses')");
-  b.selected().focus(); b.data.attempts.shift(); await b.run('refresh()');
+  const target = focus === 'row' ? b.selected() : b.descendants(b.get('retrieval-history')).find(e => focus === 'candidate'
+    ? e.tag === 'button' && e.textContent === '查看当前经验' : e.tag === 'summary')!;
+  target.focus(); b.data.attempts.shift(); await b.run('refresh()');
   assert.match(b.selected().textContent, /Older/); assert.match(b.get('retrieval-summary').textContent, /已离开保留范围/);
   await b.run("if(document.activeElement?.getAttribute('aria-pressed')!=='true')throw new Error('row focus lost')");
   assert.equal(b.posts.length, 0);
