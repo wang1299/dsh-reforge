@@ -1,0 +1,97 @@
+# Owner task intake v1：真实输入流程验证
+
+源码增量，2026-11-06，[Issue #133](https://github.com/wang1299/dsh-reforge/issues/133)、[PR #134](https://github.com/wang1299/dsh-reforge/pull/134)。合并与最终CI状态以PR当前提交为准；本轮不发布npm，已发布的alpha.2不会因源码变化而更新。设计见[ADR054](../decisions/054-owner-task-input-and-live-conditions.md)。持续目标仍包含真实 Agent 收益，本文不能替代成功率/返工/耗时/费用实验。
+
+## 可以验证什么
+
+新入口位于概览的“准备下一次任务”。填写仓库相对 Schema 路径、字段、任务和明确目标，先预览，再确认提交当前对话。经验条件由用户为一个确切版本声明，不从旧经验或任务文字推断。正常来源、代码、依赖、事实引用与反馈资格仍先执行；条件只否决原本第一候选，不改 BM25 语料、排序或补选其他候选。
+
+主插件页、设置页和独立面板可核对文件与管理条件；只有已认证、同仓库、非子 Agent 的当前对话具备提交能力。真正的空闲阶段由官方 `runMaintenance` 占有，已有待处理输入或维护工作时不抢占。预览不执行模型或写入数据库；提交使用当前对话模型，正式使用可能产生模型费用。
+
+## 零费用复现
+
+在源码仓库执行：
+
+```powershell
+npm run build
+node dist/scripts/owner-input-demo.js
+```
+
+脚本仅在仓库 `.probe-work/owner-input-demo` 下新建合成工程，建立一份真实 pytest 修复来源，启动脚本模型、实际官方 AgentLoop、原生 iframe 桥演练页和独立面板。终端打印当次入口。原生桥使用合成用户身份，不能冒充完整桌面 DSH 登录验收；实际用户身份隔离另由官方宿主测试覆盖。不读取个人 profile、Key、旧账本或授权，不访问 HTTP 模型。
+
+1. 打开 `nativeHarness`，展开准备任务。
+2. 路径填 `contract.schema.json`，字段填 `state`，任务可填 `database transaction rollback exception`，目标选择“修复代码行为”。
+3. 展开条件管理，选取已有经验；点击“检查文件与字段”。核对“必须存在=true、允许null=false、类型=object”。
+4. 明确选择 `字段是否允许 null` 前提和“修复代码行为”允许目标，保存条件。
+5. 预览当前任务，核对文件、目标与脱敏摘要，再提交。
+6. 核对回执、参考选择，以及脚本模型打印的当前插件 notice 布尔结果。历史模型上下文不会被本插件删除，当前 notice 不能代表整段历史已忘记其他经验。
+
+来源验证表示这份合成修复的独立测试通过；脚本模型只返回流程说明，不执行新修复。回执 ended、正常 turn/end、Application、模型输入含经验都不是任务验收。测试变体共用来源，不是多份独立策略证据。
+
+## 当前实际证据
+
+实现前固定[24个工作流场景](../../test/fixtures/owner-intake-v1-cases.json)，分为6个运行时、9个预提交、3个幂等、3个恢复、2个学习边界和1个旧默认行为。各阶段分开验收；未提交的输入不计入检索正确拒选。
+
+实际官方 AgentLoop 探针已经检查6个运行时案例和一次重复提交：匹配修复提供经验；UI目标、文档目标、矛盾事实、提交后文件变化、经验修订均保持空参考。探针断言真正 `GenerateOptions` 中的当前用户输入、任务绑定、事实 notice 与经验内容，而非仅等待 idle。额外回归覆盖旧对话 adapter 默认参数不误拒、实际请求模型改变时模型端调用为0。
+
+这些是作者可见的流程案例。1个匹配、5个拒选不能被写成普适准确率；更不能称为任务成功率提高。新在线方法使用既有 BM25 第一候选加 veto，区别于 T059 冻结的神经检索比较，不沿用其留出分数。
+
+补充的选择器级配对（实现后增加，非事前冻结的盲测比较）：相同6个案例、同一来源库与任务文字，另建无owner规则的独立库，实际调用旧默认 `service.select`。它在6/6中选中经验；新入口在真实脚本 `GenerateOptions` 的当前插件 notice 中提供1/6。按本次已明确的确认规则，5个不应提供的场景由5/5降为0/5，1个正向案例保留1/1。基线测的是服务选择，新入口测的是当前notice，不能冒充两组真实模型任务收益，也不声称历史上下文已被抹去。
+
+| 预登记案例 | 旧默认选择器选中 | 新入口当前notice提供 |
+| --- | --- | --- |
+| 匹配的修复目标与事实 | 是 | 是 |
+| 相同文字、UI目标 | 是 | 否 |
+| 相同文字、文档目标 | 是 | 否 |
+| 新事实与必要前提矛盾 | 是 | 否 |
+| 已提交后文件变化 | 是 | 否 |
+| 来源仍合格，但经验修订后条件过期 | 是 | 否 |
+
+测试直接读取固定案例集中的运行时标签，输出不含原文/凭据的配对诊断。正向保留的分母仅1，拒选分母5，来源证明仅1；这些分母必须随数字一起呈现。
+
+已实际观察浏览器首次配置与提交：7项输入/选择（3个文字字段、目标、经验、必要前提、允许目标），6次按钮或折叠操作，另用1次刷新核对结束回执。这个操作清单描述额外人工输入，不是用户研究、节省时间或认知负担下降的结论。桌面、390×844窄屏、浅/深色原生桥及独立面板能力限制已观察；窄屏 iframe 内容宽度360、scrollWidth360，无横向溢出。相关截图为本地合成证据。
+
+最终生产代码候选`ad98516`另在真实浏览器走通：预览→修改合成Schema字节→点击提交被明确拦截→原草稿与目标保留→重新预览后确认按钮恢复，且未创建回执、经验应用或模型输入。保留未知请求的一次消费规则没有因恢复草稿而放松。原生桥仍是合成owner演练，未冒充桌面登录。
+
+## 数据和恢复边界
+
+原主库保持 SQLite v9。新规则、128条有界回执与最多4096条永久消息/任务分类保存在独立 sidecar schema1，并由同目录身份锚绑定单个仓库。预览原文仅在短期内存；插件任务记录最多256字符脱敏摘要，新入口不自动另存512字符纠正原文。
+
+关闭自动学习时，此入口任务为 context_only，既有学习工具不能绕过；无效旧消息、unknown、混合输入和中途补充要求也保留本回合禁止学习，直到真正结束。先前已经冻结排队的普通任务不会被后来的 context_only 回合撤销。永久任务分类不随回执清理；重复/过期请求不自动重发。
+
+升级或备份先停止本地相关进程，完整复制数据目录，包含 `evolve.sqlite`、`owner-inputs-v1.sqlite`、`owner-inputs-v1.identity.json` 及其他原文件。任一 owner 元数据单独丢失或身份不符时不能清空重建。两份 owner 元数据一同被手工删除或整套替换，无法凭未修改的旧v9主库辨认，不承诺抵抗这种目录级篡改。两库也不具备跨库原子事务：孤立绑定投影为 unknown，不是重放凭据。
+
+## 验收记录与合并门槛
+
+对应如下；表格仅定位实际检查，不代替运行结果。
+
+| 阶段与场景 | 实际检查入口 |
+| --- | --- |
+| 6个运行时案例、重复提交 | `owner-input-runtime.test.ts` 的实际官方AgentLoop与真正GenerateOptions；6例共用1份来源证明 |
+| 9类预提交约束 | 同文件的真实carrier测试：缺目标、不支持Schema、预览后源变化、错会话、错工作区、非owner peer、共享关闭、待处理inbox、另一个maintenance占有idle |
+| 同预览换UUID、回执淘汰后重试 | 官方回合结束后再确认过期；`owner-input-store.test.ts` 的永久preview唯一；`owner-input-recovery.test.ts` 的实际数据库重启与未新增send |
+| 旧实例unknown、配置不可用、两库回滚 | `owner-input-recovery.test.ts` 核对活旧实例不被抢占；真正退出的子进程留下的任务只关闭已分类的context任务，其他旧任务保持；原选择器默认行为、损坏锚不回退，以及主事务回滚后sidecar孤立绑定unknown且不重放 |
+| context_only工具绕过、裁剪后分类 | runtime的服务/工具/入队边界；recovery的真正关闭并重开数据库、原始有效候选输入与服务/worker入队拒绝 |
+| 旧默认行为 | 无sidecar时来源合格的真实旧选择；原有核心/DSH/native测试仍需全套通过 |
+
+明确提交前拒绝与unknown的一次发送已区分：只有固定的可证明前置错误解除任务锁，要求用户重新预览，不自动重发；无code、连接中断、已预留后的异常仍unknown。CAS错误只在确知尚未插入/发送的reserve位置转换，实际carrier探针还断言Agent维持idle、两个inbox为空。来源失效独立于已提交任务锁，轮询不重建未变化的规则按钮。6项纯UI测试通过，来源变化后的浏览器草稿恢复也已观察。
+
+生产代码`ad9851608849f0a81fc6d99608e82956dfb5fe06`本地 `npm run check`：335项，334通过、0失败、1项因Windows符号链接权限跳过；`npm run compat`：10/10通过。后续只补文档及真正退出进程的恢复测试，新增测试已单独通过；它们的完整结果仍须核对最终提交的CI，不能继承旧SHA的绿灯。之前两轮完整检查中的预算JSON替换EPERM/relay异常和新SDK模块命名失败均保留记录；命名按原规则修正，预算源模块、旧账本和财务规则未修改，最后这轮确实完整运行并通过，而非拼接单测结果。
+
+稳定生产代码的独立只读审查已无P0/P1/P2；此前发现的学习旁路、自动歧义片段、默认模型参数误拒、历史队列撤销及表单恢复问题均经修复和对应回归。AI审查不构成GitHub正式批准。
+
+合并仍以最终提交的全部门槛为准：完整check/compat、Windows/Linux × DSH 0.2.0-rc.2/0.2.1-rc.5同包CI、独立稳定SHA审查、UI与文档证据。最新远端状态直接查看[PR检查](https://github.com/wang1299/dsh-reforge/pull/134/checks)；运行中、缺失和旧提交的通过都不能算本次完成。不发布npm、Release或部署，不上传私人profile或日志。
+
+真实任务收益另行预登记新任务集、三组同模型同预算对照和新增费用授权；旧10元研究不重放。此源码流程验证的通过不结束持续的UX/效果改进目标。
+
+## English
+
+This source-only workbench increment lets the owner inspect a supported Schema field, declare prerequisites for an exact experience revision, choose an explicit goal, preview and submit to the actual current DSH conversation. Existing source/scope/feedback qualifications and ranking remain; the new rules can only veto the original first candidate. Old experiences receive no inferred metadata. Published alpha.2 is unchanged.
+
+Build source and run `node dist/scripts/owner-input-demo.js` for a fresh synthetic repository, one actual pytest source proof, the official AgentLoop with a zero-HTTP scripted adapter, a synthetic-owner native iframe bridge and a standalone panel. The bridge is not a desktop login test. Submission in a real profile uses that conversation's model and may incur its fees. Preview, turn completion, receipts and Application records do not establish task acceptance or future benefit.
+
+An exploratory pairing uses six already-visible authored workflow cases, not a blind holdout. The actual legacy selector selects in all six. The current scripted GenerateOptions notice provides in one: violations of the additional explicit confirmation rules change from5/5 to0/5, retaining the sole positive1/1. Baseline selection and current-notice boundaries differ and are stated explicitly; all six share one source proof. No real-model success, rework, time or cost improvement is claimed. Initial browser setup takes seven inputs/choices and six button/disclosure actions, plus one optional receipt refresh; this is an action count, not a user study.
+
+Main SQLite stays v9. Separate bounded schema1 metadata and an identity anchor must be backed up together. Context-only learning guards outlive receipt pruning and steering until actual turn end, without revoking older ordinary queued work. Unknown submissions never replay automatically. Actual main-rollback, live/terminated producer, corruption and real database-restart tests check recovery boundaries. Desktop,390px light/dark, standalone capability limits and explicit pre-submit rejection followed by draft-preserving re-preview were observed in the browser.
+
+Production code `ad98516` passed local full check335 tests:334 passed,0 failed,1 existing Windows symlink privilege skip; compat10/10. Later test/documentation commits have their own final-CI gate. Earlier Windows file-replacement/relay failures are retained, not counted as passes; financial code and old ledgers were not changed. Independent AI review is not GitHub approval. Final state belongs to [PR #134 checks](https://github.com/wang1299/dsh-reforge/pull/134/checks), not an older green SHA. Real Agent benefit requires a separate new-task protocol and fresh spending authorization.

@@ -1,11 +1,13 @@
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import { z } from 'zod';
 import { LearningStore, learningTablesSql } from './learning-store.js';
 import { observationSchema } from './learning-domain.js';
 import { ExtractionStore, extractionTablesSql } from './extraction-store.js';
 import { AutomaticStore, automaticTablesSql } from './automatic-store.js';
+import { OwnerInputStore } from './owner-input-store.js';
+import { OwnerInputError } from './owner-input-domain.js';
 import { applicationSchema, experienceSchema, feedbackSchema, taskSchema, verificationSchema, RevisionConflict,
   evidenceSchema, factCitationsSchema, type Evidence, type FactCitation,
   type Application, type Experience, type Feedback, type Task, type Verification } from './domain.js';
@@ -15,7 +17,11 @@ export class Store {
   readonly learning: LearningStore;
   readonly extraction: ExtractionStore;
   readonly automatic: AutomaticStore;
+  readonly ownerInputs: OwnerInputStore;
+  /** Retained until the actual host turn ends, even if a model closes its task early. */
+  readonly ownerContextSessions = new Set<string>();
   constructor(path: string) {
+    this.ownerInputs = new OwnerInputStore(path === ':memory:' ? null : join(dirname(path), 'owner-inputs-v1.sqlite'));
     if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
     this.db = new DatabaseSync(path);
     // SQLite's table rebuild procedure requires disabling enforcement before BEGIN.
@@ -189,5 +195,20 @@ export class Store {
     try { const result = fn(); this.db.exec('RELEASE evolve_transaction'); return result; }
     catch (error) { this.db.exec('ROLLBACK TO evolve_transaction; RELEASE evolve_transaction'); throw error; }
   }
-  close(): void { this.db.close(); }
+  assertOwnerSessionLearningAllowed(repoId: string, sessionId: string): void {
+    if (this.ownerContextSessions.has(repoId + ':' + sessionId)) throw new OwnerInputError('owner_context_only');
+    for (const marker of this.ownerInputs.markers(repoId)) {
+      if (marker.mode !== 'context_only' || marker.sessionId !== sessionId || !marker.taskId) continue;
+      const task = this.task(marker.taskId);
+      if (task?.state === 'open' && this.ownerInputs.classification(task) === 'context_only') throw new OwnerInputError('owner_context_only');
+    }
+  }
+  assertTaskLearningAllowed(task: Task): void {
+    if (this.ownerInputs.classification(task) === 'context_only') throw new OwnerInputError('owner_context_only');
+  }
+  assertLearningAllowed(task: Task): void {
+    this.assertTaskLearningAllowed(task);
+    this.assertOwnerSessionLearningAllowed(task.scope.repoId, task.sessionId);
+  }
+  close(): void { this.ownerInputs.close(); this.db.close(); }
 }

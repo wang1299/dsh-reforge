@@ -53,6 +53,8 @@ DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-veri
 
 新增[真实文件事实预览与五臂对照](docs/evaluation/project-facts-v1.md)：有限Schema自动支持32/48输入，成功投影事实96/96一致；同批合成工件留出中，自动事实＋明确目标相对dense正确7/24→11/24、误选9/48→0/48，同时丢失2个原正确、覆盖率33.3%→22.9%。目标/属性仍需显式输入，13/24正例仍漏；源码`npm run project:facts`可体验，未接默认DSH或发行包，不代表Agent收益。
 
+源码工作台新增[任务准备与真实输入流程](docs/evaluation/owner-intake-v1.md)：检查文件与字段、选择明确目标、预览后提交当前对话；为确切经验版本声明必要前提，只否决原第一候选，不改变原排序。提供实际官方AgentLoop的零费用演练和恢复测试；已发布alpha.2不包含此源码增量，6个作者流程对照也不代表真实任务成功率提升。
+
 ## 演示视频：保存失败，也不丢输入
 
 **亲自运行同款工程：** [examples/customer-form](examples/customer-form/README.md) 提供原始代码、补丁、外部验收和回归测试。运行 `npm run example:customer-form`，无需 Key 或 DSH，实际核对失败、修复和经验入库。[第一次配置与验证](docs/getting-started/quickstart.md)将体验、只读配置与学习授权串起来。

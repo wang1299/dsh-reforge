@@ -26,6 +26,7 @@ export function extractionMaterial(store: Store, root: string, job: ExtractionJo
   const input = source.input; const task = store.task(job.taskId);
   if (!task || task.state !== 'closed' || input.taskId !== task.id || input.repoId !== job.repoId || task.scope.repoId !== job.repoId
     || digest(JSON.stringify(taskSchema.parse(task))) !== input.taskDigest) throw new Error('Invalid extraction task');
+  store.assertTaskLearningAllowed(task);
   for (const ref of input.sources) {
     const item = store.evidence(ref.id);
     if (!item || item.taskId !== task.id || item.repoId !== job.repoId || item.kind !== ref.kind || item.digest !== ref.digest
@@ -79,12 +80,15 @@ export class ExtractionJobs {
     this.repoId = snapshot(root).scope.repoId;
   }
   enqueue(task: Task, evidenceJobId: string): void {
+    this.store.assertLearningAllowed(task);
     if (this.policy) this.store.extraction.enqueue(task.id, task.scope.repoId, evidenceJobId, this.policy);
   }
   async runNext(port?: ExtractionPort | null, signal?: AbortSignal): Promise<boolean> {
     this.store.extraction.recover(this.repoId, Date.now());
     for (const queued of this.store.extraction.jobs().filter(j => j.repoId === this.repoId && j.state === 'waiting')) {
       if (signal?.aborted) return false;
+      try { const task = this.store.task(queued.taskId); if (!task) throw new Error('Missing task'); this.store.assertTaskLearningAllowed(task); }
+      catch { this.store.extraction.block(queued.id, 'policy_revoked'); return true; }
       if (this.store.automatic.forTask(queued.taskId) && !this.automaticEnabled) { this.store.extraction.block(queued.id, 'policy_revoked'); return true; }
       if (!this.policy || queued.policyDigest !== digest(JSON.stringify(this.policy)) || queued.policyDigest !== digest(JSON.stringify(queued.policy))) {
         this.store.extraction.block(queued.id, 'policy_revoked'); return true;
