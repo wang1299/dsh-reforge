@@ -18,6 +18,7 @@ test('new study schedule balances all arms, repeats and positions; model tasks e
     for (const repeat of [1, 2]) assert.deepEqual(new Set(studySchedule.filter(r => r.case === item.id && r.repeat === repeat).map(r => r.arm)), new Set(studyArms));
     const input = studyTaskInput(item); assert(input.includes(item.before));
     assert(!input.includes(item.reference)); assert(!input.includes(item.wrong)); assert(!input.includes(item.checks));
+    for (const wrong of Object.values(item.additionalWrong ?? {})) assert(!input.includes(wrong));
     assert.equal(item.entry, 'repair'); assert(studySources.some(s => s.id === item.family));
   }
 });
@@ -46,8 +47,9 @@ test('fresh preparation verifies three independent source repairs, six discrimin
     assert.equal(new Set(report.sourceProofs.map(p => p.verificationId)).size, 3);
     assert.equal(new Set(report.sourceProofs.map(p => p.acceptanceDigest)).size, 3); assert.equal(report.controls.length, 6);
     for (const control of report.controls) {
-      assert.equal(control.outcomes.length, 3);
-      assert.deepEqual(control.outcomes.map(o => o.passed), [false, true, false]);
+      const item = studyCases.find(c => c.id === control.case)!;
+      assert.equal(control.outcomes.length, 3 + Object.keys(item.additionalWrong ?? {}).length);
+      assert(control.outcomes.every(o => o.passed === (o.variant === 'reference')));
       assert(control.outcomes.every(o => o.cases.length >= 2 && o.cases.every(c => c.status !== 'skipped' && c.status !== 'error')));
     }
     assert.equal(report.exposure.length, 18); assert(report.exposure.every(e => e.actualScriptedRequests === 1 && e.commonTaskPresent && e.realModelAcceptance === null));

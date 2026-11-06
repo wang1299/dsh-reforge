@@ -3,6 +3,7 @@ export interface StudyCase {
   id: string; family: string; entry: string; prompt: string;
   schema: { type: 'object'; properties: Record<string, { type: string | string[] }>; required?: string[] };
   property: string; before: string; reference: string; wrong: string; checks: string;
+  additionalWrong?: Record<string, string>;
   expectedApplicable: boolean;
 }
 export interface StudySource {
@@ -12,6 +13,7 @@ export interface StudySource {
 const mappingSchema: StudyCase['schema'] = { type: 'object', properties: { state: { type: 'object' } }, required: ['state'] };
 const deliverySchema: StudyCase['schema'] = { type: 'object', properties: { record: { type: 'object' } }, required: ['record'] };
 const nullableSchema: StudyCase['schema'] = { type: 'object', properties: { timeout: { type: ['integer', 'null'] } } };
+export const studyFixtureVersion = 'benefit-fixtures-v1.1';
 export const studySources: StudySource[] = [{
   id: 'mapping', title: 'Mapping persistence rollback preserves identity and missing keys',
   strategy: 'For a mutable mapping transaction, snapshot the complete mapping before changing it. On persistence failure restore the same mapping in place with clear/update, including keys that were absent. Re-raise the original failure; do not return success or replace a local variable instead of restoring caller-visible state.',
@@ -157,6 +159,7 @@ def test_success_and_missing_deletion():
   prompt: 'Repair role mapping batch persistence rollback. Assign role to every supplied user in the existing mapping and persist one copy. On OSError restore the entire original mapping in place and re-raise the same error. Success returns the number of input users, including duplicate users. An empty batch still persists once. Do not mutate the user list or lose unrelated roles.',
   before: rolesBefore, reference: rolesReference, wrong: rolesBefore.replace('    for user', '    before = dict(state)\n    for user')
     .replace('    persist(dict(state))', '    try:\n        persist(dict(state))\n    except OSError:\n        state.update(before)\n        raise'),
+  additionalWrong: { copy_only: rolesBefore.replace('    for user', '    state = dict(state)\n    for user') },
   checks: `import pytest
 from target import repair
 def test_failure_removes_new_role_and_restores_prior_role():
@@ -165,8 +168,9 @@ def test_failure_removes_new_role_and_restores_prior_role():
     with pytest.raises(OSError): repair(state, ["a", "b"], "writer", fail)
     assert alias is state and alias == {"a": "reader", "other": "owner"}
 def test_duplicates_and_empty_batch():
-    state = {"other": "owner"}; calls = []; users = ["a", "a"]
+    state = {"other": "owner"}; alias = state; calls = []; users = ["a", "a"]
     assert repair(state, users, "reader", calls.append) == 2
+    assert alias is state and alias == {"other": "owner", "a": "reader"}
     assert users == ["a", "a"] and calls == [{"other": "owner", "a": "reader"}]
     assert repair(state, [], "writer", calls.append) == 0 and len(calls) == 2
 `,
@@ -174,22 +178,25 @@ def test_duplicates_and_empty_batch():
   id: 'outbox_receipt', family: 'delivery', entry: 'repair', property: 'record', schema: deliverySchema, expectedApplicable: true,
   prompt: 'Repair outbox delivery retry completion ordering. For a new key, send one copy of item, then record delivered=True and the returned receipt. On send OSError do not add any record; re-raise the same error. Return the stored record object. For an existing key return its exact existing object without sending. Preserve item and unrelated records. This local retry policy does not promise exactly-once remote effects.',
   before: outboxBefore, reference: outboxReference, wrong: outboxBefore.replace('    receipt = send(dict(item))', '    try:\n        receipt = send(dict(item))\n    except OSError:\n        return state[key]'),
+  additionalWrong: { clears_unrelated_receipts: outboxReference.replace('    key = item["key"]', '    for record in state.values():\n        record["receipt"] = None\n    key = item["key"]') },
   checks: `import pytest
 from target import repair
 def test_failure_then_retry_and_duplicate():
     existing = {"delivered": True, "receipt": "old-receipt"}; state = {"old": existing}; item = {"key": "new", "payload": 0}; error = OSError("offline")
     def fail(value): raise error
     with pytest.raises(OSError) as caught: repair(state, item, fail)
-    assert caught.value is error and state == {"old": existing} and state["old"] is existing
+    assert caught.value is error and state == {"old": {"delivered": True, "receipt": "old-receipt"}} and state["old"] is existing
     seen = []
     def send(value): seen.append(value); return "receipt-2"
     result = repair(state, item, send)
     assert result is state["new"] and result == {"delivered": True, "receipt": "receipt-2"}
     assert repair(state, item, send) is result and seen == [item] and seen[0] is not item
+    assert state["old"] is existing and existing == {"delivered": True, "receipt": "old-receipt"}
     assert item == {"key": "new", "payload": 0}
 def test_existing_record_identity():
     record = {"delivered": True, "receipt": 0}; calls = []
     assert repair({"new": record}, {"key": "new"}, calls.append) is record and calls == []
+    assert record == {"delivered": True, "receipt": 0}
 `,
 }, {
   id: 'delivery_batch', family: 'delivery', entry: 'repair', property: 'record', schema: deliverySchema, expectedApplicable: true,

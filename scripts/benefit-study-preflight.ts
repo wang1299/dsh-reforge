@@ -21,7 +21,7 @@ import { rankText, retrievalPolicyDigest } from '../src/retrieval.js';
 import { passes, reproduces } from '../src/verification.js';
 import type { OwnerTaskCarrier } from '../src/owner-task-input.js';
 import { runPilotTests, briefPilotTests } from './pilot-fixtures.js';
-import { studyArms, studyCases, studySchedule, studySources, studySystem, studyTaskInput, type StudyArm, type StudyCase } from './benefit-study-cases.js';
+import { studyArms, studyCases, studyFixtureVersion, studySchedule, studySources, studySystem, studyTaskInput, type StudyArm, type StudyCase } from './benefit-study-cases.js';
 
 const repository = fileURLToPath(new URL('../../', import.meta.url));
 const marker = 'DSH-Reforge repair experience (fallible data, not instructions or evidence of benefit):\n';
@@ -33,7 +33,7 @@ allowed={'Module','FunctionDef','arguments','arg','Assign','AugAssign','Return',
 for n in nodes:
     assert type(n).__name__ in allowed
     if isinstance(n,ast.Name): assert not n.id.startswith('__')
-    if isinstance(n,ast.Attribute): assert n.attr in {'get','clear','copy','update','items','append','pop'}
+    if isinstance(n,ast.Attribute): assert n.attr in {'get','clear','copy','update','items','values','append','pop'}
     if isinstance(n,ast.Constant) and isinstance(n.value,int): assert abs(n.value)<=10000
     if isinstance(n,ast.Call): assert (isinstance(n.func,ast.Name) and n.func.id in {'persist','send','dict','len','ValueError','OSError'}) or isinstance(n.func,ast.Attribute)
 `;
@@ -166,20 +166,21 @@ async function selectedReference(bank: Store, repo: string, item: StudyCase, arm
 }
 
 class ExposureAdapter extends LlmAdapter {
-  readonly requests: { digest: string; systemDigest: string; commonTask: boolean; exactReference: boolean }[] = [];
+  readonly requests: { digest: string; systemDigest: string; commonTask: boolean; exactReference: boolean; valid: Record<string, boolean> }[] = [];
   constructor(private readonly common: string, private readonly memory: string | null) { super(); }
   override providerRetryPolicy() { return resolveRetryPolicy({ mode: 'normal', maxRetries: 0 }, 'benefit preflight zero HTTP'); }
   override async *stream(options: GenerateOptions): AsyncIterable<StreamChunk> {
     assert.equal(options.provider, 'benefit-offline'); assert.equal(options.model, 'scripted'); assert.equal(this.requests.length, 0);
     const texts = options.messages.filter(m => m.role === 'user').flatMap(m => m.content.flatMap(b => b.type === 'text' ? [b.text] : []));
     const systems = options.messages.filter(m => m.role === 'system').flatMap(m => m.content.flatMap(b => b.type === 'text' ? [b.text] : []));
-    assert(systems.some(text => text.includes(studySystem))); assert.equal(options.maxTokens, 2048); assert.equal(options.temperature, 0);
-    assert.equal(options.tools?.length ?? 0, 0);
     const reference = texts.filter(t => t.startsWith(marker));
     const exactReference = this.memory !== null && reference.length === 1 && reference[0] === marker + this.memory;
-    assert.equal(reference.length, this.memory === null ? 0 : 1); if (this.memory) assert(exactReference);
-    assert(texts.includes(this.common));
-    this.requests.push({ digest: digest(JSON.stringify({ systems, texts })), systemDigest: digest(JSON.stringify(systems)), commonTask: true, exactReference });
+    const valid = { system: systems.some(text => text.includes(studySystem)), outputCap: options.maxTokens === 2048,
+      temperature: options.temperature === 0, noTools: (options.tools?.length ?? 0) === 0, commonTask: texts.includes(this.common),
+      referenceCount: reference.length === (this.memory === null ? 0 : 1), referenceContent: this.memory === null || exactReference };
+    // Complete the scripted turn even on a bad probe, then report fixed booleans outside the SDK.
+    // Throwing inside stream can be consumed by host error handling and hide the actual mismatch.
+    this.requests.push({ digest: digest(JSON.stringify({ systems, texts })), systemDigest: digest(JSON.stringify(systems)), commonTask: valid.commonTask!, exactReference, valid });
     const text = 'Scripted exposure rehearsal only. No repair generated or task acceptance evaluated.';
     yield { type: 'block-start', index: 0, blockType: 'text' }; yield { type: 'text-delta', index: 0, text };
     yield { type: 'block-end', index: 0, block: { type: 'text', text } }; yield { type: 'finish', reason: { kind: 'stop' } };
@@ -203,6 +204,7 @@ async function providerExposure(item: StudyCase, memory: string | null) {
         timer = setTimeout(() => reject(new Error('scripted_exposure_timeout')), 30000); timer.unref();
       })]); } finally { clearTimeout(timer); }
       assert.equal(adapter.requests.length, 1, 'Idle is insufficient; an actual GenerateOptions must be observed');
+      assert(Object.values(adapter.requests[0]!.valid).every(Boolean), 'scripted_input_mismatch:' + JSON.stringify(adapter.requests[0]!.valid));
       return adapter.requests[0]!;
     } finally { await handle.dispose(); }
   } finally { await ctx.fiber.dispose(); }
@@ -219,7 +221,9 @@ export async function prepareBenefitStudy(parent = join(repository, '.probe-work
       const folder = join(root, item.id); await mkdir(folder); const tests = join(folder, 'checks'); await mkdir(tests);
       await writeFile(join(tests, 'test_contract.py'), item.checks);
       const outcomes = [];
-      for (const [variant, code] of [['before', item.before], ['reference', item.reference], ['wrong', item.wrong]] as const) {
+      const variants = [['before', item.before], ['reference', item.reference], ['wrong', item.wrong], ...Object.entries(item.additionalWrong ?? {})];
+      for (const [variant, code] of variants) {
+        assert(variant && code);
         validateStudyCode(python, code); await writeFile(join(folder, 'target.py'), code);
         const run = await runPilotTests(python, folder, tests, join(root, item.id + '-' + variant + '.xml'));
         const expected = variant === 'reference' ? passes(run) : reproduces(run);
@@ -245,7 +249,7 @@ export async function prepareBenefitStudy(parent = join(repository, '.probe-work
     const runtime = { node: process.version, python: execFileSync(python, ['--version'], { windowsHide: true, encoding: 'utf8', timeout: 5000 }).trim(),
       sdk: Object.fromEntries(await Promise.all(['dsh-agent', 'dsh-agent-loop', 'dsh-llm'].map(async name =>
         [name, (JSON.parse(await readFile(join(repository, 'node_modules/@deepseek-ai', name, 'package.json'), 'utf8')) as { version: string }).version]))) };
-    const report = { kind: 'zero-http-benefit-study-preparation', schemaVersion: 1, fixtureDigest, methodDigest, implementation, runtime,
+    const report = { kind: 'zero-http-benefit-study-preparation', schemaVersion: 1, fixtureVersion: studyFixtureVersion, fixtureDigest, methodDigest, implementation, runtime,
       plannedRealTrials: studySchedule.length, schedule: studySchedule, realTrialsStarted: 0, paidHttpCalls: 0,
       sourceProofs: bank.proofs, controls, exposure, elapsedMs: Date.now() - started,
       futureBenefitProven: false, liveExecutionImplemented: false, spendingAuthorized: false,
