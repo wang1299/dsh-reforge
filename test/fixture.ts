@@ -9,8 +9,8 @@ export function citeFact(evidence: Evidence, fact: string, factIndex = 0): FactC
   return { factIndex, factDigest: digest(fact), evidenceId: evidence.id, evidenceDigest: evidence.digest };
 }
 
-export async function fixture(): Promise<{ home: string; repo: string; acceptance: string; base: string; fix: () => Promise<string> }> {
-  const home = await mkdtemp(join(tmpdir(), 'evolve-test-'));
+export async function fixture(parent = tmpdir()): Promise<{ home: string; repo: string; acceptance: string; base: string; fix: () => Promise<string> }> {
+  const home = await mkdtemp(join(parent, 'evolve-test-'));
   const repo = join(home, 'repository'); const acceptance = join(home, 'acceptance');
   await mkdir(repo); await mkdir(acceptance); await mkdir(join(repo, 'tests'));
   execFileSync('git', ['init', '-b', 'main', repo], { windowsHide: true, stdio: 'ignore' });

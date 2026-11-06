@@ -50,7 +50,12 @@ function learningEvidence(stage) {
       const bytes = readFileSync(join(base, name)); assert(bytes.length <= 262144);
       const value = JSON.parse(bytes); assert.equal(value.modelHttpRequests, 0);
       if (name.startsWith('learning-')) assert.equal(value.archiveDigest, report.sourcePackage.sha256);
-      else assert.equal(value.passed, true);
+      else {
+        assert.equal(value.passed, true);
+        assert.equal(value.retrieval?.available, true, 'Installed candidate must provide bounded live retrieval diagnostics');
+        assert.equal(value.retrieval.actualContextDecisionRecorded, true);
+        assert.equal(value.retrieval.subsequentLocalSelectionReusedIndex, true);
+      }
       receipts.push({ file: join(base, name), sha256: hash(bytes), modelHttpRequests: value.modelHttpRequests });
     }
   }

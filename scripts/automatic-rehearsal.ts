@@ -95,7 +95,18 @@ export async function rehearseAutomatic(productDir?: string) {
     const proof = await verifyWorkspaceRepair(f.repo, target.taskId!, target.base, target.fixed, service.automatic.snapshots!, { ...policy, acceptanceDir: targetAcceptance });
     assert.equal(proof.verified, true); assert.equal(adapter.extractionCalls, 1); assert.equal(store.extraction.grants()[0]!.used, 1);
     assert.equal(git(f.repo, ['rev-parse', 'HEAD']), head); assert.deepEqual(readFileSync(join(f.repo, '.git/index')), index); assert.equal(store.feedback().length, 0);
+    const retrieval = { available: typeof service.retrievalStatus === 'function', actualContextDecisionRecorded: false, subsequentLocalSelectionReusedIndex: false };
+    if (retrieval.available) {
+      const before = service.retrievalStatus();
+      retrieval.actualContextDecisionRecorded = before.attempts.some(a => a.selectedId === store.experiences()[0]!.id && a.applicationId === store.applications()[0]!.id);
+      assert.equal(retrieval.actualContextDecisionRecorded, true);
+      // A local abstention probes reuse after the real scripted provider context, without another model turn or application.
+      const probe = service.begin('installed-index-probe', 'unrelated visual palette'); const chosen = service.select(probe.id);
+      assert.equal(chosen.experience, null); retrieval.subsequentLocalSelectionReusedIndex = service.retrievalStatus().attempts[0]!.cache === 'hit';
+      assert.equal(retrieval.subsequentLocalSelectionReusedIndex, true); assert.equal(store.applications().length, 1);
+      assert.equal(store.extraction.grants()[0]!.used, 1); assert.equal(adapter.extractionCalls, 1);
+    }
     return { passed: true, installedProduct: !!productDir, modelHttpRequests: 0, scriptedCalls: adapter.calls, extractionCalls: adapter.extractionCalls,
-      evolveToolCalls: 0, nonHumanInputsIgnored: true, sourceVerified: true, targetReceivedContext: true, targetAcceptancePassed: proof.verified, userGitUnchanged: true, feedbackFabricated: false, benefitEvaluated: false };
+      evolveToolCalls: 0, nonHumanInputsIgnored: true, sourceVerified: true, targetReceivedContext: true, targetAcceptancePassed: proof.verified, userGitUnchanged: true, feedbackFabricated: false, benefitEvaluated: false, retrieval };
   } finally { for (const h of handles.reverse()) await h.dispose(); await ctx.fiber.dispose(); }
 }

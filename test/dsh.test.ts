@@ -12,6 +12,7 @@ import { Store } from '../src/store.js';
 import { EvolveService } from '../src/service.js';
 import { bindDsh } from '../src/dsh.js';
 import { fixture } from './fixture.js';
+import { verifiedRetrievalFixture } from './retrieval-fixture.js';
 
 test('official DSH 0.2.0-rc.2 services register, execute, isolate sessions and unload', async () => {
   const f = await fixture(); const ctx = new Context();
@@ -105,4 +106,22 @@ test('official DSH 0.2.0-rc.2 services register, execute, isolate sessions and u
   const after = await ctx.systemPrompt.assemble();
   assert.ok(!after.sections.some((s) => s.name === 'dsh-reforge:workflow'));
   assert.equal(after.tools.filter((t) => t.name.startsWith('evolve_')).length, 0);
+});
+
+test('official host tool requests reuse only a requalified index and record inert bounded explanations', { timeout: 60000 }, async () => {
+  const f = await verifiedRetrievalFixture(); const bank = f.createBank(); const ctx = new Context();
+  try {
+    await ctx.plugin(SystemPrompt, {}).await(); await ctx.plugin(ToolRuntime, { mode: 'native' }).await(); await ctx.plugin(SessionStore).await();
+    await ctx.plugin({ name: 'live-retrieval-probe', inject: ['tools', 'systemPrompt', 'sessions'], apply: (child: Context) => bindDsh(child, bank.service, true) }).await();
+    for (let i = 0; i < 2; i++) {
+      const session = ctx.sessions.create(SessionId('retrieval-host-' + i), { meta: { cwd: f.repo } });
+      const result = await ctx.tools.execute({ callId: ToolCallId(crypto.randomUUID()), name: 'evolve_begin_task', arguments: { summary: 'transaction rollback exception' },
+        agent: { id: session.id } as Agent, signal: new AbortController().signal });
+      assert.equal(result.isError, false); const output = JSON.parse(result.content.find(block => block.type === 'text')!.text);
+      assert.equal(output.experience.id, bank.experiences[0]!.id);
+    }
+    const status = bank.service.retrievalStatus(); assert.equal(status.cache.builds, 1); assert.equal(status.cache.hits, 1);
+    assert.equal(status.attempts.length, 2); assert(status.attempts.every(a => a.outcome === 'selected'));
+    assert.equal(bank.store.applications().length, 2); assert.equal(bank.store.extraction.grants().length, 0);
+  } finally { await ctx.fiber.dispose(); f.store.close(); }
 });

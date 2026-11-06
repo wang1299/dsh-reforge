@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { performance } from 'node:perf_hooks';
 import { z } from 'zod';
 import { Store } from './store.js';
 import { applicability, snapshot } from './repository.js';
@@ -6,7 +7,8 @@ import { candidateSchema, digest, feedbackSchema, idSchema, redact, textSchema, 
   type Application, type Candidate, type Evidence, type Experience, type Feedback, type Scope, type Task } from './domain.js';
 import { verifyRepair, verifyWorkspaceRepair, type VerificationPolicy } from './verification.js';
 import { AutomaticLearning } from './automatic-learning.js';
-import { rankText, retrievalPolicy } from './retrieval.js';
+import { retrievalPolicy, type TextMatch } from './retrieval.js';
+import { RetrievalRuntime, explanationTerms, type CandidateExplanation, type CandidateReason, type RetrievalStatus } from './retrieval-runtime.js';
 import { contextKey, feedbackMemory, rankFeedback, type ContextEvidence } from './feedback-retrieval.js';
 import { correctionEvidence, factProvenance, validateCitations, verificationEvidence } from './evidence.js';
 import { EvidenceJobs } from './evidence-jobs.js';
@@ -32,7 +34,7 @@ export class EvolveService {
   readonly extraction: ExtractionJobs;
   readonly automatic: AutomaticLearning;
   private readonly repoId: string;
-  constructor(readonly store: Store, readonly root: string, readonly policy: VerificationPolicy, backgroundVerification = false, extractionPolicy?: ExtractionPolicy, private readonly modelSharingAllowed = false, automaticLearning = false) {
+  constructor(readonly store: Store, readonly root: string, readonly policy: VerificationPolicy, backgroundVerification = false, extractionPolicy?: ExtractionPolicy, private readonly modelSharingAllowed = false, automaticLearning = false, private readonly retrievalRuntime = new RetrievalRuntime()) {
     if (automaticLearning && (!policy.trusted || !backgroundVerification || !extractionPolicy || !modelSharingAllowed)) throw new Error('Automatic learning requires explicit execution, background verification, sharing and extraction authorization');
     this.jobs = new EvidenceJobs(store, root, policy, backgroundVerification, verifyRepair, automaticLearning);
     this.repoId = snapshot(root).scope.repoId;
@@ -204,37 +206,50 @@ export class EvolveService {
     }) };
   }
   select(taskId: string, mode: 'evidence-v1' | 'feedback-v1' | 'bm25-v1' = 'evidence-v1'): { application: Application | null; experience: Experience | null; reasons: string[] } {
+    const started = performance.now();
     z.enum(['evidence-v1', 'feedback-v1', 'bm25-v1']).parse(mode);
     const task = this.requireTask(taskId); if (task.state !== 'open') throw new Error('Task is closed');
     if (this.store.applications().some((a) => a.taskId === task.id)) return { application: null, experience: null, reasons: ['already_applied_one_experience'] };
     const reasons: string[] = [];
+    const bank = this.store.experiences();
+    const excluded: CandidateExplanation[] = [];
+    const explain = (experience: Experience, reason: CandidateReason, match?: { score: number; anchors: number }, combinedScore: number | null = null, alias?: string): CandidateExplanation => ({
+      id: experience.id, revision: experience.revision, title: redact(experience.title, 80), reason,
+      textScore: match?.score ?? null, combinedScore, anchors: match?.anchors ?? null,
+      ...(match ? explanationTerms(task.summary, alias ?? experience.title, experience.strategy) : { titleTerms: [], strategyTerms: [] }),
+    });
+    const exclude = (experience: Experience, reason: CandidateReason): void => {
+      if (experience.scope.repoId === this.repoId && excluded.length < 5) excluded.push(explain(experience, reason));
+    };
     const eligible = new Map<string, { experience: Experience; scope: Scope }>();
     const ranked: { experience: Experience; score: number; textScore: number; utility: number; anchors: number; scope: Scope; evidence?: ContextEvidence }[] = [];
-    for (const experience of this.store.experiences()) {
-      if (experience.sourceTaskId === task.id) { reasons.push(experience.id + ':source_task'); continue; }
-      if (experience.status !== 'source_verified') { reasons.push(experience.id + ':' + experience.status); continue; }
+    for (const experience of bank) {
+      if (experience.sourceTaskId === task.id) { reasons.push(experience.id + ':source_task'); exclude(experience, 'source_task'); continue; }
+      if (experience.status !== 'source_verified') { reasons.push(experience.id + ':' + experience.status); exclude(experience, experience.status); continue; }
       const proof = experience.verificationId ? this.store.verification(experience.verificationId) : null;
       if (!proof?.verified || proof.sourceTaskId !== experience.sourceTaskId || proof.repoId !== experience.scope.repoId) {
-        reasons.push(experience.id + ':missing_or_invalid_source_evidence'); continue;
+        reasons.push(experience.id + ':missing_or_invalid_source_evidence'); exclude(experience, 'missing_or_invalid_source_evidence'); continue;
       }
       if (mode === 'evidence-v1') {
         const provenance = this.provenance(experience);
-        if (!provenance.complete) { reasons.push(experience.id + ':incomplete_fact_sources:' + provenance.reasons.join(',')); continue; }
+        if (!provenance.complete) { reasons.push(experience.id + ':incomplete_fact_sources:' + provenance.reasons.join(',')); exclude(experience, 'incomplete_fact_sources'); continue; }
       }
       let current;
       try { current = snapshot(this.root, Object.keys(experience.scope.requiredFiles)); }
-      catch { reasons.push(experience.id + ':missing_code_condition'); continue; }
+      catch { reasons.push(experience.id + ':missing_code_condition'); exclude(experience, 'missing_code_condition'); continue; }
       const mismatch = applicability(experience.scope, current.scope);
-      if (mismatch) { reasons.push(experience.id + ':' + mismatch); continue; }
+      if (mismatch) { reasons.push(experience.id + ':' + mismatch); exclude(experience, mismatch.startsWith('code_condition_changed:') ? 'code_condition_changed' : mismatch as CandidateReason); continue; }
       eligible.set(experience.id, { experience, scope: current.scope });
     }
     const memory = mode !== 'bm25-v1' ? feedbackMemory(this.store, [...eligible.values()].map((e) => e.experience)) : new Map();
     for (const [id] of eligible) {
       const negative = memory.get(id)?.irrelevant.get(contextKey(task.summary));
-      if (negative) { eligible.delete(id); reasons.push(`${id}:owner_irrelevant_context; feedback=${negative.feedbackId}; application=${negative.applicationId}; task=${negative.taskId}`); }
+      if (negative) { exclude(eligible.get(id)!.experience, 'owner_irrelevant_context'); eligible.delete(id); reasons.push(`${id}:owner_irrelevant_context; feedback=${negative.feedbackId}; application=${negative.applicationId}; task=${negative.taskId}`); }
     }
     const experiences = [...eligible.values()].map((e) => e.experience);
-    const original = rankText(task.summary, experiences);
+    const qualified = performance.now();
+    const search = this.retrievalRuntime.search(task.summary, experiences, this.repoId + ':' + mode);
+    const original: TextMatch[] = search.matches; const searched = performance.now();
     for (const m of original) if (m.reason) reasons.push(m.id + ':' + m.reason);
     const originalMatches = original.filter((m) => m.reason === null);
     const matches: { id: string; score: number; anchors: number; evidence?: ContextEvidence }[] = originalMatches.length || mode === 'bm25-v1'
@@ -251,13 +266,37 @@ export class EvolveService {
     }
     ranked.sort((a, b) => b.score - a.score || a.experience.id.localeCompare(b.experience.id));
     const selected = ranked[0];
-    if (!selected) return { application: null, experience: null, reasons: reasons.length ? reasons : ['no_experiences'] };
+    const record = (application: Application | null): void => {
+      const candidates: CandidateExplanation[] = [];
+      if (selected) candidates.push(explain(selected.experience, selected.evidence ? 'owner_accepted_context' : 'original_text',
+        { score: selected.textScore, anchors: selected.anchors }, selected.score, selected.evidence?.summary));
+      for (const match of original) {
+        if (candidates.length >= 5) break;
+        if (match.id === selected?.experience.id) continue;
+        candidates.push(explain(eligible.get(match.id)!.experience, match.reason ?? 'lower_combined_score', match,
+          ranked.find(row => row.experience.id === match.id)?.score ?? null));
+      }
+      for (const row of excluded) if (candidates.length < 5) candidates.push(row);
+      const considered = bank.filter(e => e.scope.repoId === this.repoId).length;
+      const completed = performance.now();
+      this.retrievalRuntime.record({ taskId: task.id, mode, completedAt: new Date().toISOString(),
+        outcome: selected ? 'selected' : 'abstained', selectedId: selected?.experience.id ?? null,
+        selectedRevision: selected?.experience.revision ?? null, applicationId: application?.id ?? null,
+        candidatesConsidered: considered, eligibleCount: eligible.size, omittedCandidates: Math.max(0, considered - candidates.length), candidates,
+        cache: search.cache, generation: search.generation,
+        timings: { qualificationMs: qualified - started, lookupMs: search.lookupMs, buildMs: search.buildMs,
+          queryMs: search.queryMs, selectionMs: completed - searched, totalMs: completed - started } });
+    };
+    if (!selected) { record(null); return { application: null, experience: null, reasons: reasons.length ? reasons : ['no_experiences'] }; }
     const application: Application = { id: randomUUID(), taskId: task.id, experienceId: selected.experience.id,
       revision: selected.experience.revision, reason: `Applicable code/dependency scope; ${mode}${mode === 'evidence-v1' ? ':complete_fact_sources; feedback-v1' : ''}; text=${retrievalPolicy.version}:${selected.textScore.toFixed(3)}; utility=${selected.utility.toFixed(3)}; anchors=${selected.anchors}; combined=${selected.score.toFixed(3)}`
         + (selected.evidence ? `; fallback_owner_accepted_inference; feedback=${selected.evidence.feedbackId}; application=${selected.evidence.applicationId}; task=${selected.evidence.taskId}` : '; original_text'), createdAt: new Date().toISOString() };
     this.store.putApplication(application);
+    record(application);
     return { application, experience: selected.experience, reasons: [application.reason] };
   }
+  /** Process-local, read-only projection; no task, model, verification or database operation. */
+  retrievalStatus(): RetrievalStatus { return this.retrievalRuntime.status(); }
   feedback(input: Omit<Feedback, 'createdAt'>): Feedback {
     const existing = this.store.feedback().find((f) => f.id === input.id);
     const value = feedbackSchema.parse({ ...input, note: redact(input.note), createdAt: existing?.createdAt ?? new Date().toISOString() });
