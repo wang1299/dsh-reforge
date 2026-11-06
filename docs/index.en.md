@@ -1,5 +1,7 @@
 # DSH-Reforge documentation
 
+Project facts: [real-file preview, explicit goals and complete five-arm comparison](evaluation/project-facts-v1.md#english). Supports32/48 inputs;96/96 agreement is conditional on successful projection. Wrong offers9→0 with extra target/goal inputs, correct offers7→11 while coverage falls33.3%→22.9%; not default DSH or Agent benefit.
+
 Read-only inspector: [screenshots, scoped interaction comparison and runnable zero-model demo](evaluation/reference-inspector.md#english). Local search, outcome filters and candidate details use the existing bounded state; scripted clicks are not human or Agent benefit.
 
 Applicability prototype: [evidence-bound contracts and three-state rejection](evaluation/applicability-v1.md#english). On48 synthetic holdout queries, wrong offers13→1 with extra authored task facts; precision45.8%→92.3%, coverage50%→27.1%. Not natural-language extraction or default DSH rollout.
