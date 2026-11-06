@@ -453,7 +453,7 @@
       "split": "development",
       "family": "ndjson-framing",
       "kind": "paraphrase",
-      "text": "TCP delivers half an object now and the rest with the next object later; preserve the unfinished suffix.",
+      "text": "Each serialized JSON object ends with a line break. TCP delivers half an object now and the rest with the next object later; preserve the unfinished suffix.",
       "relevantIds": [
         "ndjson-framing-primary"
       ],
