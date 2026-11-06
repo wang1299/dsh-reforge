@@ -1,0 +1,1568 @@
+{
+  "schemaVersion": 3,
+  "kind": "author-curated-synthetic-relevance",
+  "experiences": [
+    {
+      "id": "unicode-equivalence-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "unicode-equivalence",
+      "title": "Canonical Unicode identifier equality",
+      "strategy": "Normalize identifiers to NFC before equality or lookup so a composed accent and the equivalent base-plus-mark sequence refer to the same key. Do not remove accents or change case."
+    },
+    {
+      "id": "unicode-equivalence-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "unicode-equivalence",
+      "title": "忽略大小写的账户匹配",
+      "strategy": "账户匹配需要忽略字母大小写时使用casefold，再比较结果；这条提醒不负责合并不同的重音或字符编码形式。"
+    },
+    {
+      "id": "csv-field-quoting-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "csv-field-quoting",
+      "title": "CSV fields with delimiters and embedded lines",
+      "strategy": "Use a CSV writer with field quoting and escaping. A delimiter or newline inside a quoted field belongs to that field, so splitting text on commas or physical lines corrupts records."
+    },
+    {
+      "id": "csv-field-quoting-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "csv-field-quoting",
+      "title": "表格字段的空值约定",
+      "strategy": "导出表格时为None使用明确的空值标记，同时保留合法的空字符串；导入时按同一约定还原，不能把两者合并。"
+    },
+    {
+      "id": "ndjson-framing-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "ndjson-framing",
+      "title": "Frame newline-delimited JSON across network chunks",
+      "strategy": "Accumulate decoded text until a full line is available, then parse that line as one JSON value. Preserve the incomplete tail for the next chunk; one network chunk is not one record."
+    },
+    {
+      "id": "ndjson-framing-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "ndjson-framing",
+      "title": "UTF8分段解码",
+      "strategy": "网络分块可能切开一个多字节字符。使用有状态的增量UTF8解码器，并在结束时刷新；不要对每块分别做独立解码。"
+    },
+    {
+      "id": "regex-whole-input-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "regex-whole-input",
+      "title": "Validate an entire string with a regular expression",
+      "strategy": "When every character must satisfy a format, use fullmatch or equivalent whole-input matching. A successful substring search must not accept a valid-looking prefix followed by invalid text."
+    },
+    {
+      "id": "regex-whole-input-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "regex-whole-input",
+      "title": "将用户文本作为字面量搜索",
+      "strategy": "搜索内容应按普通字符处理时，先转义正则元字符；用户输入中的点号或星号不能意外变成匹配规则。"
+    },
+    {
+      "id": "url-path-segments-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "url-path-segments",
+      "title": "Encode dynamic URL segments without losing path separators",
+      "strategy": "Percent-encode each dynamic path segment separately and preserve structural slashes between segments. A slash inside one identifier is data and must not become an extra route level."
+    },
+    {
+      "id": "url-path-segments-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "url-path-segments",
+      "title": "查询参数的重复键",
+      "strategy": "构造查询字符串时保留同名参数的多个值，使用键值对列表或支持多值的编码接口；不要用普通字典覆盖重复键。"
+    },
+    {
+      "id": "stream-peek-position-primary",
+      "revision": 1,
+      "split": "development",
+      "family": "stream-peek-position",
+      "title": "Restore a seekable stream after probing its header",
+      "strategy": "Save the current position before reading a header for inspection and seek back afterward. The next consumer must see the same bytes it would have seen before the probe."
+    },
+    {
+      "id": "stream-peek-position-secondary",
+      "revision": 1,
+      "split": "development",
+      "family": "stream-peek-position",
+      "title": "二进制长度单位",
+      "strategy": "协议规定长度以字节计数时，先编码字符串再计算字节数；字符数量不能直接充当UTF8载荷的字节长度。"
+    },
+    {
+      "id": "directed-graph-cycles-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "title": "Detect directed cycles using the active traversal path",
+      "strategy": "In a directed depth-first traversal, an edge back to an active ancestor signals a cycle. A node visited on an already completed branch does not by itself establish a cycle."
+    },
+    {
+      "id": "directed-graph-cycles-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "title": "按依赖顺序安排节点",
+      "strategy": "需要依赖先执行时，按入度维护就绪队列并逐步释放后继节点；输出的是拓扑顺序，不只是是否存在环。"
+    },
+    {
+      "id": "monotonic-duration-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "title": "Measure elapsed intervals with a monotonic clock",
+      "strategy": "Use a monotonic clock for timeouts and elapsed durations so wall-clock corrections cannot make an interval negative or extend a deadline. Wall timestamps are for calendar display."
+    },
+    {
+      "id": "monotonic-duration-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "title": "跨系统时间戳格式",
+      "strategy": "交换发生时间时使用包含时区偏移或UTC标记的标准时间戳，避免接收端把本地时间按另一个时区解释。"
+    },
+    {
+      "id": "collection-mutation-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "collection-mutation",
+      "title": "Avoid changing a collection while traversing it",
+      "strategy": "When filtering elements, build a new result or traverse a stable copy instead of deleting from the same collection being iterated. This prevents skipped elements and invalid iteration state."
+    },
+    {
+      "id": "collection-mutation-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "collection-mutation",
+      "title": "对象浅拷贝与嵌套修改",
+      "strategy": "需要独立修改嵌套成员时，复制嵌套结构或使用合适的深拷贝；仅复制最外层容器仍会共享内部可变对象。"
+    },
+    {
+      "id": "stable-equal-key-sort-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "title": "Preserve input order among equal sort keys",
+      "strategy": "Use a stable sort when records with equal ranking keys must retain their original relative order. Keep all records; stability is not duplicate removal."
+    },
+    {
+      "id": "stable-equal-key-sort-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "title": "按键去重并保留首项",
+      "strategy": "要求同键只保留一条时，记录已见键并保留首次出现的记录；这是去重策略，不应误删不同键或擅自保留最后一项。"
+    },
+    {
+      "id": "binary-byte-order-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "title": "Decode integers with the protocol byte order",
+      "strategy": "Specify the protocol endianness explicitly when decoding multi-byte integers. Do not inherit the machine native byte order; the same byte sequence must have the same protocol meaning on every platform."
+    },
+    {
+      "id": "binary-byte-order-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "title": "固定宽度整数的有符号解释",
+      "strategy": "协议字段允许负数时按约定的有符号补码解码，并校验位宽；不要把所有位模式都当无符号正整数。"
+    },
+    {
+      "id": "photo-orientation-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "photo-orientation",
+      "title": "Honor camera orientation before thumbnailing",
+      "strategy": "Apply the image orientation metadata to pixel geometry before resizing a camera photo. Otherwise portrait photos can produce sideways thumbnails even though viewers display the original upright."
+    },
+    {
+      "id": "photo-orientation-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "photo-orientation",
+      "title": "缩放图片时保留透明通道",
+      "strategy": "处理带透明度的图片时保留alpha通道，选择支持透明度的输出格式；不要无意转换成不带透明度的RGB图像。"
+    }
+  ],
+  "queries": [
+    {
+      "id": "unicode-equivalence-literal",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "literal",
+      "text": "Compare user identifiers that use composed and decomposed accents as equal.",
+      "relevantIds": [
+        "unicode-equivalence-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "NFC处理规范等价形式，不处理大小写。"
+    },
+    {
+      "id": "unicode-equivalence-cross_language",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "cross_language",
+      "text": "同一个用户名的é有两种码点表示，查找时应当认作同一名字。",
+      "relevantIds": [
+        "unicode-equivalence-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "NFC处理规范等价形式，不处理大小写。"
+    },
+    {
+      "id": "unicode-equivalence-paraphrase",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "paraphrase",
+      "text": "An accent can be one code point or a base plus a mark; both spellings should hit the same stored name.",
+      "relevantIds": [
+        "unicode-equivalence-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "NFC处理规范等价形式，不处理大小写。"
+    },
+    {
+      "id": "unicode-equivalence-cross_language_context",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "cross_language_context",
+      "text": "导入后看起来一样的姓名却匹配不到原记录，需要消除等价组合形式的差别。",
+      "relevantIds": [
+        "unicode-equivalence-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "NFC处理规范等价形式，不处理大小写。"
+    },
+    {
+      "id": "unicode-equivalence-reverse_language",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "reverse_language",
+      "text": "Account matching should ignore letter case without removing accents.",
+      "relevantIds": [
+        "unicode-equivalence-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "casefold处理大小写，不替代规范等价处理。"
+    },
+    {
+      "id": "unicode-equivalence-hard_negative",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "hard_negative",
+      "text": "Keep composed and decomposed identifiers distinct in a byte-preserving forensic export.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "此任务明确要求保留码点差别，NFC会违背要求。"
+    },
+    {
+      "id": "unicode-equivalence-unrelated_context",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "unrelated_context",
+      "text": "Show the Unicode standard version in an about dialog; identifier comparisons already work.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅展示版本元数据，没有文本比较需求。"
+    },
+    {
+      "id": "unicode-equivalence-ambiguous",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "ambiguous",
+      "text": "处理文字",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "缺少比较、大小写或编码目标。"
+    },
+    {
+      "id": "unicode-equivalence-stale",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "stale",
+      "text": "历史提醒针对旧的名字归一化规则，但当前仍需让两种等价重音写法匹配。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "unicode-equivalence-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "unicode-equivalence-other_repo",
+      "split": "development",
+      "family": "unicode-equivalence",
+      "kind": "other_repo",
+      "text": "另一仓库也遇到同一个重音由不同码点组成时查找失败的问题。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "unicode-equivalence-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "csv-field-quoting-literal",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "literal",
+      "text": "CSV export breaks a customer address containing a comma and a quoted sentence.",
+      "relevantIds": [
+        "csv-field-quoting-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "CSV转义保留包含分隔符和换行的字段。"
+    },
+    {
+      "id": "csv-field-quoting-cross_language",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "cross_language",
+      "text": "备注里有换行和逗号，导出的表格必须还能读回原来的一条记录。",
+      "relevantIds": [
+        "csv-field-quoting-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "CSV转义保留包含分隔符和换行的字段。"
+    },
+    {
+      "id": "csv-field-quoting-paraphrase",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "paraphrase",
+      "text": "A line break inside an escaped spreadsheet field must not create an extra row on import.",
+      "relevantIds": [
+        "csv-field-quoting-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "CSV转义保留包含分隔符和换行的字段。"
+    },
+    {
+      "id": "csv-field-quoting-cross_language_context",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "cross_language_context",
+      "text": "地址列写着“上海,浦东”，读回后列数变多了，要求保留原字段。",
+      "relevantIds": [
+        "csv-field-quoting-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "CSV转义保留包含分隔符和换行的字段。"
+    },
+    {
+      "id": "csv-field-quoting-reverse_language",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "reverse_language",
+      "text": "Distinguish a missing value from a deliberately empty string in a table round trip.",
+      "relevantIds": [
+        "csv-field-quoting-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "空值标记约定区分None和合法空串。"
+    },
+    {
+      "id": "csv-field-quoting-hard_negative",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "hard_negative",
+      "text": "The required format is raw one-value-per-line text; reject fields containing line breaks instead of quoting them.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "格式明确拒绝换行，不能应用保留换行的CSV写法。"
+    },
+    {
+      "id": "csv-field-quoting-unrelated_context",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "unrelated_context",
+      "text": "Change the column header font in the CSV preview screen without touching file serialization.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "修改预览字体不涉及序列化。"
+    },
+    {
+      "id": "csv-field-quoting-ambiguous",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "ambiguous",
+      "text": "表格有问题",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "没有说明是空值、转义还是显示问题。"
+    },
+    {
+      "id": "csv-field-quoting-stale",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "stale",
+      "text": "旧导出实现的提醒已过期，现在的备注仍有内嵌换行需要正确转义。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "csv-field-quoting-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "csv-field-quoting-other_repo",
+      "split": "development",
+      "family": "csv-field-quoting",
+      "kind": "other_repo",
+      "text": "为另一个项目修复包含逗号的地址被拆成两列的问题。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "csv-field-quoting-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "ndjson-framing-literal",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "literal",
+      "text": "A newline-delimited JSON message is split over two reads and must be buffered before parsing.",
+      "relevantIds": [
+        "ndjson-framing-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "需要按完整行分帧而不是网络块。"
+    },
+    {
+      "id": "ndjson-framing-cross_language",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "cross_language",
+      "text": "流式返回的一条JSON还没收全就报错，需要等到行结束再解析。",
+      "relevantIds": [
+        "ndjson-framing-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "需要按完整行分帧而不是网络块。"
+    },
+    {
+      "id": "ndjson-framing-paraphrase",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "paraphrase",
+      "text": "TCP delivers half an object now and the rest with the next object later; preserve the unfinished suffix.",
+      "relevantIds": [
+        "ndjson-framing-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "需要按完整行分帧而不是网络块。"
+    },
+    {
+      "id": "ndjson-framing-cross_language_context",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "cross_language_context",
+      "text": "一次接收可能有多行，也可能只有半行，逐行JSON协议不能按接收次数切记录。",
+      "relevantIds": [
+        "ndjson-framing-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "需要按完整行分帧而不是网络块。"
+    },
+    {
+      "id": "ndjson-framing-reverse_language",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "reverse_language",
+      "text": "A network read ends halfway through a UTF-8 character; continue decoding it with the next bytes.",
+      "relevantIds": [
+        "ndjson-framing-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "字符边界解码与JSON记录分帧是不同层。"
+    },
+    {
+      "id": "ndjson-framing-hard_negative",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "hard_negative",
+      "text": "The protocol is length-prefixed binary data and newline bytes may occur in the payload; do not use line boundaries.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "二进制长度前缀不能被换行分帧替代。"
+    },
+    {
+      "id": "ndjson-framing-unrelated_context",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "unrelated_context",
+      "text": "Show how many JSON records were received in a status label; framing and decoding are already correct.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅展示统计不涉及解析或解码。"
+    },
+    {
+      "id": "ndjson-framing-ambiguous",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "ambiguous",
+      "text": "修复流",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "未说明是字节解码还是记录边界。"
+    },
+    {
+      "id": "ndjson-framing-stale",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "stale",
+      "text": "已失效的旧协议提醒之外，新版本仍要求缓冲未结束的一行JSON。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "ndjson-framing-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "ndjson-framing-other_repo",
+      "split": "development",
+      "family": "ndjson-framing",
+      "kind": "other_repo",
+      "text": "在其他仓库里处理一个JSON对象被分成多个网络包的情况。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "ndjson-framing-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "regex-whole-input-literal",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "literal",
+      "text": "A format validator accepts a valid-looking prefix followed by junk; require the entire input to match.",
+      "relevantIds": [
+        "regex-whole-input-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "完整输入约束需要whole-input匹配。"
+    },
+    {
+      "id": "regex-whole-input-cross_language",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "cross_language",
+      "text": "校验码前半段合法、后面夹了别的字符也通过了，必须检查完整字符串。",
+      "relevantIds": [
+        "regex-whole-input-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "完整输入约束需要whole-input匹配。"
+    },
+    {
+      "id": "regex-whole-input-paraphrase",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "paraphrase",
+      "text": "Finding a permitted fragment anywhere is insufficient when the submitted value must contain nothing else.",
+      "relevantIds": [
+        "regex-whole-input-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "完整输入约束需要whole-input匹配。"
+    },
+    {
+      "id": "regex-whole-input-cross_language_context",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "cross_language_context",
+      "text": "输入后面多了一段垃圾字符，当前校验仍返回成功，修复这类漏检。",
+      "relevantIds": [
+        "regex-whole-input-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "完整输入约束需要whole-input匹配。"
+    },
+    {
+      "id": "regex-whole-input-reverse_language",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "reverse_language",
+      "text": "Search for the literal text a.b* rather than interpreting punctuation as regex operators.",
+      "relevantIds": [
+        "regex-whole-input-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "字面量转义解决元字符解释，不解决整串边界。"
+    },
+    {
+      "id": "regex-whole-input-hard_negative",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "hard_negative",
+      "text": "We intentionally need to locate an identifier embedded in a larger log message, not validate the whole line.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "搜索嵌入片段正是所需行为，fullmatch会破坏需求。"
+    },
+    {
+      "id": "regex-whole-input-unrelated_context",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "unrelated_context",
+      "text": "Add an example of the accepted format to the help tooltip; keep the already-correct validator unchanged.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅补提示说明，没有校验实现变更。"
+    },
+    {
+      "id": "regex-whole-input-ambiguous",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "ambiguous",
+      "text": "匹配失败",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "没有说明完整校验或字面量搜索目标。"
+    },
+    {
+      "id": "regex-whole-input-stale",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "stale",
+      "text": "旧版本的校验提醒不能使用，但新任务仍要拒绝合法片段后面的多余字符。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "regex-whole-input-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "regex-whole-input-other_repo",
+      "split": "development",
+      "family": "regex-whole-input",
+      "kind": "other_repo",
+      "text": "给另一代码库的整串格式校验修复前缀误接受。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "regex-whole-input-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "url-path-segments-literal",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "literal",
+      "text": "Build a URL where one resource identifier contains a slash without creating another route segment.",
+      "relevantIds": [
+        "url-path-segments-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "区分动态段内的数据斜杠与结构分隔符。"
+    },
+    {
+      "id": "url-path-segments-cross_language",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "cross_language",
+      "text": "对象名字本身带斜杠，但它仍是一个路径参数，不能因此多出一级路由。",
+      "relevantIds": [
+        "url-path-segments-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "区分动态段内的数据斜杠与结构分隔符。"
+    },
+    {
+      "id": "url-path-segments-paraphrase",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "paraphrase",
+      "text": "Escape the variable pieces of an endpoint while leaving the separators between those pieces intact.",
+      "relevantIds": [
+        "url-path-segments-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "区分动态段内的数据斜杠与结构分隔符。"
+    },
+    {
+      "id": "url-path-segments-cross_language_context",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "cross_language_context",
+      "text": "动态路径参数含特殊字符，要求转义参数而不是把整个路径的分隔符一起改掉。",
+      "relevantIds": [
+        "url-path-segments-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "区分动态段内的数据斜杠与结构分隔符。"
+    },
+    {
+      "id": "url-path-segments-reverse_language",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "reverse_language",
+      "text": "An HTTP query must retain several values for the same filter name instead of overwriting earlier ones.",
+      "relevantIds": [
+        "url-path-segments-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "重复查询参数不是路径段转义。"
+    },
+    {
+      "id": "url-path-segments-hard_negative",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "hard_negative",
+      "text": "The input intentionally supplies multiple route levels separated by slashes; do not hide those separators inside one identifier.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "多个路由层级本来就是结构，不能合并成一个段。"
+    },
+    {
+      "id": "url-path-segments-unrelated_context",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "unrelated_context",
+      "text": "Change the link color in the navigation bar; URL construction already has correct escaping.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅改颜色不涉及URL编码。"
+    },
+    {
+      "id": "url-path-segments-ambiguous",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "ambiguous",
+      "text": "编码处理",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "没有说明路径、查询或编码目标。"
+    },
+    {
+      "id": "url-path-segments-stale",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "stale",
+      "text": "旧服务的提醒已过期，新服务仍要求把带斜杠的名字编码为一个参数。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "url-path-segments-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "url-path-segments-other_repo",
+      "split": "development",
+      "family": "url-path-segments",
+      "kind": "other_repo",
+      "text": "另一个仓库里需要保留路由结构，只转义动态名字。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "url-path-segments-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "stream-peek-position-literal",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "literal",
+      "text": "Inspect a file header without changing what the later parser reads from the stream.",
+      "relevantIds": [
+        "stream-peek-position-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "预读不应改变后续消费者可见的流位置。"
+    },
+    {
+      "id": "stream-peek-position-cross_language",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "cross_language",
+      "text": "先检查文件魔数后，真正解析时少了开头几个字节，需要恢复读取位置。",
+      "relevantIds": [
+        "stream-peek-position-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "预读不应改变后续消费者可见的流位置。"
+    },
+    {
+      "id": "stream-peek-position-paraphrase",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "paraphrase",
+      "text": "A reusable input was advanced by a type detector; the downstream decoder must start where it originally would.",
+      "relevantIds": [
+        "stream-peek-position-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "预读不应改变后续消费者可见的流位置。"
+    },
+    {
+      "id": "stream-peek-position-cross_language_context",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "cross_language_context",
+      "text": "探测格式只是预读，后续处理还要看到预读前的完整内容。",
+      "relevantIds": [
+        "stream-peek-position-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "预读不应改变后续消费者可见的流位置。"
+    },
+    {
+      "id": "stream-peek-position-reverse_language",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "reverse_language",
+      "text": "A UTF-8 packet length must count encoded bytes rather than the number of characters.",
+      "relevantIds": [
+        "stream-peek-position-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "字节长度计量与流位置恢复不同。"
+    },
+    {
+      "id": "stream-peek-position-hard_negative",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "hard_negative",
+      "text": "The protocol deliberately consumes and discards a fixed header before handing only the remaining payload to the decoder.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "需求明确要消费头部，回退会让解析器重新读到它。"
+    },
+    {
+      "id": "stream-peek-position-unrelated_context",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "unrelated_context",
+      "text": "Display the detected file type beside an upload button; the detector already preserves its input position.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅显示类型，不涉及读取位置。"
+    },
+    {
+      "id": "stream-peek-position-ambiguous",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "ambiguous",
+      "text": "修复读取",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "没有给出长度计量或流位置目标。"
+    },
+    {
+      "id": "stream-peek-position-stale",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "stale",
+      "text": "旧探测器提醒不适用于当前版本，但新探测操作仍不应消耗解析器的数据。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "stream-peek-position-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "stream-peek-position-other_repo",
+      "split": "development",
+      "family": "stream-peek-position",
+      "kind": "other_repo",
+      "text": "在另一个项目修复预读文件头后没有回到原位置。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "stream-peek-position-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "directed-graph-cycles-literal",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "literal",
+      "text": "A directed acyclic graph with a shared child is incorrectly reported as cyclic.",
+      "relevantIds": [
+        "directed-graph-cycles-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "已完成节点不等于当前路径祖先。"
+    },
+    {
+      "id": "directed-graph-cycles-cross_language",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "cross_language",
+      "text": "两个分支指向同一节点就被当成有环，要区分已结束节点和当前递归路径。",
+      "relevantIds": [
+        "directed-graph-cycles-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "已完成节点不等于当前路径祖先。"
+    },
+    {
+      "id": "directed-graph-cycles-paraphrase",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "paraphrase",
+      "text": "Reaching a previously finished vertex is different from returning to an ancestor that is still being explored.",
+      "relevantIds": [
+        "directed-graph-cycles-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "已完成节点不等于当前路径祖先。"
+    },
+    {
+      "id": "directed-graph-cycles-cross_language_context",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "cross_language_context",
+      "text": "检查有向依赖图时只把回到当前祖先的边算作环，不能见到访问过就报错。",
+      "relevantIds": [
+        "directed-graph-cycles-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "已完成节点不等于当前路径祖先。"
+    },
+    {
+      "id": "directed-graph-cycles-reverse_language",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "reverse_language",
+      "text": "Produce a prerequisite-first execution order for dependency nodes rather than only a cycle boolean.",
+      "relevantIds": [
+        "directed-graph-cycles-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "输出拓扑顺序需要排序策略而非仅检测环。"
+    },
+    {
+      "id": "directed-graph-cycles-hard_negative",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "hard_negative",
+      "text": "This is an undirected tree traversal; an edge back to the parent is expected and is not a directed back-edge test.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "无向图父边不能套用有向祖先回边语义。"
+    },
+    {
+      "id": "directed-graph-cycles-unrelated_context",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "unrelated_context",
+      "text": "Move graph labels to avoid overlaps in the diagram; cycle detection and scheduling already work.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "只是布局，不涉及图算法。"
+    },
+    {
+      "id": "directed-graph-cycles-ambiguous",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "ambiguous",
+      "text": "图的处理",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "未指定检测环还是安排执行顺序。"
+    },
+    {
+      "id": "directed-graph-cycles-stale",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "stale",
+      "text": "旧图算法提醒已失效，但新任务仍须避免把汇合节点误判成有向环。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "directed-graph-cycles-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "directed-graph-cycles-other_repo",
+      "split": "holdout",
+      "family": "directed-graph-cycles",
+      "kind": "other_repo",
+      "text": "另一个仓库的有向图检测把已完成分支再次到达的节点误判成环。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "directed-graph-cycles-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "monotonic-duration-literal",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "literal",
+      "text": "A timeout changes unexpectedly after the operating system adjusts the clock.",
+      "relevantIds": [
+        "monotonic-duration-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "测量间隔应隔离墙钟校正。"
+    },
+    {
+      "id": "monotonic-duration-cross_language",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "cross_language",
+      "text": "系统校时后耗时竟然成了负数，需要用不会被日历时间调整影响的计时方式。",
+      "relevantIds": [
+        "monotonic-duration-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "测量间隔应隔离墙钟校正。"
+    },
+    {
+      "id": "monotonic-duration-paraphrase",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "paraphrase",
+      "text": "Measure how long an operation ran without being affected by corrections to the displayed date and time.",
+      "relevantIds": [
+        "monotonic-duration-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "测量间隔应隔离墙钟校正。"
+    },
+    {
+      "id": "monotonic-duration-cross_language_context",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "cross_language_context",
+      "text": "截止等待时间不能因为用户改了系统日期而延长，修复计时间隔。",
+      "relevantIds": [
+        "monotonic-duration-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "测量间隔应隔离墙钟校正。"
+    },
+    {
+      "id": "monotonic-duration-reverse_language",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "reverse_language",
+      "text": "Exchange an event timestamp with an explicit UTC offset so another system interprets the same instant.",
+      "relevantIds": [
+        "monotonic-duration-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "交换绝对发生时间需要时区信息。"
+    },
+    {
+      "id": "monotonic-duration-hard_negative",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "hard_negative",
+      "text": "Record a human-readable audit date that must agree with the corrected calendar clock, not an elapsed duration.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "日历审计时间不能用无纪元意义的单调计时值替代。"
+    },
+    {
+      "id": "monotonic-duration-unrelated_context",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "unrelated_context",
+      "text": "Change the date label font; elapsed-time calculations already use the correct clock.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅改变显示字体。"
+    },
+    {
+      "id": "monotonic-duration-ambiguous",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "ambiguous",
+      "text": "时间有问题",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "没有区分绝对时间与持续时间。"
+    },
+    {
+      "id": "monotonic-duration-stale",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "stale",
+      "text": "旧计时提醒的版本不符，新任务仍要避免校时改变超时判断。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "monotonic-duration-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "monotonic-duration-other_repo",
+      "split": "holdout",
+      "family": "monotonic-duration",
+      "kind": "other_repo",
+      "text": "其他代码库在调系统时钟后得到负的耗时值。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "monotonic-duration-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "collection-mutation-literal",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "literal",
+      "text": "Removing rejected items during list traversal skips some consecutive rejected entries.",
+      "relevantIds": [
+        "collection-mutation-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "避免遍历中改变容器成员集合。"
+    },
+    {
+      "id": "collection-mutation-cross_language",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "cross_language",
+      "text": "边遍历边删除列表元素导致相邻的不合格项漏删，需要稳定地完成过滤。",
+      "relevantIds": [
+        "collection-mutation-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "避免遍历中改变容器成员集合。"
+    },
+    {
+      "id": "collection-mutation-paraphrase",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "paraphrase",
+      "text": "Do not invalidate the traversal by editing the very container that supplies its next element.",
+      "relevantIds": [
+        "collection-mutation-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "避免遍历中改变容器成员集合。"
+    },
+    {
+      "id": "collection-mutation-cross_language_context",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "cross_language_context",
+      "text": "筛选字典时直接删键触发迭代状态错误，要求安全地产生剩余项。",
+      "relevantIds": [
+        "collection-mutation-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "避免遍历中改变容器成员集合。"
+    },
+    {
+      "id": "collection-mutation-reverse_language",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "reverse_language",
+      "text": "Editing a nested list in a copied configuration unexpectedly changes the original configuration too.",
+      "relevantIds": [
+        "collection-mutation-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "嵌套共享需要处理拷贝深度，不是过滤迭代。"
+    },
+    {
+      "id": "collection-mutation-hard_negative",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "hard_negative",
+      "text": "We intentionally mutate elements in place while preserving the container size and key set; do not remove entries or build a filtered collection.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "只改元素内容且结构不变，不符合删除成员导致遍历失效的前提。"
+    },
+    {
+      "id": "collection-mutation-unrelated_context",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "unrelated_context",
+      "text": "Display the number of rejected elements in a dashboard; filtering and copying already behave correctly.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅展示数量。"
+    },
+    {
+      "id": "collection-mutation-ambiguous",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "ambiguous",
+      "text": "集合处理",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "缺少成员筛选或嵌套拷贝目标。"
+    },
+    {
+      "id": "collection-mutation-stale",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "stale",
+      "text": "旧列表处理经验的前提已过期，新任务仍要避免删除时跳过相邻元素。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "collection-mutation-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "collection-mutation-other_repo",
+      "split": "holdout",
+      "family": "collection-mutation",
+      "kind": "other_repo",
+      "text": "另一个仓库的容器过滤在遍历时删除自身成员而漏项。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "collection-mutation-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "stable-equal-key-sort-literal",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "literal",
+      "text": "Records with identical priorities must retain their incoming order after sorting.",
+      "relevantIds": [
+        "stable-equal-key-sort-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "稳定排序保留同键输入次序并保留全部记录。"
+    },
+    {
+      "id": "stable-equal-key-sort-cross_language",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "cross_language",
+      "text": "按分数排序后，同分记录应保持原来的先后顺序，而且一条也不能少。",
+      "relevantIds": [
+        "stable-equal-key-sort-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "稳定排序保留同键输入次序并保留全部记录。"
+    },
+    {
+      "id": "stable-equal-key-sort-paraphrase",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "paraphrase",
+      "text": "Ties must not shuffle otherwise indistinguishable records relative to how they arrived.",
+      "relevantIds": [
+        "stable-equal-key-sort-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "稳定排序保留同键输入次序并保留全部记录。"
+    },
+    {
+      "id": "stable-equal-key-sort-cross_language_context",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "cross_language_context",
+      "text": "要求排序是稳定的，键相等时沿用输入顺序，不做去重。",
+      "relevantIds": [
+        "stable-equal-key-sort-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "稳定排序保留同键输入次序并保留全部记录。"
+    },
+    {
+      "id": "stable-equal-key-sort-reverse_language",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "reverse_language",
+      "text": "Keep only the first record for each identifier and discard subsequent repeats.",
+      "relevantIds": [
+        "stable-equal-key-sort-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "按键保留首次项是去重。"
+    },
+    {
+      "id": "stable-equal-key-sort-hard_negative",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "hard_negative",
+      "text": "Equal ranking keys must instead be reordered by a new explicit secondary key, even when that reverses their input order.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "显式次级键要求重新排序，同键原输入次序不是最终约束。"
+    },
+    {
+      "id": "stable-equal-key-sort-unrelated_context",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "unrelated_context",
+      "text": "Change the table sort-arrow icon while leaving the correct ordering behavior unchanged.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅改排序图标。"
+    },
+    {
+      "id": "stable-equal-key-sort-ambiguous",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "ambiguous",
+      "text": "排序记录",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "未说明稳定排序还是去重。"
+    },
+    {
+      "id": "stable-equal-key-sort-stale",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "stale",
+      "text": "旧排序经验已不符合版本，新需求仍要求同分项保留输入次序。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "stable-equal-key-sort-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "stable-equal-key-sort-other_repo",
+      "split": "holdout",
+      "family": "stable-equal-key-sort",
+      "kind": "other_repo",
+      "text": "另一项目排序时打乱了键相等记录的原始顺序。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "stable-equal-key-sort-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "binary-byte-order-literal",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "literal",
+      "text": "The same packet integer decodes differently on machines with different native endianness.",
+      "relevantIds": [
+        "binary-byte-order-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "协议字节序不应依赖宿主。"
+    },
+    {
+      "id": "binary-byte-order-cross_language",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "cross_language",
+      "text": "协议按大端传整数，不能在小端机器上直接按本机顺序读。",
+      "relevantIds": [
+        "binary-byte-order-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "协议字节序不应依赖宿主。"
+    },
+    {
+      "id": "binary-byte-order-paraphrase",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "paraphrase",
+      "text": "Make a wire number mean the same value regardless of the processor ordering of its constituent bytes.",
+      "relevantIds": [
+        "binary-byte-order-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "协议字节序不应依赖宿主。"
+    },
+    {
+      "id": "binary-byte-order-cross_language_context",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "cross_language_context",
+      "text": "跨平台解析同一串字节得到不同数值，需要显式采用协议规定的字节序。",
+      "relevantIds": [
+        "binary-byte-order-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "协议字节序不应依赖宿主。"
+    },
+    {
+      "id": "binary-byte-order-reverse_language",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "reverse_language",
+      "text": "A signed fixed-width packet field is incorrectly interpreted as a very large positive number instead of a negative value.",
+      "relevantIds": [
+        "binary-byte-order-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "有符号解释与字节序是不同维度。"
+    },
+    {
+      "id": "binary-byte-order-hard_negative",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "hard_negative",
+      "text": "The field is an ASCII decimal string, not a packed multi-byte binary integer; parse its text digits.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "ASCII数字文本不使用二进制整数字节序解码。"
+    },
+    {
+      "id": "binary-byte-order-unrelated_context",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "unrelated_context",
+      "text": "Show the protocol name in the connection settings; number decoding is already correct.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅显示协议名字。"
+    },
+    {
+      "id": "binary-byte-order-ambiguous",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "ambiguous",
+      "text": "解析数字",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "未说明文本数字、字节序还是符号解释。"
+    },
+    {
+      "id": "binary-byte-order-stale",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "stale",
+      "text": "旧协议的经验不能沿用，但新协议仍须按明确的大端顺序解码整数字段。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "binary-byte-order-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "binary-byte-order-other_repo",
+      "split": "holdout",
+      "family": "binary-byte-order",
+      "kind": "other_repo",
+      "text": "另一个项目在不同处理器上解析相同二进制字节却得出不同整数。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "binary-byte-order-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    },
+    {
+      "id": "photo-orientation-literal",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "literal",
+      "text": "A portrait camera image appears sideways after generating its thumbnail.",
+      "relevantIds": [
+        "photo-orientation-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "方向元数据应在缩略图缩放前作用于像素。"
+    },
+    {
+      "id": "photo-orientation-cross_language",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "cross_language",
+      "text": "手机照片原图查看正常，缩略图却横着，需要先处理方向信息。",
+      "relevantIds": [
+        "photo-orientation-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "方向元数据应在缩略图缩放前作用于像素。"
+    },
+    {
+      "id": "photo-orientation-paraphrase",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "paraphrase",
+      "text": "The preview resize ignores the rotation recorded by the camera rather than applying it to the pixels.",
+      "relevantIds": [
+        "photo-orientation-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "方向元数据应在缩略图缩放前作用于像素。"
+    },
+    {
+      "id": "photo-orientation-cross_language_context",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "cross_language_context",
+      "text": "生成小图前要把元数据里的旋转落实到像素，避免竖拍图方向错误。",
+      "relevantIds": [
+        "photo-orientation-primary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "方向元数据应在缩略图缩放前作用于像素。"
+    },
+    {
+      "id": "photo-orientation-reverse_language",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "reverse_language",
+      "text": "Resizing a transparent logo gives it an opaque background; preserve its alpha channel.",
+      "relevantIds": [
+        "photo-orientation-secondary"
+      ],
+      "ineligibleIds": [],
+      "rationale": "透明通道保护与方向变换不同。"
+    },
+    {
+      "id": "photo-orientation-hard_negative",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "hard_negative",
+      "text": "An archival export must preserve raw pixel geometry and orientation metadata exactly; do not rotate or resize the original.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "归档明确要求原样保留，不能应用像素旋转/缩放。"
+    },
+    {
+      "id": "photo-orientation-unrelated_context",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "unrelated_context",
+      "text": "Move the photo count badge on the gallery page; orientation and transparency already render correctly.",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "仅调整数量徽章位置。"
+    },
+    {
+      "id": "photo-orientation-ambiguous",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "ambiguous",
+      "text": "图片不对",
+      "relevantIds": [],
+      "ineligibleIds": [],
+      "rationale": "未说明方向、透明或显示目标。"
+    },
+    {
+      "id": "photo-orientation-stale",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "stale",
+      "text": "旧图片处理提醒已过期，新任务仍是手机缩略图没有正确应用拍摄方向。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "photo-orientation-primary"
+      ],
+      "rationale": "目标经验已过期；其余经验不解决本任务。"
+    },
+    {
+      "id": "photo-orientation-other_repo",
+      "split": "holdout",
+      "family": "photo-orientation",
+      "kind": "other_repo",
+      "text": "在其他仓库修复相机照片缩小后方向变横的问题。",
+      "relevantIds": [],
+      "ineligibleIds": [
+        "photo-orientation-primary"
+      ],
+      "rationale": "目标经验属于其他仓库；不可跨仓库提供。"
+    }
+  ]
+}

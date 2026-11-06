@@ -6,13 +6,15 @@
 
 新增120条作者编写合成查询，12个任务族各10条、每族5正例/5负例；开发/任务族留出各6族、60查询，分区经验库独立。每族两条相关但不同的提醒，包含中→英、英→中、改述、明确反例、含相似词但不同任务、信息不足、过期和其他仓库。每条提供相关性理由，不沿用T053单一文档负例模板。旧36/100查询只作回归，不再称新留出。
 
+实现前冻结文件 `test/fixtures/retrieval-v3-cases.json` SHA256 `7cb82149123bbcf9bd363e4ad193fd7e7ba03347ea7bc4ec6d80ed877cd4a5fb`：24条提醒/120查询；每分区12提醒、30正例/30负例。标签只声明本合成场景的预期相关性。
+
 这些是作者可见标签，不是独立人工盲测、可执行来源证明或真实用户任务。稳定数据提交后由独立只读Agent审查标签/拆分与限制；AI审查不能替代外部人工标注。标签修正仅允许在算法和任何评分前，重新固定数据摘要。方法提交后才首次运行留出；见结果不再调参或换题，后续版本须新留出。
 
 ## 本地向量与依赖
 
 使用[原作者多语言MiniLM](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2)的公开Apache-2.0权重，revision `e8f8c211226b894fcb81acc59f3b34ba3efd5f42`；原仓库 `onnx/model_quint8_avx2.onnx` SHA256 `98a01d88b7de996cdea58c32ca71208c09968d143798814b2ea09d3439dc334f`，tokenizer SHA256 `2c3387be76557bd40970cec13153b3bbf80407865484b209e655e5e4729076b8`。CPU ONNX Runtime，384维、按attention mask均值池化、L2归一化，最多128 tokens，超长明确拒绝而非默默截断；向量保留7位小数并记录精度。无手写同义词词典、伪向量或模型训练。
 
-Python3.10独立忽略目录venv使用onnxruntime1.23.2、tokenizers0.23.3、numpy2.2.6（实际发布的Python3.10兼容轮子），依赖不加入插件运行时。下载仅公开模型/官方PyPI，核对制品字节与摘要；推理仅从本地文件读取，无网络、Key或私有经验输入。[CPU运行](https://onnxruntime.ai/docs/get-started/with-python.html)。准备依赖/权重和本地神经推理分别记录，不能把零付费HTTP说成零本地模型计算。
+Python3.10独立忽略目录使用onnxruntime1.23.2、tokenizers0.23.3、numpy2.2.6（实际发布的Python3.10兼容轮子），依赖不加入插件运行时。本机恢复的嵌入式Python没有venv，采用 `pip --target .probe-work/t056-python-packages` 隔离安装，由离线入口显式加入其模块路径，不改全局Python或用户配置。下载仅公开模型/官方PyPI，核对制品字节与摘要；推理仅从本地文件读取，无网络、Key或私有经验输入。[CPU运行](https://onnxruntime.ai/docs/get-started/with-python.html)。准备依赖/权重和本地神经推理分别记录，不能把零付费HTTP说成零本地模型计算。
 
 ## 策略、校准与拒绝
 

@@ -1,5 +1,7 @@
 # DSH-Reforge 产品需求 v0.2
 
+T056（2026-11-06）：新增120条作者可见的跨语言/改述/困难负例合成查询，比较原BM25、真实本地向量与加权混合。只在开发集校准，冻结后留出；默认DSH策略、SQLitev9、历史数据与授权不变。本地模型推理和零付费HTTP分开计数，来源验证与后续收益仍独立。设计见[ADR050](decisions/050-offline-multilingual-hybrid.md)，实际回执见[T056](tasks/T056-hybrid-retrieval.md)。
+
 T055（2026-11-06）：将已逐项验证等价的BM25索引接入实际选择服务；每次资格检查保持，合格库变化重建缓存。同次请求共用新读取的仓库/依赖与条件路径视图，跨请求重新读取。工作台显示本次运行的有界选择/拒绝依据，读页面不选择或写库。设计见[ADR048](decisions/048-live-retrieval-index-and-diagnostics.md)、[ADR049](decisions/049-request-local-scope-read.md)，实际链路测量与验收见[T055](tasks/T055-live-retrieval.md)。实验候选仍仅离线，实际提速以完整服务链实测为准，不新增模型费用。
 
 T053（2026-11-05）：按用户要求建立可复查的量化改进，先完成零模型调用的冻结检索评测、正文覆盖候选、选择解释和可复用索引性能对照。设计见[ADR047](decisions/047-retrieval-evaluation-v2.md)，实际结果见[T053](tasks/T053-retrieval-evaluation.md)。候选不替换默认 DSH 策略，离线召回不表示真实任务收益；旧经验、授权及财务账本保持。
