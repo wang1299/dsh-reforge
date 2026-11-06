@@ -93,6 +93,51 @@ test('workbench explains selected and abstained attempts as text, survives polli
   assert.match(root.textContent, /本次未选中/); assert.match(root.textContent, /相关代码已变化/); assert.equal(b.posts.length, 0);
 });
 
+function decisionFixture() {
+  const b = browser();
+  const attempt = (taskId: string, outcome: 'selected' | 'abstained', reason: 'original_text' | 'code_condition_changed', time: string): RetrievalStatus['attempts'][number] => ({
+    taskId, mode: 'evidence-v1', completedAt: time, outcome, selectedId: outcome === 'selected' ? 'experience-one' : null,
+    selectedRevision: outcome === 'selected' ? 1 : null, applicationId: null, candidatesConsidered: 1, eligibleCount: outcome === 'selected' ? 1 : 0, omittedCandidates: 0,
+    candidates: [{ id: 'experience-one', revision: 1, title: 'rollback example', reason, textScore: 0.5, combinedScore: 0.5, anchors: 2, titleTerms: ['rollback'], strategyTerms: [] }],
+    cache: 'hit', generation: 1, timings: { qualificationMs: 2, lookupMs: 1, buildMs: 0, queryMs: 1, selectionMs: 1, totalMs: 5 },
+  });
+  const data: RetrievalStatus = { version: 1, lifetime: 'service-instance', policy: 'bm25-v1', omittedAttempts: 0,
+    cache: { documents: 1, builds: 1, hits: 1, bypasses: 0 }, attempts: [attempt('target', 'abstained', 'code_condition_changed', '2026-11-06T02:00:00Z'),
+      attempt('older', 'selected', 'original_text', '2026-11-06T01:00:00Z')] };
+  b.current.tasks.push({ id: 'older', summary: 'Older selected task' });
+  (b.current as typeof b.current & { retrieval: RetrievalStatus }).retrieval = data;
+  const rows = () => b.descendants(b.get('retrieval-history')).filter(e => e.className === 'inspector-row');
+  const selected = () => rows().find(e => e.getAttribute('aria-pressed') === 'true')!;
+  return { ...b, data, attempt, rows, selected };
+}
+test('decision inspector filters locally and preserves a chosen older attempt through polling', async () => {
+  const b = decisionFixture(); await b.run('refresh()'); await b.run("showView('uses')");
+  assert.equal(b.rows().length, 2); assert.match(b.selected().textContent, /库存异常/);
+  await b.rows().find(e => e.textContent.includes('Older'))!.onclick!(); b.selected().focus();
+  b.data.attempts.unshift(b.attempt('newest', 'abstained', 'code_condition_changed', '2026-11-06T03:00:00Z'));
+  b.current.tasks.push({ id: 'newest', summary: 'Newer changed task' }); await b.run('refresh()');
+  assert.match(b.selected().textContent, /Older/);
+  b.get('retrieval-filter').value = 'selected'; await b.get('retrieval-filter').onchange!(); assert.equal(b.rows().length, 1);
+  b.get('retrieval-search').value = 'no such request'; await b.get('retrieval-search').oninput!();
+  assert.match(b.get('retrieval-history').textContent, /没有匹配/);
+  const clear = b.descendants(b.get('retrieval-history')).find(e => e.tag === 'button' && e.textContent === '清除筛选')!;
+  await clear.onclick!(); assert.equal(b.rows().length, 3); assert.match(b.selected().textContent, /Older/); assert.equal(b.posts.length, 0);
+});
+test('evicted decisions fall back within retained scope and recover an owned row focus', async () => {
+  const b = decisionFixture(); await b.run('refresh()'); await b.run("showView('uses')");
+  b.selected().focus(); b.data.attempts.shift(); await b.run('refresh()');
+  assert.match(b.selected().textContent, /Older/); assert.match(b.get('retrieval-summary').textContent, /已离开保留范围/);
+  await b.run("if(document.activeElement?.getAttribute('aria-pressed')!=='true')throw new Error('row focus lost')");
+  assert.equal(b.posts.length, 0);
+});
+test('default candidate action is visible without a disclosure and truncated reasons stay qualified', async () => {
+  const b = decisionFixture(); await b.run('refresh()'); await b.run("showView('uses')");
+  const open = b.descendants(b.get('retrieval-history')).find(e => e.tag === 'button' && e.textContent === '查看当前经验')!;
+  assert(open); await open.onclick!(); assert.equal(b.get('detail').hidden, false); assert.equal(b.posts.length, 0);
+  await b.run("showView('uses')"); b.data.attempts[0]!.omittedCandidates = 4; b.data.attempts[0]!.candidatesConsidered = 5; await b.run('refresh()');
+  assert.match(b.get('retrieval-history').textContent, /无法据此概括全部原因/); assert.match(b.get('retrieval-history').textContent, /另有 4 条候选未展开/);
+});
+
 test('an acknowledged write followed by an offline read preserves the draft and warns that the record must be checked', async () => {
   const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
   const strategy = b.control('处理策略'); strategy.value = 'Do not lose this after a read failure'; b.get('detail').listeners.get('input')!();
