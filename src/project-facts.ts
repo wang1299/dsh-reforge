@@ -121,6 +121,10 @@ export function assessProjectCandidate(candidateInput: unknown, facts: ProjectFa
   const candidate = experimentalCandidateSchema.safeParse(candidateInput);
   const goalCheck: ProjectCandidateAssessment['goalCheck'] = { state: 'not_checked', kind: null, source: null };
   if (!candidate.success) return { state: 'insufficient_information', reason: 'invalid_project_candidate', checks: [], contractDigest: null, goalCheck };
+  const source = contractSourceRefSchema.safeParse(facts.source);
+  if (!source.success || !facts.bindingVerified || source.data.namespace !== expected.namespace || source.data.taskId !== expected.taskId || source.data.revision !== expected.revision) {
+    return { state: 'insufficient_information', reason: facts.context.problems[0] ?? 'project_fact_binding_mismatch', checks: [], contractDigest: null, goalCheck };
+  }
   let base = assessApplicability(candidate.data.contract, facts.context);
   if (!facts.context.problems.length && candidate.data.targetProperty !== facts.targetProperty) base = { ...base, state: 'not_applicable', reason: 'target_property_mismatch' };
   if (!useGoal) return { ...base, goalCheck };

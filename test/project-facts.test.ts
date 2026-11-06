@@ -101,6 +101,12 @@ test('explicit goal checks are separately bound and do not invent intent or auth
   assert.equal(assessProjectCandidate(candidate, facts, binding, { ...goal, kind: 'present_ui' }, true).reason, 'explicit_goal_mismatch');
   assert.equal(assessProjectCandidate({ ...candidate, targetProperty: 'other' }, facts, binding, goal, true).reason, 'target_property_mismatch');
   assert.equal(assessProjectCandidate({ ...candidate, allowedGoals: [] }, facts, binding, goal, true).state, 'insufficient_information');
+  for (const expected of [{ ...binding, taskId: 'other' }, { ...binding, namespace: 'other/project' }, { ...binding, revision: 2 }]) {
+    for (const useGoal of [false, true]) {
+      const result = assessProjectCandidate(candidate, facts, expected, { ...expected, kind: 'validate_payload' }, useGoal);
+      assert.equal(result.state, 'insufficient_information'); assert.equal(result.reason, 'project_fact_binding_mismatch'); assert.deepEqual(result.checks, []);
+    }
+  }
 });
 
 test('all preregistered manual reference facts match independent schema behavior before method scoring', () => {
