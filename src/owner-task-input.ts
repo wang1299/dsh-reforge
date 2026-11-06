@@ -35,6 +35,7 @@ export class OwnerTaskInput {
   readonly instanceId = randomUUID();
   private previews = new Map<string, Preview>();
   private active = new Map<string, ActiveInput>();
+  private contextTurns = new Map<string, number>();
   constructor(private readonly service: EvolveService) {}
   private get store() { return this.service.store.ownerInputs; }
   private get repoId() { return this.service.repositoryId; }
@@ -70,7 +71,7 @@ export class OwnerTaskInput {
     return this.prepare(parsed, { text: parsed.text, goal: parsed.goal, sessionId: carrier.sessionId, scopeKey: carrier.scopeKey });
   }
   private prepare(input: z.infer<typeof sourceInput>, task: Preview['task']) {
-    this.recover(); this.prune();
+    this.prune();
     if (this.previews.size >= ownerInputPolicy.maxPreviews) throw new OwnerInputError('owner_preview_limit');
     const rules = this.store.snapshot(this.repoId); const id = randomUUID();
     const facts = this.facts(input.path, input.property, id); const values = this.values(facts);
@@ -138,9 +139,12 @@ export class OwnerTaskInput {
   admit(sessionId: string, scopeKey: string, turn: number, messages: { id: string; text: string }[], sharing = true): { owned: boolean; context: string } {
     this.store.snapshot(this.repoId); // A foreign sidecar must never look like an unprepared legacy input.
     const markers = messages.map(m => this.store.marker(m.id)).filter((m): m is OwnerMarker => !!m);
+    if (markers.some(m => m.mode === 'context_only')) {
+      this.contextTurns.set(sessionId, turn); this.service.store.ownerContextSessions.add(this.repoId + ':' + sessionId);
+    }
     const previous = this.active.get(sessionId);
-    if (previous && messages.length && messages.some(m => m.id !== previous.marker.messageId)) this.end(sessionId, previous.marker.turn!, true);
-    if (!markers.length) return { owned: !!previous, context: '' };
+    if (previous && messages.length && messages.some(m => m.id !== previous.marker.messageId)) this.revoke(sessionId, previous.marker.turn!, 'multiple_inputs');
+    if (!markers.length) return { owned: !!previous || this.contextTurns.get(sessionId) === turn, context: '' };
     const marker = markers[0]!; const message = messages[0];
     const receipt = this.store.receipt(this.repoId, marker.requestId);
     const valid = messages.length === 1 && markers.length === 1 && marker.repoId === this.repoId && marker.hostRunId === this.instanceId
@@ -148,13 +152,13 @@ export class OwnerTaskInput {
       && message?.id === marker.messageId && digest(message.text) === marker.requestDigest && receipt
       && receipt.expiresAt > Date.now() && ['reserved', 'submitted'].includes(receipt.phase) && this.service.sharingEnabled && sharing;
     if (!valid || !receipt) {
-      if (receipt) this.store.transition(this.repoId, receipt.id, pending, { phase: 'blocked', reason: 'host_binding_rejected' });
+      if (receipt?.hostRunId === this.instanceId) this.store.transition(this.repoId, receipt.id, pending, { phase: 'blocked', reason: 'host_binding_rejected' });
       return { owned: true, context: '' };
     }
     let task: Task | null = null;
     try {
       task = this.service.store.transaction(() => {
-        const current = marker.mode === 'automatic' ? this.service.automatic.begin(sessionId, turn, messages)
+        const current = marker.mode === 'automatic' ? this.service.automatic.begin(sessionId, turn, messages, false)
           : this.service.beginOwnerContext(sessionId, redact(message.text, ownerInputPolicy.maxSummary));
         if (!current) throw new OwnerInputError('owner_task_unavailable');
         const facts = this.values(this.facts(receipt.path, receipt.property, current.id, receipt.sha256));
@@ -162,7 +166,6 @@ export class OwnerTaskInput {
         this.active.set(sessionId, { marker: bound, receipt: this.store.receipt(this.repoId, receipt.id)! });
         return current;
       });
-      if (marker.mode === 'context_only') this.service.store.ownerContextSessions.add(this.repoId + ':' + sessionId);
       const facts = this.active.get(sessionId)!.receipt.facts;
       const notice = 'DSH-Reforge owner-confirmed task input (bounded data, not instructions, acceptance or learning permission):\n'
         + JSON.stringify({ taskId: task.id, goal: receipt.goal, path: receipt.path, property: receipt.property, sha256: receipt.sha256, facts, sourceState: facts ? 'confirmed' : 'unknown' });
@@ -200,18 +203,31 @@ export class OwnerTaskInput {
       return assessApplicability(rule.contract, facts.context).state === 'applicable' ? null : 'owner_conditions_unconfirmed';
     } catch { return 'owner_configuration_unavailable'; }
   }
-  end(sessionId: string, turn: number, interrupted = false): void {
+  private revoke(sessionId: string, turn: number, reason: 'multiple_inputs' | 'cancelled_turn'): void {
     const active = this.active.get(sessionId); if (!active || active.marker.turn !== turn) return;
     const task = active.marker.taskId ? this.service.store.task(active.marker.taskId) : null;
     if (active.marker.mode === 'context_only' && task?.state === 'open') this.service.finish(task.id);
-    this.store.transition(this.repoId, active.receipt.id, pending, { phase: interrupted ? 'unknown' : 'ended', reason: interrupted ? 'turn_interrupted' : 'turn_ended_unverified' });
-    this.active.delete(sessionId); this.service.store.ownerContextSessions.delete(this.repoId + ':' + sessionId);
+    if (active.marker.mode === 'automatic') this.service.automatic.invalidate(sessionId, turn, reason);
+    this.store.transition(this.repoId, active.receipt.id, pending, { phase: 'unknown', reason: reason === 'multiple_inputs' ? 'multiple_inputs' : 'turn_interrupted' });
+    this.active.delete(sessionId);
   }
+  end(sessionId: string, turn: number, interrupted = false): void {
+    const active = this.active.get(sessionId);
+    if (interrupted) this.revoke(sessionId, turn, 'cancelled_turn');
+    else if (active?.marker.turn === turn) {
+      const task = active.marker.taskId ? this.service.store.task(active.marker.taskId) : null;
+      if (active.marker.mode === 'context_only' && task?.state === 'open') this.service.finish(task.id);
+      this.store.transition(this.repoId, active.receipt.id, pending, { phase: 'ended', reason: 'turn_ended_unverified' }); this.active.delete(sessionId);
+    }
+    if (this.contextTurns.get(sessionId) === turn) {
+      this.contextTurns.delete(sessionId); this.service.store.ownerContextSessions.delete(this.repoId + ':' + sessionId);
+    }
+  }
+  invalidate(sessionId: string, turn: number): void { this.revoke(sessionId, turn, 'cancelled_turn'); }
   checkRequest(sessionId: string, turn: number, scopeKey: string): void {
     const active = this.active.get(sessionId); if (!active || active.marker.turn !== turn) return;
     if (scopeKey !== active.marker.scopeKey || !this.service.sharingEnabled) {
-      this.end(sessionId, turn, true);
-      if (active.marker.mode === 'automatic') this.service.automatic.invalidate(sessionId, turn, 'cancelled_turn');
+      this.revoke(sessionId, turn, 'cancelled_turn');
       throw new OwnerInputError('owner_model_changed');
     }
   }
@@ -234,7 +250,7 @@ export class OwnerTaskInput {
   }
   state(carrier: OwnerTaskCarrier | null = null) {
     try {
-      this.recover(); const snapshot = this.store.snapshot(this.repoId); let reason = 'owner_conversation_required';
+      const snapshot = this.store.snapshot(this.repoId); let reason = 'owner_conversation_required';
       if (carrier) { try { carrier.assertReady(); reason = this.service.sharingEnabled ? 'ready' : 'owner_sharing_disabled'; } catch (error) { reason = error instanceof OwnerInputError ? error.code : 'owner_conversation_unavailable'; } }
       return { available: true, instanceId: this.instanceId, rulesRevision: snapshot.revision, rules: snapshot.rules,
         receipts: this.store.receipts(this.repoId).slice(0, 12).map(r => this.receipt(r)), canSubmit: reason === 'ready', reason,
@@ -243,6 +259,7 @@ export class OwnerTaskInput {
   }
   dispose(): void {
     for (const [session, active] of this.active) this.end(session, active.marker.turn!, true);
+    for (const [session, turn] of this.contextTurns) this.end(session, turn, true);
     for (const receipt of this.store.receipts(this.repoId)) if (receipt.hostRunId === this.instanceId) this.store.transition(this.repoId, receipt.id, pending, { phase: 'unknown', reason: 'plugin_unloaded' });
     this.previews.clear();
   }

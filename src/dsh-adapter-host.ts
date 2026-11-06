@@ -36,6 +36,7 @@ const output = { schema: { type: 'json' as const }, render: (_args: unknown, val
 interface HostLifetime { lifetime: AbortController; pending: Set<Promise<unknown>>; setSharing(value: boolean): void }
 function startHost(ctx: Context, service: EvolveService): HostLifetime {
   let disposed = false; let sharing = false;
+  try { service.ownerInput.recover(); } catch { /* The panel exposes unavailable metadata; no reset or task replay. */ }
   const carrier = (id: string): OwnerTaskCarrier | null => dshOwnerCarrier(ctx, service, id, () => !disposed && sharing);
   ctx.inject(['connection'], child => {
     mountNative(child.connection, nativeHandler(service, browserOwner(child.connection), () => !disposed, id => {
@@ -113,7 +114,7 @@ export function bindDsh(ctx: Context, service: EvolveService, shareWithModel: bo
         const requests = human.map(m => ({ id: String(m.id), text: m.content.filter(b => b.type === 'text').map(b => b.text).join('\n') }));
         const owner = service.ownerInput.admit(sessionId, ownerAgentScope(agent), turn, requests, shareWithModel && !signal.aborted);
         if (owner.owned) {
-          if (signal.aborted || !shareWithModel || !service.sharingEnabled) { service.ownerInput.end(sessionId, turn, true); return decision; }
+          if (signal.aborted || !shareWithModel || !service.sharingEnabled) { service.ownerInput.invalidate(sessionId, turn); return decision; }
           return owner.context ? { ...decision, messages: [...decision.messages, createUserMessage({
             source: { kind: 'dsh-reforge-experience', form: 'notice', summary: 'Owner-confirmed task input and applicable experience' },
             content: [{ type: 'text', text: owner.context }],

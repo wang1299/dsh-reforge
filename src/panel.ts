@@ -16,6 +16,7 @@ async function body(request: IncomingMessage): Promise<unknown> {
   return JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown;
 }
 export async function startPanel(service: EvolveService): Promise<{ url: string; origin: string; token: string; close: () => Promise<void> }> {
+  try { service.ownerInput.recover(); } catch { /* Keep the diagnostics page available without resetting owner metadata. */ }
   const token = randomBytes(32).toString('hex'); let origin = '';
   const server = createServer((request, response) => { void handle(request, response); });
   async function handle(request: IncomingMessage, response: ServerResponse): Promise<void> {

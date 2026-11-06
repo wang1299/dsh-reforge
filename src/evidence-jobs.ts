@@ -49,7 +49,7 @@ export class EvidenceJobs {
     const task = this.store.task(job.input.taskId);
     if (!task || task.state !== 'closed' || task.scope.repoId !== job.input.repoId
       || digest(JSON.stringify(task)) !== job.input.taskDigest) throw new Error('Invalid closed task');
-    this.store.assertLearningAllowed(task);
+    this.store.assertTaskLearningAllowed(task);
     const segment = this.store.automatic.forTask(task.id);
     if (segment ? !segment.base || !segment.fixed || segment.repoId !== this.repoId || job.input.snapshotDigest !== automaticProofDigest(segment)
       || segment.base.commit !== job.input.baseCommit || segment.fixed.commit !== job.input.fixCommit : job.input.snapshotDigest !== undefined) throw new InvalidSource();

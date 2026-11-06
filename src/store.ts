@@ -203,8 +203,11 @@ export class Store {
       if (task?.state === 'open' && this.ownerInputs.classification(task) === 'context_only') throw new OwnerInputError('owner_context_only');
     }
   }
-  assertLearningAllowed(task: Task): void {
+  assertTaskLearningAllowed(task: Task): void {
     if (this.ownerInputs.classification(task) === 'context_only') throw new OwnerInputError('owner_context_only');
+  }
+  assertLearningAllowed(task: Task): void {
+    this.assertTaskLearningAllowed(task);
     this.assertOwnerSessionLearningAllowed(task.scope.repoId, task.sessionId);
   }
   close(): void { this.ownerInputs.close(); this.db.close(); }

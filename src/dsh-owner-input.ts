@@ -12,7 +12,14 @@ import type { EvolveService } from './service.js';
 
 const identities = new WeakMap<Agent, string>();
 /** Only bounded routing configuration is hashed; no credentials or conversation read. */
-export function ownerAgentScope(agent: Agent, config: Partial<LlmCallConfig> = agent.session?.requestHeader()?.config ?? agent.options): string {
+export function ownerAgentScope(agent: Agent, proposed?: Partial<LlmCallConfig>): string {
+  let config = proposed;
+  if (!config) {
+    const header = agent.session?.requestHeader(); config = { ...(header?.config ?? agent.options) };
+    // Match the official requestProposal layer, before adapter defaults are resolved again.
+    if (header?.adapterDefaults?.maxTokens) delete config.maxTokens;
+    if (header?.adapterDefaults?.reasoningEffort) delete config.reasoningEffort;
+  }
   let identity = identities.get(agent); if (!identity) { identity = randomUUID(); identities.set(agent, identity); }
   return digest(JSON.stringify([identity, config.provider ?? null, config.model ?? null, config.reasoningEffort ?? null,
     config.maxTokens ?? null, config.temperature ?? null, config.stop ?? null]));

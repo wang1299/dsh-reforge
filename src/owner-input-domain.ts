@@ -2,12 +2,11 @@ import { z } from 'zod';
 import { digest, hashSchema, idSchema, taskSchema, type Task } from './domain.js';
 import { applicabilityContractSchema } from './applicability.js';
 import { projectFactRequestSchema, projectSchemaPath } from './project-facts.js';
+import { ownerGoals } from './owner-input-copy.js';
+export { ownerGoals, ownerGoalLabels } from './owner-input-copy.js';
 
 export const ownerInputPolicy = { version: 'owner-task-input-v1', maxRules: 64, maxReceipts: 128, maxMessages: 4096,
   maxPreviews: 64, previewMs: 120000, maxTaskText: 2000, maxSummary: 256 } as const;
-export const ownerGoals = ['repair_behavior', 'validate_payload', 'change_contract', 'present_ui', 'generate_docs'] as const;
-export const ownerGoalLabels: Record<(typeof ownerGoals)[number], string> = { repair_behavior: '修复代码行为', validate_payload: '修复输入校验',
-  change_contract: '修改接口契约', present_ui: '调整界面展示', generate_docs: '编写说明文档' };
 export const ownerGoalSchema = z.enum(ownerGoals);
 export const ownerFactNames = ['field_required', 'field_nullable', 'field_type'] as const;
 const fieldType = z.enum(['string', 'number', 'integer', 'boolean', 'null', 'object', 'array', 'union']);
