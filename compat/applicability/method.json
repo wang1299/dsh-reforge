@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "dataDigest": "9946016730fc0c054b9ffaeb282d06854ba552a15cefd60ab9fc1b662d0ee3aa",
+  "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+  "policy": {
+    "version": "bound-contracts-v1",
+    "minimumScore": 0.5,
+    "minimumMargin": 0.025,
+    "topK": 3,
+    "contractsOnly": "unique-confirmed-unknown-others-allowed",
+    "gate": "original-next-margin/higher-unknown-blocks"
+  },
+  "policyDigest": "ebee9724447317b9162ea0df6dbd3603cb0cfa5e74356c757eb55b12b69298b9",
+  "sourceCommit": "75690fa0fc0b1e6b090e50a4d5aac9a342d2b9e0",
+  "sourceDirty": false,
+  "sourceDigests": {
+    "src/applicability.ts": "9f3d50a1c8031544c550defd465ce29078f0a1522477ac7a2eee6c3a2f1388ac",
+    "src/applicability-evaluation.ts": "7a5e070417402a91baeaa79d6a9d5236bb631d416fc3af6f331c2489de3fb3fa",
+    "scripts/applicability-evaluate.ts": "7bde3a3d8d36b681d84b232ea21db0650ad6ee4a490b017a33c2b7d1cdbb1a90",
+    "scripts/applicability-embedding.py": "14d5ae37e4435231373a5f4e669b53fdfe457846f527fd09769c45804a5baca5",
+    "src/embedding.ts": "030109c1c385b907a59e28274b827cf0b2fd44d64c17330b4d4539f8d04d40da",
+    "src/hybrid-retrieval.ts": "a47bf29bec082701dc693ec1eac0f10b9cd3a115678930239df27f3faa528ed7",
+    "src/retrieval.ts": "79248d6b7d3b4d2b7dec325f8d50117f49c73ff742e3ac1296c3671f9ed142a6",
+    "scripts/retrieval-embedding.py": "e007cc36028278891bad6603e83135d497616e125609c9759e02fee87ccfdf13"
+  }
+}
