@@ -99,11 +99,13 @@ export function calibrateHybrid(corpus: HybridCorpus, port: EmbeddingPort) {
     const qualified = rows.filter(r => r.metrics.wrong <= baseline.wrong).sort((a, b) => b.metrics.correct - a.metrics.correct
       || a.metrics.wrong - b.metrics.wrong || b.config.minimumMargin - a.config.minimumMargin
       || b.config.minimumScore - a.config.minimumScore || a.config.lexicalWeight - b.config.lexicalWeight);
-    assert(qualified[0], 'No calibrated configuration satisfies wrong-offer cap'); return qualified[0].config;
+    return qualified[0]?.config ?? null;
   };
   const denseGrid = grid([0]); const hybridGrid = grid(calibrationGrid.lexicalWeights);
+  const dense = select(denseGrid); const hybrid = select(hybridGrid);
   return { schemaVersion: 1, dataDigest: frozenHybridCorpusDigest, baselinePolicyDigest: retrievalPolicyDigest,
-    split: 'development' as const, wrongOfferCap: baseline.wrong, dense: select(denseGrid), hybrid: select(hybridGrid),
+    split: 'development' as const, status: dense && hybrid ? 'admissible' as const : 'no_admissible_config' as const,
+    wrongOfferCap: baseline.wrong, dense, hybrid,
     denseGrid, hybridGrid };
 }
 export function evaluateHybrid(corpus: HybridCorpus, partition: 'development' | 'holdout', port: EmbeddingPort,

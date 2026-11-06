@@ -34,13 +34,16 @@ if (args[0] === 'calibrate') {
   const calibration = { ...calibrateHybrid(corpus, port), modelDigest: digest(manifestBytes), developmentVectorDigest: digest(vectorBytes),
     sourceCommit, sourceDirty, sourceDigests };
   await writeFile(join(output, 'calibration.json'), JSON.stringify(calibration, null, 2) + '\n');
-  process.stdout.write(JSON.stringify({ sourceCommit, sourceDirty, dense: calibration.dense, hybrid: calibration.hybrid, wrongOfferCap: calibration.wrongOfferCap }) + '\n');
+  process.stdout.write(JSON.stringify({ sourceCommit, sourceDirty, status: calibration.status, dense: calibration.dense,
+    hybrid: calibration.hybrid, wrongOfferCap: calibration.wrongOfferCap }) + '\n');
+  if (calibration.status !== 'admissible') process.exitCode = 2; // Both full grids are already persisted; do not run holdout.
 } else {
   if (partition === 'holdout') assert(!sourceDirty, 'Commit frozen method/config before first holdout evaluation');
   const calibrationBytes = await read('compat/retrieval-embedding/calibration.json');
   const calibration = JSON.parse(calibrationBytes.toString('utf8')) as ReturnType<typeof calibrateHybrid> & {
     modelDigest: string; developmentVectorDigest: string; sourceDigests: Record<string, string>; sourceDirty: boolean };
   assert.equal(calibration.split, 'development'); assert.equal(calibration.dataDigest, frozenHybridCorpusDigest);
+  assert(calibration.status === 'admissible' && calibration.dense && calibration.hybrid, 'Calibration failed; retain grids and stop before holdout');
   assert.equal(calibration.modelDigest, digest(manifestBytes)); assert(!calibration.sourceDirty, 'Calibration must use committed source');
   assert.deepEqual(calibration.sourceDigests, sourceDigests, 'Method changed after calibration; no silent retuning');
   assert.equal(calibration.developmentVectorDigest, digest(await read('test/fixtures/retrieval-v3-development-vectors.json')));

@@ -27,10 +27,23 @@ test('calibration accesses only development requests and retains the full prereg
   const result = calibrateHybrid(corpus, port);
   assert.equal(result.denseGrid.length, 24); assert.equal(result.hybridGrid.length, 72);
   for (const [config, grid] of [[result.dense, result.denseGrid], [result.hybrid, result.hybridGrid]] as const) {
+    assert(config);
     assert(calibrationGrid.minimumScores.some(v => v === config.minimumScore));
     assert(calibrationGrid.minimumMargins.some(v => v === config.minimumMargin));
     assert(grid.find(row => JSON.stringify(row.config) === JSON.stringify(config))!.metrics.wrong <= result.wrongOfferCap);
   }
+});
+test('no admissible dense configuration retains both grids and a serializable stop status', () => {
+  const result = calibrateHybrid({ schemaVersion: 3, kind: 'author-curated-synthetic-relevance', experiences: [
+    { id: 'a', revision: 1, split: 'development', family: 'toy', title: 'alpha', strategy: 'beta' },
+    { id: 'b', revision: 1, split: 'development', family: 'toy', title: 'gamma', strategy: 'delta' },
+  ], queries: [{ id: 'q', split: 'development', family: 'toy', kind: 'hard_negative', text: 'unmatched',
+    relevantIds: [], ineligibleIds: [], rationale: 'Invented negative for calibration failure only.' }] },
+  { embed(input) { return input.id === 'b' ? [-1, 0] : [1, 0]; } });
+  const saved = JSON.parse(JSON.stringify(result)) as typeof result;
+  assert.equal(saved.status, 'no_admissible_config'); assert.equal(saved.dense, null);
+  assert.equal(saved.wrongOfferCap, 0); assert.equal(saved.denseGrid.length, 24); assert.equal(saved.hybridGrid.length, 72);
+  assert(saved.denseGrid.every(row => row.metrics.wrong === 1));
 });
 test('snapshot binds model, corpus, namespace, revision and exact text; copies prevent cache mutation', () => {
   const source = snapshot(); const port = snapshotEmbeddingPort(source, binding);
