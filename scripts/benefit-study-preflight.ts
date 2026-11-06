@@ -13,13 +13,14 @@ import { SessionId, SessionStore } from '@deepseek-ai/dsh-session';
 import { SessionProjectionRegistry } from '@deepseek-ai/dsh-session-projection';
 import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt';
 import { ToolRuntime } from '@deepseek-ai/dsh-tools';
-import { digest, type Application, type Experience } from '../src/domain.js';
+import { digest, redact, type Application, type Experience } from '../src/domain.js';
 import { git } from '../src/repository.js';
 import { Store } from '../src/store.js';
 import { EvolveService } from '../src/service.js';
 import { rankText, retrievalPolicyDigest } from '../src/retrieval.js';
 import { passes, reproduces } from '../src/verification.js';
 import type { OwnerTaskCarrier } from '../src/owner-task-input.js';
+import { ownerInputPolicy } from '../src/owner-input-domain.js';
 import { runPilotTests, briefPilotTests } from './pilot-fixtures.js';
 import { studyArms, studyCases, studyFixtureVersion, studySchedule, studySources, studySystem, studyTaskInput, type StudyArm, type StudyCase } from './benefit-study-cases.js';
 
@@ -128,9 +129,10 @@ async function selectedReference(bank: Store, repo: string, item: StudyCase, arm
     message(text) { const id = randomUUID(); return { id, send() { sent = { id, text }; } }; } };
   try {
     const bankDigest = digest(JSON.stringify(store.experiences()));
+    const query = redact(item.prompt, ownerInputPolicy.maxSummary);
     let selected: Experience | null = null; let reason: string | null = null; let application: Application | null = null;
     if (arm === 'plain') {
-      const ranked = rankText(item.prompt, store.experiences()); const match = ranked.find(r => r.reason === null);
+      const ranked = rankText(query, store.experiences()); const match = ranked.find(r => r.reason === null);
       selected = store.experiences().find(e => e.id === match?.id) ?? null;
       reason = selected ? null : ranked[0]?.reason ?? 'empty_bank';
     } else if (arm === 'reforge') {
@@ -145,6 +147,7 @@ async function selectedReference(bank: Store, repo: string, item: StudyCase, arm
       const preview = service.ownerInput.taskPreview({ path: 'context.schema.json', property: item.property, goal: 'repair_behavior', text: item.prompt }, carrier);
       await service.ownerInput.submit({ instanceId: preview.instanceId, previewId: preview.previewId, idempotencyKey: randomUUID() }, carrier);
       assert(sent); const admitted = service.ownerInput.admit(sessionId, scopeKey, 1, [sent]); assert(admitted.owned);
+      const task = store.tasks().find(t => t.sessionId === sessionId); assert.equal(task?.summary, query);
       application = store.applications().find(a => store.task(a.taskId)?.sessionId === sessionId) ?? null;
       const selectedId = application?.experienceId;
       selected = selectedId ? store.experiences().find(e => e.id === selectedId)! : null;
@@ -161,7 +164,7 @@ async function selectedReference(bank: Store, repo: string, item: StudyCase, arm
     const memory = selected ? JSON.stringify({ title: selected.title, strategy: selected.strategy }) : null;
     return { memory, selectedId: selected?.id ?? null, revision: selected?.revision ?? null,
       selectedFamily: selected ? studySources.find(s => s.title === selected.title)!.id : null,
-      applicationRecorded: !!application, reason };
+      retrievalQueryDigest: digest(query), applicationRecorded: !!application, reason };
   } finally { service.ownerInput.end(sessionId, 1); service.ownerInput.dispose(); store.close(); }
 }
 

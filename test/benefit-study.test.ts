@@ -67,6 +67,7 @@ test('fresh preparation verifies three independent source repairs, six discrimin
       const rows = report.exposure.filter(e => e.case === item.id);
       assert.equal(new Set(rows.map(e => e.commonPromptDigest)).size, 1);
       assert.equal(new Set(rows.map(e => e.commonSystemDigest)).size, 1);
+      assert.equal(new Set(rows.map(e => e.retrievalQueryDigest)).size, 1);
       assert.equal(rows[0]!.commonPromptDigest, digest(studyTaskInput(item)));
     }
     assert.equal(report.realTrialsStarted, 0); assert.equal(report.paidHttpCalls, 0); assert.equal(report.futureBenefitProven, false);
