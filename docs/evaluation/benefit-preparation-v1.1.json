@@ -1,0 +1,1198 @@
+{
+  "schemaVersion": 1,
+  "kind": "zero-http-benefit-study-preparation",
+  "sourceCommit": "f0a85cf51e87845fad4a85dce81620bb3612c53e",
+  "fixtureVersion": "benefit-fixtures-v1.1",
+  "fixtureDigest": "89b3f295621c2430ff449917ec4064c8b50efaf5799180e46939f5ddb6b1f602",
+  "methodDigest": "884c10dc93632dd55d2657b491a022e2739edb1f89444bd9e0819d886e995ca5",
+  "implementation": {
+    "scripts/benefit-study-cases.ts": "b493298f7857fbf84688bf2fabca970e407dd6f8f361a8f75382612499810575",
+    "scripts/benefit-study-preflight.ts": "e600e0b9094f136e09867ad87ce55c3cd8fcd42be764b26d636b1e1a4200b5c8",
+    "src/service.ts": "7a099e06436056927c6a1bf7c9a2a3b63585f97c291ceb8848bcd2688cb08ac8",
+    "src/owner-task-input.ts": "4132a6201d958e77fca6c75417a4681900f24c4360133b90172b5ac1f0010d54",
+    "src/retrieval.ts": "79248d6b7d3b4d2b7dec325f8d50117f49c73ff742e3ac1296c3671f9ed142a6"
+  },
+  "execution": {
+    "preflight": "675b1e1355e96ad45829ff8fb6f1fd88ff18c0b179edd7ccf3b222491967daa5",
+    "cases": "18b2eac35e635110b81fb5147743d79f41e70faa8f0fca4589f349b31e2b2386"
+  },
+  "runtime": {
+    "node": "v24.19.0",
+    "python": "Python 3.10.11",
+    "sdk": {
+      "dsh-agent": "0.2.0-rc.2",
+      "dsh-agent-loop": "0.2.0-rc.2",
+      "dsh-llm": "0.2.0-rc.2"
+    }
+  },
+  "plannedRealTrials": 36,
+  "schedule": [
+    {
+      "case": "preferences_patch",
+      "repeat": 1,
+      "arm": "none"
+    },
+    {
+      "case": "preferences_patch",
+      "repeat": 1,
+      "arm": "plain"
+    },
+    {
+      "case": "preferences_patch",
+      "repeat": 1,
+      "arm": "reforge"
+    },
+    {
+      "case": "role_batch",
+      "repeat": 1,
+      "arm": "plain"
+    },
+    {
+      "case": "role_batch",
+      "repeat": 1,
+      "arm": "reforge"
+    },
+    {
+      "case": "role_batch",
+      "repeat": 1,
+      "arm": "none"
+    },
+    {
+      "case": "outbox_receipt",
+      "repeat": 1,
+      "arm": "reforge"
+    },
+    {
+      "case": "outbox_receipt",
+      "repeat": 1,
+      "arm": "none"
+    },
+    {
+      "case": "outbox_receipt",
+      "repeat": 1,
+      "arm": "plain"
+    },
+    {
+      "case": "delivery_batch",
+      "repeat": 1,
+      "arm": "none"
+    },
+    {
+      "case": "delivery_batch",
+      "repeat": 1,
+      "arm": "reforge"
+    },
+    {
+      "case": "delivery_batch",
+      "repeat": 1,
+      "arm": "plain"
+    },
+    {
+      "case": "nullable_deadline",
+      "repeat": 1,
+      "arm": "reforge"
+    },
+    {
+      "case": "nullable_deadline",
+      "repeat": 1,
+      "arm": "plain"
+    },
+    {
+      "case": "nullable_deadline",
+      "repeat": 1,
+      "arm": "none"
+    },
+    {
+      "case": "required_deadline",
+      "repeat": 1,
+      "arm": "plain"
+    },
+    {
+      "case": "required_deadline",
+      "repeat": 1,
+      "arm": "none"
+    },
+    {
+      "case": "required_deadline",
+      "repeat": 1,
+      "arm": "reforge"
+    },
+    {
+      "case": "preferences_patch",
+      "repeat": 2,
+      "arm": "plain"
+    },
+    {
+      "case": "preferences_patch",
+      "repeat": 2,
+      "arm": "reforge"
+    },
+    {
+      "case": "preferences_patch",
+      "repeat": 2,
+      "arm": "none"
+    },
+    {
+      "case": "role_batch",
+      "repeat": 2,
+      "arm": "reforge"
+    },
+    {
+      "case": "role_batch",
+      "repeat": 2,
+      "arm": "none"
+    },
+    {
+      "case": "role_batch",
+      "repeat": 2,
+      "arm": "plain"
+    },
+    {
+      "case": "outbox_receipt",
+      "repeat": 2,
+      "arm": "none"
+    },
+    {
+      "case": "outbox_receipt",
+      "repeat": 2,
+      "arm": "plain"
+    },
+    {
+      "case": "outbox_receipt",
+      "repeat": 2,
+      "arm": "reforge"
+    },
+    {
+      "case": "delivery_batch",
+      "repeat": 2,
+      "arm": "reforge"
+    },
+    {
+      "case": "delivery_batch",
+      "repeat": 2,
+      "arm": "plain"
+    },
+    {
+      "case": "delivery_batch",
+      "repeat": 2,
+      "arm": "none"
+    },
+    {
+      "case": "nullable_deadline",
+      "repeat": 2,
+      "arm": "plain"
+    },
+    {
+      "case": "nullable_deadline",
+      "repeat": 2,
+      "arm": "none"
+    },
+    {
+      "case": "nullable_deadline",
+      "repeat": 2,
+      "arm": "reforge"
+    },
+    {
+      "case": "required_deadline",
+      "repeat": 2,
+      "arm": "none"
+    },
+    {
+      "case": "required_deadline",
+      "repeat": 2,
+      "arm": "reforge"
+    },
+    {
+      "case": "required_deadline",
+      "repeat": 2,
+      "arm": "plain"
+    }
+  ],
+  "realTrialsStarted": 0,
+  "paidHttpCalls": 0,
+  "sourceProofs": [
+    {
+      "source": "mapping",
+      "experienceId": "9796233c-b053-47a8-99e1-e7c0f19ccf11",
+      "revision": 2,
+      "verificationId": "4200ac07-3bd2-4520-a1cc-dc3a61a11acd",
+      "acceptanceDigest": "4950a36e293e1944af781d5366099a0338ccf0f7dbaf33a6ac5f9f3f2a75b590",
+      "base": {
+        "passed": false,
+        "exitCode": 1,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "fixed": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "regression": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      }
+    },
+    {
+      "source": "delivery",
+      "experienceId": "6f1172a1-0109-46fb-8cb2-7f7896ec808f",
+      "revision": 2,
+      "verificationId": "e29c92e3-7468-4fc9-9431-8dfa0f1f6e73",
+      "acceptanceDigest": "33241b50fdefcad4257c7873a162992d94f07d038d2221b6ab68c0b5f8a8e1f6",
+      "base": {
+        "passed": false,
+        "exitCode": 1,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "fixed": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "regression": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      }
+    },
+    {
+      "source": "nullable",
+      "experienceId": "13a52e14-1fe9-4b85-96ba-ae9e58e3aaad",
+      "revision": 2,
+      "verificationId": "0aff95e5-cd0e-44a6-8e4a-c280fdb79baf",
+      "acceptanceDigest": "cb4dd15cef93df42e55111bfcf18d7714c938a80ffb0335e2e40d2a1d42ab2b5",
+      "base": {
+        "passed": false,
+        "exitCode": 1,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "fixed": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      },
+      "regression": {
+        "passed": true,
+        "exitCode": 0,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "timedOut": false
+      }
+    }
+  ],
+  "controls": [
+    {
+      "case": "preferences_patch",
+      "family": "mapping",
+      "authoredApplicable": true,
+      "outcomes": [
+        {
+          "variant": "before",
+          "codeDigest": "10da2e1cfcf7e98e62eb43c858eb0f620383bfde6634f336ea011a01e4b77d82",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "preferences_patch.checks.test_contract::test_failure_restores_removed_added_and_existing_keys",
+              "status": "failed"
+            },
+            {
+              "id": "preferences_patch.checks.test_contract::test_success_and_missing_deletion",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "reference",
+          "codeDigest": "8f6ba9559c1ec83849e93920bc78cb585ed947ca1f290620572edca0faaf6f41",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "preferences_patch.checks.test_contract::test_failure_restores_removed_added_and_existing_keys",
+              "status": "passed"
+            },
+            {
+              "id": "preferences_patch.checks.test_contract::test_success_and_missing_deletion",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "wrong",
+          "codeDigest": "6fe59f6c4a193d429cca9a52f0cdc195d2c17040a848822235967ca6a69a3e43",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "preferences_patch.checks.test_contract::test_failure_restores_removed_added_and_existing_keys",
+              "status": "failed"
+            },
+            {
+              "id": "preferences_patch.checks.test_contract::test_success_and_missing_deletion",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "persists_caller_object",
+          "codeDigest": "052781f1a2e6049c75086466a6816950a5f4effcfc51997db59cca187c8a0188",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "preferences_patch.checks.test_contract::test_failure_restores_removed_added_and_existing_keys",
+              "status": "failed"
+            },
+            {
+              "id": "preferences_patch.checks.test_contract::test_success_and_missing_deletion",
+              "status": "failed"
+            }
+          ]
+        },
+        {
+          "variant": "retries_persistence",
+          "codeDigest": "f2b49b874b752416f46b11f7f8a0fc2b78706ef78607fff7b898b31ba51fb21e",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "preferences_patch.checks.test_contract::test_failure_restores_removed_added_and_existing_keys",
+              "status": "failed"
+            },
+            {
+              "id": "preferences_patch.checks.test_contract::test_success_and_missing_deletion",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "role_batch",
+      "family": "mapping",
+      "authoredApplicable": true,
+      "outcomes": [
+        {
+          "variant": "before",
+          "codeDigest": "d986c68b8b88d36c7a4538d5d5620eae4def69e7753c36c34e95ecdbb6d7251b",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "role_batch.checks.test_contract::test_failure_removes_new_role_and_restores_prior_role",
+              "status": "failed"
+            },
+            {
+              "id": "role_batch.checks.test_contract::test_duplicates_and_empty_batch",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "reference",
+          "codeDigest": "11960f0f1d743bce9fa84ff46dc8f08211b813c0d70444aafe0e25f4f8e5110f",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "role_batch.checks.test_contract::test_failure_removes_new_role_and_restores_prior_role",
+              "status": "passed"
+            },
+            {
+              "id": "role_batch.checks.test_contract::test_duplicates_and_empty_batch",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "wrong",
+          "codeDigest": "52669a4ae9eaabf1b70a7e46a0a3205de0da56bf51ee8315e611abf502542431",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "role_batch.checks.test_contract::test_failure_removes_new_role_and_restores_prior_role",
+              "status": "failed"
+            },
+            {
+              "id": "role_batch.checks.test_contract::test_duplicates_and_empty_batch",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "copy_only",
+          "codeDigest": "addcc867cd5559dc07d65c15b321f747f07d612d185a33fc9b7777a26a425bfe",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "role_batch.checks.test_contract::test_failure_removes_new_role_and_restores_prior_role",
+              "status": "passed"
+            },
+            {
+              "id": "role_batch.checks.test_contract::test_duplicates_and_empty_batch",
+              "status": "failed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "outbox_receipt",
+      "family": "delivery",
+      "authoredApplicable": true,
+      "outcomes": [
+        {
+          "variant": "before",
+          "codeDigest": "0483f3ea2abf73b6b6154670ce2cf7948d5af8f3f785c81ed9ba857214a39e52",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "outbox_receipt.checks.test_contract::test_failure_then_retry_and_duplicate",
+              "status": "failed"
+            },
+            {
+              "id": "outbox_receipt.checks.test_contract::test_existing_record_identity",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "reference",
+          "codeDigest": "940961dd536f22a49a9a0b280696c6e62cd24c275278cbd5b599759a2b5e5996",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "outbox_receipt.checks.test_contract::test_failure_then_retry_and_duplicate",
+              "status": "passed"
+            },
+            {
+              "id": "outbox_receipt.checks.test_contract::test_existing_record_identity",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "wrong",
+          "codeDigest": "744e47f973f149ed0edb53269198c954475ad14aa759b5520f95ad76d3b4aef3",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "outbox_receipt.checks.test_contract::test_failure_then_retry_and_duplicate",
+              "status": "failed"
+            },
+            {
+              "id": "outbox_receipt.checks.test_contract::test_existing_record_identity",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "clears_unrelated_receipts",
+          "codeDigest": "cbdc63718293565e08ab2afe2fe9b0925d88dec2707efe951f2de26e1cd51970",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "outbox_receipt.checks.test_contract::test_failure_then_retry_and_duplicate",
+              "status": "failed"
+            },
+            {
+              "id": "outbox_receipt.checks.test_contract::test_existing_record_identity",
+              "status": "failed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "delivery_batch",
+      "family": "delivery",
+      "authoredApplicable": true,
+      "outcomes": [
+        {
+          "variant": "before",
+          "codeDigest": "d987f5a67a04e591612da5e4f4523527419b0375447e8f2635bb1fb81689771a",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "delivery_batch.checks.test_contract::test_partial_success_is_kept_and_failure_retries",
+              "status": "failed"
+            },
+            {
+              "id": "delivery_batch.checks.test_contract::test_duplicate_and_empty_batch",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "reference",
+          "codeDigest": "f99e347fba7ec97fd59e18d233502d08ed0b4d57325b692c5aece16894ce9430",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "delivery_batch.checks.test_contract::test_partial_success_is_kept_and_failure_retries",
+              "status": "passed"
+            },
+            {
+              "id": "delivery_batch.checks.test_contract::test_duplicate_and_empty_batch",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "wrong",
+          "codeDigest": "295dc0b7a4079a1a599f67bd6866a591cf5f5fce467c87732a925a081216d0b6",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "delivery_batch.checks.test_contract::test_partial_success_is_kept_and_failure_retries",
+              "status": "failed"
+            },
+            {
+              "id": "delivery_batch.checks.test_contract::test_duplicate_and_empty_batch",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "clears_completed_state",
+          "codeDigest": "6d474e1da45eb13222d48afde12dd4957f80ad16377f3bb034f057eda7c21ce2",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "delivery_batch.checks.test_contract::test_partial_success_is_kept_and_failure_retries",
+              "status": "failed"
+            },
+            {
+              "id": "delivery_batch.checks.test_contract::test_duplicate_and_empty_batch",
+              "status": "failed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "nullable_deadline",
+      "family": "nullable",
+      "authoredApplicable": true,
+      "outcomes": [
+        {
+          "variant": "before",
+          "codeDigest": "bfae147a078f0e0691c32c5adcf4f5716c82d4b240a83b50a5100e366267f21f",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "nullable_deadline.checks.test_contract::test_null_zero_and_absence",
+              "status": "failed"
+            },
+            {
+              "id": "nullable_deadline.checks.test_contract::test_negative_values_and_fallback",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "reference",
+          "codeDigest": "eefb9def9ab87b30e8287e4156d88d4855bd4baa626ae4d5c4f19c65dd37fea3",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "nullable_deadline.checks.test_contract::test_null_zero_and_absence",
+              "status": "passed"
+            },
+            {
+              "id": "nullable_deadline.checks.test_contract::test_negative_values_and_fallback",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "wrong",
+          "codeDigest": "13b1ec485b6c4925994852b42cce8c73cd7c9903d4e8575a87d652d61d7fc36b",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "nullable_deadline.checks.test_contract::test_null_zero_and_absence",
+              "status": "passed"
+            },
+            {
+              "id": "nullable_deadline.checks.test_contract::test_negative_values_and_fallback",
+              "status": "failed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "required_deadline",
+      "family": "nullable",
+      "authoredApplicable": false,
+      "outcomes": [
+        {
+          "variant": "before",
+          "codeDigest": "a94ea444061b0aa6f9c57a4d752b223e196407feb500a055f80cb18441410e3e",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "required_deadline.checks.test_contract::test_required_and_nonnullable",
+              "status": "failed"
+            },
+            {
+              "id": "required_deadline.checks.test_contract::test_zero_positive_negative_and_no_mutation",
+              "status": "failed"
+            }
+          ]
+        },
+        {
+          "variant": "reference",
+          "codeDigest": "f9ce82d223e8e162ed4a4e5002ce311c941f5ccdce091f1e18a371b30a3e1f6e",
+          "passed": true,
+          "exitCode": 0,
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "required_deadline.checks.test_contract::test_required_and_nonnullable",
+              "status": "passed"
+            },
+            {
+              "id": "required_deadline.checks.test_contract::test_zero_positive_negative_and_no_mutation",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "variant": "wrong",
+          "codeDigest": "a4730234e049b86c6582466c9f19fdea4947a663f298a3e430d459dd40f94fff",
+          "passed": false,
+          "exitCode": 1,
+          "tests": 2,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0,
+          "timedOut": false,
+          "cases": [
+            {
+              "id": "required_deadline.checks.test_contract::test_required_and_nonnullable",
+              "status": "failed"
+            },
+            {
+              "id": "required_deadline.checks.test_contract::test_zero_positive_negative_and_no_mutation",
+              "status": "failed"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "exposure": [
+    {
+      "case": "preferences_patch",
+      "arm": "none",
+      "selectedId": null,
+      "revision": null,
+      "selectedFamily": null,
+      "retrievalQueryDigest": "b162a4632ed4b93aeec30de3094c268547cfc1fdfa039bb481afe9fc2427d091",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "b413bea9bf6cf9be84a780a86cbc6e7346ca31766956adf15f4fc50476b724db",
+      "providerInputDigest": "fd63cd45d0a41b1e9392e811f8d44cbcef7440c64150078e321e6981def07d93",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": false,
+      "selectionAgreesWithAuthoredLabel": null,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "preferences_patch",
+      "arm": "plain",
+      "selectedId": "9796233c-b053-47a8-99e1-e7c0f19ccf11",
+      "revision": 2,
+      "selectedFamily": "mapping",
+      "retrievalQueryDigest": "b162a4632ed4b93aeec30de3094c268547cfc1fdfa039bb481afe9fc2427d091",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "b413bea9bf6cf9be84a780a86cbc6e7346ca31766956adf15f4fc50476b724db",
+      "providerInputDigest": "94fa344ec89352b5c0e07b6dbc3d4aaacc20785da1892b5bfdeb6802a42886d0",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "preferences_patch",
+      "arm": "reforge",
+      "selectedId": "9796233c-b053-47a8-99e1-e7c0f19ccf11",
+      "revision": 2,
+      "selectedFamily": "mapping",
+      "retrievalQueryDigest": "b162a4632ed4b93aeec30de3094c268547cfc1fdfa039bb481afe9fc2427d091",
+      "applicationRecorded": true,
+      "reason": null,
+      "commonPromptDigest": "b413bea9bf6cf9be84a780a86cbc6e7346ca31766956adf15f4fc50476b724db",
+      "providerInputDigest": "94fa344ec89352b5c0e07b6dbc3d4aaacc20785da1892b5bfdeb6802a42886d0",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "role_batch",
+      "arm": "none",
+      "selectedId": null,
+      "revision": null,
+      "selectedFamily": null,
+      "retrievalQueryDigest": "a7058debf5bec63366de6b238315c93aace03f477fbef62b788606163c1e3816",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "0e007d3882e38db31f6b82fb75ec25ef5f5ceeb0b355fe5f0521b4d2e23f3ebd",
+      "providerInputDigest": "d2ca21976ea8e5ec906d02264e57ff2b1135683bd2cbd81155567c0792325bf6",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": false,
+      "selectionAgreesWithAuthoredLabel": null,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "role_batch",
+      "arm": "plain",
+      "selectedId": "9796233c-b053-47a8-99e1-e7c0f19ccf11",
+      "revision": 2,
+      "selectedFamily": "mapping",
+      "retrievalQueryDigest": "a7058debf5bec63366de6b238315c93aace03f477fbef62b788606163c1e3816",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "0e007d3882e38db31f6b82fb75ec25ef5f5ceeb0b355fe5f0521b4d2e23f3ebd",
+      "providerInputDigest": "b7e287d7407c01e61e35fe430a26ff75c4a8736669648fe61b807715c95aeb47",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "role_batch",
+      "arm": "reforge",
+      "selectedId": "9796233c-b053-47a8-99e1-e7c0f19ccf11",
+      "revision": 2,
+      "selectedFamily": "mapping",
+      "retrievalQueryDigest": "a7058debf5bec63366de6b238315c93aace03f477fbef62b788606163c1e3816",
+      "applicationRecorded": true,
+      "reason": null,
+      "commonPromptDigest": "0e007d3882e38db31f6b82fb75ec25ef5f5ceeb0b355fe5f0521b4d2e23f3ebd",
+      "providerInputDigest": "b7e287d7407c01e61e35fe430a26ff75c4a8736669648fe61b807715c95aeb47",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "outbox_receipt",
+      "arm": "none",
+      "selectedId": null,
+      "revision": null,
+      "selectedFamily": null,
+      "retrievalQueryDigest": "0f86774515c90f47eda5421c3764db5b6266693b87da04115b5a1aaab4fd3863",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "d655ced4feb69a8b5efdf1f729e1d816c6d2acfa1d067ecf436c87fba299c559",
+      "providerInputDigest": "462409608b7510f598e9bf25462851340ebb423eddebe2585cfefa0a1f9655e6",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": false,
+      "selectionAgreesWithAuthoredLabel": null,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "outbox_receipt",
+      "arm": "plain",
+      "selectedId": "6f1172a1-0109-46fb-8cb2-7f7896ec808f",
+      "revision": 2,
+      "selectedFamily": "delivery",
+      "retrievalQueryDigest": "0f86774515c90f47eda5421c3764db5b6266693b87da04115b5a1aaab4fd3863",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "d655ced4feb69a8b5efdf1f729e1d816c6d2acfa1d067ecf436c87fba299c559",
+      "providerInputDigest": "17e582f828530b1de64468595a8245c16d425892b98c2a9d47e285fe09bad3b9",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "outbox_receipt",
+      "arm": "reforge",
+      "selectedId": "6f1172a1-0109-46fb-8cb2-7f7896ec808f",
+      "revision": 2,
+      "selectedFamily": "delivery",
+      "retrievalQueryDigest": "0f86774515c90f47eda5421c3764db5b6266693b87da04115b5a1aaab4fd3863",
+      "applicationRecorded": true,
+      "reason": null,
+      "commonPromptDigest": "d655ced4feb69a8b5efdf1f729e1d816c6d2acfa1d067ecf436c87fba299c559",
+      "providerInputDigest": "17e582f828530b1de64468595a8245c16d425892b98c2a9d47e285fe09bad3b9",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "delivery_batch",
+      "arm": "none",
+      "selectedId": null,
+      "revision": null,
+      "selectedFamily": null,
+      "retrievalQueryDigest": "b5451a73f0a96824e855fa4e08fc656b27c8ccdd91ac1231cb1ff7e0a90e8ea5",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "4ccb10b5bd31738caf498f2ba09c60ae335d11a62aea7e1f6c1e8ba338deb061",
+      "providerInputDigest": "71aac881715c90f12c9fbfa019e74efa327f93cf9a1d5a8abd7bba651e16f66d",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": false,
+      "selectionAgreesWithAuthoredLabel": null,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "delivery_batch",
+      "arm": "plain",
+      "selectedId": "6f1172a1-0109-46fb-8cb2-7f7896ec808f",
+      "revision": 2,
+      "selectedFamily": "delivery",
+      "retrievalQueryDigest": "b5451a73f0a96824e855fa4e08fc656b27c8ccdd91ac1231cb1ff7e0a90e8ea5",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "4ccb10b5bd31738caf498f2ba09c60ae335d11a62aea7e1f6c1e8ba338deb061",
+      "providerInputDigest": "320cb4aba02b329ac2fe6746c55bcdca4539ba5ca4b6b94ba3a9db8679ab3ff7",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "delivery_batch",
+      "arm": "reforge",
+      "selectedId": "6f1172a1-0109-46fb-8cb2-7f7896ec808f",
+      "revision": 2,
+      "selectedFamily": "delivery",
+      "retrievalQueryDigest": "b5451a73f0a96824e855fa4e08fc656b27c8ccdd91ac1231cb1ff7e0a90e8ea5",
+      "applicationRecorded": true,
+      "reason": null,
+      "commonPromptDigest": "4ccb10b5bd31738caf498f2ba09c60ae335d11a62aea7e1f6c1e8ba338deb061",
+      "providerInputDigest": "320cb4aba02b329ac2fe6746c55bcdca4539ba5ca4b6b94ba3a9db8679ab3ff7",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "nullable_deadline",
+      "arm": "none",
+      "selectedId": null,
+      "revision": null,
+      "selectedFamily": null,
+      "retrievalQueryDigest": "93665e6a861e18fd2e69173d8967ab5dbf9329580cb6d8f6984e86a073cb75c8",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "5aa5e476b3c87c2ae0065794376370eefe0d63393fb6cae9d8bf88bfdcee55fb",
+      "providerInputDigest": "c9ccd5c2d8455bfd202dd076ce77b2e4ca8f4578239299d15ba558a56d61e53c",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": false,
+      "selectionAgreesWithAuthoredLabel": null,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "nullable_deadline",
+      "arm": "plain",
+      "selectedId": "13a52e14-1fe9-4b85-96ba-ae9e58e3aaad",
+      "revision": 2,
+      "selectedFamily": "nullable",
+      "retrievalQueryDigest": "93665e6a861e18fd2e69173d8967ab5dbf9329580cb6d8f6984e86a073cb75c8",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "5aa5e476b3c87c2ae0065794376370eefe0d63393fb6cae9d8bf88bfdcee55fb",
+      "providerInputDigest": "318d3d8f82242d0f483aea863c478a23e907fb26941c070663fe030bd5813b97",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "nullable_deadline",
+      "arm": "reforge",
+      "selectedId": "13a52e14-1fe9-4b85-96ba-ae9e58e3aaad",
+      "revision": 2,
+      "selectedFamily": "nullable",
+      "retrievalQueryDigest": "93665e6a861e18fd2e69173d8967ab5dbf9329580cb6d8f6984e86a073cb75c8",
+      "applicationRecorded": true,
+      "reason": null,
+      "commonPromptDigest": "5aa5e476b3c87c2ae0065794376370eefe0d63393fb6cae9d8bf88bfdcee55fb",
+      "providerInputDigest": "318d3d8f82242d0f483aea863c478a23e907fb26941c070663fe030bd5813b97",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "required_deadline",
+      "arm": "none",
+      "selectedId": null,
+      "revision": null,
+      "selectedFamily": null,
+      "retrievalQueryDigest": "86819acc84e9d49e6ee397fef22cdb2aa71566d8d3b1b746c27901b7bce91280",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "e4f0d9df46150e897263300ed2fec0dcd244478926fa99982904f36638a2961c",
+      "providerInputDigest": "ff984416778bb9e49ed3506ac87b1993951f5f557ce9d946e4d57c84364086b0",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": false,
+      "selectionAgreesWithAuthoredLabel": null,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "required_deadline",
+      "arm": "plain",
+      "selectedId": "13a52e14-1fe9-4b85-96ba-ae9e58e3aaad",
+      "revision": 2,
+      "selectedFamily": "nullable",
+      "retrievalQueryDigest": "86819acc84e9d49e6ee397fef22cdb2aa71566d8d3b1b746c27901b7bce91280",
+      "applicationRecorded": false,
+      "reason": null,
+      "commonPromptDigest": "e4f0d9df46150e897263300ed2fec0dcd244478926fa99982904f36638a2961c",
+      "providerInputDigest": "405818434f4fa835112833ab54268acd431ab0cbb8369687348d9f5fad974db0",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": true,
+      "selectionAgreesWithAuthoredLabel": false,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    },
+    {
+      "case": "required_deadline",
+      "arm": "reforge",
+      "selectedId": null,
+      "revision": null,
+      "selectedFamily": null,
+      "retrievalQueryDigest": "86819acc84e9d49e6ee397fef22cdb2aa71566d8d3b1b746c27901b7bce91280",
+      "applicationRecorded": false,
+      "reason": "owner_conditions_unconfirmed",
+      "commonPromptDigest": "e4f0d9df46150e897263300ed2fec0dcd244478926fa99982904f36638a2961c",
+      "providerInputDigest": "ff984416778bb9e49ed3506ac87b1993951f5f557ce9d946e4d57c84364086b0",
+      "commonSystemDigest": "c87f1d7aa58369109f3f65e206c220e8d9d2fdb2553914faaa1b82a8eee74c80",
+      "actualScriptedRequests": 1,
+      "commonTaskPresent": true,
+      "referencePresent": false,
+      "selectionAgreesWithAuthoredLabel": true,
+      "realModelAcceptance": null,
+      "paidHttpCalls": 0
+    }
+  ],
+  "futureBenefitProven": false,
+  "liveExecutionImplemented": false,
+  "spendingAuthorized": false,
+  "limitations": [
+    "six authored visible synthetic cases, not a blind holdout",
+    "three authored strategies independently source-verified; no model extraction",
+    "source-service selection projected into a uniform actual scripted AgentLoop request; not full production host comparison",
+    "reference controls are author repairs, not model output or benefit",
+    "future live runner, frozen dependencies, current prices and fresh budget authorization still required"
+  ]
+}
