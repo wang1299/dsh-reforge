@@ -191,7 +191,7 @@ async function providerExposure(item: StudyCase, memory: string | null) {
   try {
     for (const plugin of [SessionStore, SessionProjectionRegistry, AgentRegistry, LlmRuntime]) await ctx.plugin(plugin).await();
     await ctx.plugin(SystemPrompt, {}).await(); await ctx.plugin(ToolRuntime, { mode: 'native' }).await();
-    ctx.systemPrompt.context({ name: 'benefit-study-system', order: 100, text: studySystem });
+    ctx.systemPrompt.section({ name: 'benefit-study-system', order: 100, text: studySystem, complete: true, interpolate: false });
     ctx.llm.registerAdapter(['benefit-offline'], adapter); await ctx.plugin(AgentLoop, { agents: [], maxParallelToolCalls: 1 }).await();
     ctx.on('agent/request', async (_payload, next) => ({ ...await next(), temperature: 0 }));
     const handle = await ctx.agents.create({ sessionId: SessionId('exposure-' + randomUUID()), meta: {},
@@ -212,8 +212,16 @@ async function providerExposure(item: StudyCase, memory: string | null) {
 
 export async function prepareBenefitStudy(parent = join(repository, '.probe-work/t061-study-preparation'), python = process.env.EVOLVE_PYTHON ?? 'python') {
   const root = await newRoot(parent); const started = Date.now();
+  const implementationPaths = ['scripts/benefit-study-cases.ts', 'scripts/benefit-study-preflight.ts',
+    'src/service.ts', 'src/owner-task-input.ts', 'src/retrieval.ts'];
+  const implementationSnapshot = async () => Object.fromEntries(await Promise.all(implementationPaths.map(async path => [path, digest(await readFile(join(repository, path)))])));
+  const implementation = await implementationSnapshot();
+  const executionSnapshot = async () => ({ preflight: digest(await readFile(fileURLToPath(import.meta.url))),
+    cases: digest(await readFile(fileURLToPath(new URL('./benefit-study-cases.js', import.meta.url)))) });
+  const execution = await executionSnapshot();
   const fixtureDigest = digest(JSON.stringify({ studyCases, studySources }));
-  const methodDigest = digest(JSON.stringify({ studySchedule, studySystem, retrievalPolicyDigest, taskInput: studyTaskInput.toString(), version: 'benefit-preflight-v1' }));
+  const methodDigest = digest(JSON.stringify({ studySchedule, studySystem, retrievalPolicyDigest, execution,
+    taskInput: studyTaskInput.toString(), version: 'benefit-preflight-v1.1' }));
   const bank = await sourceBank(root, python);
   try {
     const controls = [];
@@ -244,12 +252,12 @@ export async function prepareBenefitStudy(parent = join(repository, '.probe-work
           : selected.selectedFamily === item.family && item.expectedApplicable || !selected.memory && !item.expectedApplicable,
         realModelAcceptance: null, paidHttpCalls: 0 });
     }
-    const implementation = Object.fromEntries(await Promise.all(['scripts/benefit-study-cases.ts', 'scripts/benefit-study-preflight.ts',
-      'src/service.ts', 'src/owner-task-input.ts', 'src/retrieval.ts'].map(async path => [path, digest(await readFile(join(repository, path)))])));
+    assert.deepEqual(await implementationSnapshot(), implementation, 'Preparation source changed during this run');
+    assert.deepEqual(await executionSnapshot(), execution, 'Preparation compiled entry changed during this run');
     const runtime = { node: process.version, python: execFileSync(python, ['--version'], { windowsHide: true, encoding: 'utf8', timeout: 5000 }).trim(),
       sdk: Object.fromEntries(await Promise.all(['dsh-agent', 'dsh-agent-loop', 'dsh-llm'].map(async name =>
         [name, (JSON.parse(await readFile(join(repository, 'node_modules/@deepseek-ai', name, 'package.json'), 'utf8')) as { version: string }).version]))) };
-    const report = { kind: 'zero-http-benefit-study-preparation', schemaVersion: 1, fixtureVersion: studyFixtureVersion, fixtureDigest, methodDigest, implementation, runtime,
+    const report = { kind: 'zero-http-benefit-study-preparation', schemaVersion: 1, fixtureVersion: studyFixtureVersion, fixtureDigest, methodDigest, implementation, execution, runtime,
       plannedRealTrials: studySchedule.length, schedule: studySchedule, realTrialsStarted: 0, paidHttpCalls: 0,
       sourceProofs: bank.proofs, controls, exposure, elapsedMs: Date.now() - started,
       futureBenefitProven: false, liveExecutionImplemented: false, spendingAuthorized: false,

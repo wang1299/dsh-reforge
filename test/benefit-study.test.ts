@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { studyArms, studyCases, studySchedule, studySources, studyTaskInput } from '../scripts/benefit-study-cases.js';
+import { studyArms, studyCases, studyFixtureVersion, studySchedule, studySources, studyTaskInput } from '../scripts/benefit-study-cases.js';
 import { prepareBenefitStudy, validateStudyCode } from '../scripts/benefit-study-preflight.js';
 import { digest } from '../src/domain.js';
 
@@ -16,11 +16,19 @@ test('new study schedule balances all arms, repeats and positions; model tasks e
   }
   for (const item of studyCases) {
     for (const repeat of [1, 2]) assert.deepEqual(new Set(studySchedule.filter(r => r.case === item.id && r.repeat === repeat).map(r => r.arm)), new Set(studyArms));
+    for (const arm of studyArms) assert.equal(new Set(studySchedule.flatMap((row, i) => row.case === item.id && row.arm === arm ? [i % 3] : [])).size, 2);
     const input = studyTaskInput(item); assert(input.includes(item.before));
     assert(!input.includes(item.reference)); assert(!input.includes(item.wrong)); assert(!input.includes(item.checks));
     for (const wrong of Object.values(item.additionalWrong ?? {})) assert(!input.includes(wrong));
     assert.equal(item.entry, 'repair'); assert(studySources.some(s => s.id === item.family));
   }
+});
+
+test('pre-live fixture revision preserves the complete original v1 and identifies strengthened controls', async () => {
+  assert.equal(studyFixtureVersion, 'benefit-fixtures-v1.1');
+  const original = await readFile(fileURLToPath(new URL('../../test/fixtures/benefit-study-v1.ts.txt', import.meta.url)));
+  assert.equal(digest(original), 'b0530361486e13cb994cf3ad1475eea34835b56f90c8460b90b1fdc605a21b3a');
+  assert.equal(studyCases.reduce((n, item) => n + Object.keys(item.additionalWrong ?? {}).length, 0), 5);
 });
 
 test('study function admission rejects external operations and unbounded syntax before Python execution', () => {
