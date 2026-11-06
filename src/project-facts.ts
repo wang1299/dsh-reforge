@@ -72,8 +72,8 @@ export function projectSchemaFacts(input: unknown, expected: TaskBinding, port: 
   } catch { return unknown('invalid_project_source_json', ref, property, true); }
   const artifact = schema.safeParse(document);
   if (!artifact.success) return unknown('invalid_or_unsupported_schema', ref, property, true);
-  const target = artifact.data.properties[property];
-  if (!target) return unknown('target_property_not_declared', ref, property, true);
+  if (!Object.hasOwn(artifact.data.properties, property)) return unknown('target_property_not_declared', ref, property, true);
+  const target = artifact.data.properties[property]!;
   const declared = Array.isArray(target.type) ? target.type : [target.type]; const nonNull = declared.filter(t => t !== 'null');
   const pointer = '/properties/' + property + '/type'; const required = artifact.data.required;
   const observations: ProjectFactObservation[] = [

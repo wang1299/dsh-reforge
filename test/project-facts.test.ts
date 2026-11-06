@@ -50,6 +50,11 @@ test('unsupported constraints, dialects and secret/prototype names never silentl
     { ...schema(), properties: JSON.parse('{"constructor":{"type":"string"}}') },
     { ...schema(), properties: { api_key: { type: 'string' } } }]) assert.equal(fixture(JSON.stringify(document)).read().state, 'unknown');
   assert.equal(fixture(JSON.stringify(schema()), 'missing').read().context.problems[0], 'target_property_not_declared');
+  for (const name of ['toString', 'valueOf', 'hasOwnProperty']) {
+    assert.equal(fixture(JSON.stringify(schema()), name).read().context.problems[0], 'target_property_not_declared');
+    const explicit = { ...schema(), properties: { [name]: { type: 'string' } } };
+    assert.equal(fixture(JSON.stringify(explicit), name).read().state, 'confirmed');
+  }
 });
 
 test('identity, revision, digest, JSON grammar and byte bounds are fresh and fail closed', () => {
