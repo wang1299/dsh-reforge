@@ -1,5 +1,7 @@
 # DSH-Reforge documentation
 
+Applicability prototype: [evidence-bound contracts and three-state rejection](evaluation/applicability-v1.md#english). On48 synthetic holdout queries, wrong offers13→1 with extra authored task facts; precision45.8%→92.3%, coverage50%→27.1%. Not natural-language extraction or default DSH rollout.
+
 Developer evaluation: [frozen retrieval comparison, per-query explanations and index performance](evaluation/retrieval-v2.md#english). Offline synthetic results are separate from downstream Agent benefit.
 
 Live integration: [bounded workbench decisions and three-arm service-chain measurements](evaluation/live-retrieval.md#english). Every request rechecks eligibility; the text policy is unchanged.

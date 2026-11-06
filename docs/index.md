@@ -17,6 +17,7 @@
 | 复查检索改进数字与选择原因 | [冻结检索评测、逐条解释与性能报告](evaluation/retrieval-v2.md) |
 | 查看实际选择原因与完整链路耗时 | [工作台选择依据、缓存失效与三组测量](evaluation/live-retrieval.md) |
 | 比较跨语言关键词、向量与混合检索 | [120条合成评测、错误与可重放向量](evaluation/retrieval-v3.md) |
+| 了解哪些经验应拒选及其代价 | [有依据的条件、三态判断与96条对照](evaluation/applicability-v1.md) |
 | 参与试用或报告问题 | [外部试用](community/pilot.md)、[问题表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)、[安全报告](../SECURITY.md) |
 | 从一个小贡献开始 | [贡献指南](../CONTRIBUTING.md)、[新人任务](community/newcomers.md) |
 
