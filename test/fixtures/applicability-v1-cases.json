@@ -400,37 +400,193 @@
       }
     },
     {
-      "id": "archive-root-containment-primary",
+      "id": "tensor-normalization-axis-primary",
       "revision": 1,
       "split": "holdout",
-      "family": "archive-root-containment",
-      "title": "Keep untrusted archive entry extraction inside the destination root",
-      "strategy": "Before extracting path-named entries from an untrusted archive, resolve each destination against the extraction root and reject escapes. Do not allow writing outside that root.",
+      "family": "tensor-normalization-axis",
+      "title": "Keep row reduction dimensions when broadcasting row normalization",
+      "strategy": "For a two-dimensional tensor normalized by rows, reduce each row with its dimension retained and divide using broadcasting. Handle zero denominators separately.",
       "contract": {
         "schemaVersion": 1,
         "requires": [
           {
-            "field": "input_trust",
+            "field": "tensor_rank",
+            "oneOf": [
+              2
+            ]
+          },
+          {
+            "field": "normalize_axis",
+            "oneOf": [
+              "rows"
+            ]
+          },
+          {
+            "field": "broadcasting_enabled",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "zero_denominators",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "tensor-normalization-axis-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "tensor-normalization-axis",
+      "title": "按列归一化时保留列归约的广播维度",
+      "strategy": "二维张量按列归一化时，沿行方向归约并保留维度，使每列分母正确广播，零分母需单独处理。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "tensor_rank",
+            "oneOf": [
+              2
+            ]
+          },
+          {
+            "field": "normalize_axis",
+            "oneOf": [
+              "columns"
+            ]
+          },
+          {
+            "field": "broadcasting_enabled",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "zero_denominators",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bitmask-flag-union-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "bitmask-flag-union",
+      "title": "Combine overlapping bit flags with bitwise union",
+      "strategy": "When combining bit flags that may overlap, use bitwise OR rather than arithmetic addition. Duplicate bits should remain set once, without carrying into another bit.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "representation",
+            "oneOf": [
+              "bit_flags"
+            ]
+          },
+          {
+            "field": "operation",
+            "oneOf": [
+              "union"
+            ]
+          },
+          {
+            "field": "overlap_possible",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "preserve_multiplicity",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bitmask-flag-union-secondary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "bitmask-flag-union",
+      "title": "检查位掩码是否包含全部要求标志",
+      "strategy": "若问题是判断掩码是否包含全部指定标志，比较按位与的结果和要求掩码，不能仅检查结果非零。",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "representation",
+            "oneOf": [
+              "bit_flags"
+            ]
+          },
+          {
+            "field": "operation",
+            "oneOf": [
+              "contains_all"
+            ]
+          },
+          {
+            "field": "overlap_possible",
+            "oneOf": [
+              true
+            ]
+          }
+        ],
+        "excludes": [
+          {
+            "field": "preserve_multiplicity",
+            "oneOf": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "html-context-escaping-primary",
+      "revision": 1,
+      "split": "holdout",
+      "family": "html-context-escaping",
+      "title": "Escape untrusted literal values for quoted HTML attribute context",
+      "strategy": "For an untrusted literal inserted into a quoted HTML attribute, use an attribute-context escaping routine that handles the quote delimiter and HTML metacharacters. Do not treat allowed markup as a literal value.",
+      "contract": {
+        "schemaVersion": 1,
+        "requires": [
+          {
+            "field": "document_kind",
+            "oneOf": [
+              "html"
+            ]
+          },
+          {
+            "field": "insertion_context",
+            "oneOf": [
+              "quoted_attribute"
+            ]
+          },
+          {
+            "field": "value_trust",
             "oneOf": [
               "untrusted"
             ]
-          },
-          {
-            "field": "entries_are_paths",
-            "oneOf": [
-              true
-            ]
-          },
-          {
-            "field": "operation_kind",
-            "oneOf": [
-              "extract"
-            ]
           }
         ],
         "excludes": [
           {
-            "field": "allow_outside_root",
+            "field": "markup_allowed",
             "oneOf": [
               true
             ]
@@ -439,195 +595,39 @@
       }
     },
     {
-      "id": "archive-root-containment-secondary",
+      "id": "html-context-escaping-secondary",
       "revision": 1,
       "split": "holdout",
-      "family": "archive-root-containment",
-      "title": "只列出压缩包目录时不写入载荷",
-      "strategy": "对不可信压缩包仅列目录时，读取有界元数据，不提取文件内容也不写入载荷。",
+      "family": "html-context-escaping",
+      "title": "将不可信字面文本作为HTML文本节点转义",
+      "strategy": "向HTML文本节点插入不可信字面文本时，转义会形成标签或实体的元字符；不要把文本直接当标记解析。",
       "contract": {
         "schemaVersion": 1,
         "requires": [
           {
-            "field": "input_trust",
+            "field": "document_kind",
+            "oneOf": [
+              "html"
+            ]
+          },
+          {
+            "field": "insertion_context",
+            "oneOf": [
+              "text_node"
+            ]
+          },
+          {
+            "field": "value_trust",
             "oneOf": [
               "untrusted"
             ]
-          },
-          {
-            "field": "entries_are_paths",
-            "oneOf": [
-              true
-            ]
-          },
-          {
-            "field": "operation_kind",
-            "oneOf": [
-              "list"
-            ]
           }
         ],
         "excludes": [
           {
-            "field": "writes_payload",
+            "field": "markup_allowed",
             "oneOf": [
               true
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "id": "pagination-total-order-primary",
-      "revision": 1,
-      "split": "holdout",
-      "family": "pagination-total-order",
-      "title": "Add a unique tie-breaker to a stable cursor pagination order",
-      "strategy": "For cursor pagination with stable ordering values and a non-unique sort key, include a unique secondary key in both ordering and cursor comparison to avoid skipping tied rows.",
-      "contract": {
-        "schemaVersion": 1,
-        "requires": [
-          {
-            "field": "pagination_kind",
-            "oneOf": [
-              "cursor"
-            ]
-          },
-          {
-            "field": "sort_unique",
-            "oneOf": [
-              false
-            ]
-          },
-          {
-            "field": "ordering_stable",
-            "oneOf": [
-              true
-            ]
-          }
-        ],
-        "excludes": [
-          {
-            "field": "allow_duplicate_rows",
-            "oneOf": [
-              true
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "id": "pagination-total-order-secondary",
-      "revision": 1,
-      "split": "holdout",
-      "family": "pagination-total-order",
-      "title": "偏移分页遇到并发变化时使用固定快照",
-      "strategy": "当使用offset分页且数据会变化、固定快照可用时，各页读取同一快照以减少行偏移造成的重复或遗漏。",
-      "contract": {
-        "schemaVersion": 1,
-        "requires": [
-          {
-            "field": "pagination_kind",
-            "oneOf": [
-              "offset"
-            ]
-          },
-          {
-            "field": "dataset_mutates",
-            "oneOf": [
-              true
-            ]
-          },
-          {
-            "field": "snapshot_available",
-            "oneOf": [
-              true
-            ]
-          }
-        ],
-        "excludes": [
-          {
-            "field": "allow_duplicate_rows",
-            "oneOf": [
-              true
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "id": "decimal-sum-rounding-primary",
-      "revision": 1,
-      "split": "holdout",
-      "family": "decimal-sum-rounding",
-      "title": "Round decimal measurement sums only at the required final boundary",
-      "strategy": "For sums of decimal-text measurements whose contract requires final-total rounding, accumulate exact decimal values and round the total once. Do not round each sample first.",
-      "contract": {
-        "schemaVersion": 1,
-        "requires": [
-          {
-            "field": "input_representation",
-            "oneOf": [
-              "decimal_text"
-            ]
-          },
-          {
-            "field": "aggregation",
-            "oneOf": [
-              "sum"
-            ]
-          },
-          {
-            "field": "rounding_stage",
-            "oneOf": [
-              "final_total"
-            ]
-          }
-        ],
-        "excludes": [
-          {
-            "field": "round_each_sample",
-            "oneOf": [
-              true
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "id": "decimal-sum-rounding-secondary",
-      "revision": 1,
-      "split": "holdout",
-      "family": "decimal-sum-rounding",
-      "title": "契约要求逐项舍入时先处理每个样本",
-      "strategy": "当十进制样本求和契约明确规定逐项舍入时，先按规定精度处理每个样本再累计，不能改为只舍入总和。",
-      "contract": {
-        "schemaVersion": 1,
-        "requires": [
-          {
-            "field": "input_representation",
-            "oneOf": [
-              "decimal_text"
-            ]
-          },
-          {
-            "field": "aggregation",
-            "oneOf": [
-              "sum"
-            ]
-          },
-          {
-            "field": "rounding_stage",
-            "oneOf": [
-              "per_sample"
-            ]
-          }
-        ],
-        "excludes": [
-          {
-            "field": "round_each_sample",
-            "oneOf": [
-              false
             ]
           }
         ]
@@ -1871,163 +1871,163 @@
       "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
     },
     {
-      "id": "archive-root-containment-literal",
+      "id": "tensor-normalization-axis-literal",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "literal",
-      "text": "Handle entry destinations under the supplied archive operation and trust contract.",
+      "text": "Normalize the tensor along the axis declared in its attached shape and broadcasting contract.",
       "relevantIds": [
-        "archive-root-containment-primary"
+        "tensor-normalization-axis-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-literal",
+          "taskId": "tensor-normalization-axis-literal",
           "revision": 1,
-          "path": "contracts/archive-root-containment-literal-0.json",
-          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+          "path": "contracts/tensor-normalization-axis-literal-0.json",
+          "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625"
         }
       ],
-      "pairId": "archive-root-containment-single-fact-flip",
+      "pairId": "tensor-normalization-axis-single-fact-flip",
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "archive-root-containment-cross_language",
+      "id": "tensor-normalization-axis-cross_language",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "cross_language",
-      "text": "解包路径需要限制在目标根目录内，请先核对归档契约。",
+      "text": "二维张量按行归一化后形状应不变，请核对归约和广播维度。",
       "relevantIds": [
-        "archive-root-containment-primary"
+        "tensor-normalization-axis-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-cross_language",
+          "taskId": "tensor-normalization-axis-cross_language",
           "revision": 1,
-          "path": "contracts/archive-root-containment-cross_language-0.json",
-          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+          "path": "contracts/tensor-normalization-axis-cross_language-0.json",
+          "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "archive-root-containment-paraphrase",
+      "id": "tensor-normalization-axis-paraphrase",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "paraphrase",
-      "text": "A downloaded bundle contains names that could traverse above the chosen output folder.",
+      "text": "Each horizontal slice needs its own divisor without accidentally scaling vertical slices instead.",
       "relevantIds": [
-        "archive-root-containment-primary"
+        "tensor-normalization-axis-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-paraphrase",
+          "taskId": "tensor-normalization-axis-paraphrase",
           "revision": 1,
-          "path": "contracts/archive-root-containment-paraphrase-0.json",
-          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+          "path": "contracts/tensor-normalization-axis-paraphrase-0.json",
+          "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "archive-root-containment-reverse_language",
+      "id": "tensor-normalization-axis-reverse_language",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "reverse_language",
-      "text": "Display an untrusted archive directory listing without extracting payload files.",
+      "text": "Normalize each column independently while retaining dimensions for broadcasting.",
       "relevantIds": [
-        "archive-root-containment-secondary"
+        "tensor-normalization-axis-secondary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-reverse_language",
+          "taskId": "tensor-normalization-axis-reverse_language",
           "revision": 1,
-          "path": "contracts/archive-root-containment-reverse_language-0.json",
-          "sha256": "0451ac6607cde8ddb1decf82a99307d982a858d5a51a2fd607965f7f71255435"
+          "path": "contracts/tensor-normalization-axis-reverse_language-0.json",
+          "sha256": "7199a47b17b5d51e6a8297ec98d20dd4edda5050a996fdc2aa1225360fb1e539"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "archive-root-containment-missing_positive",
+      "id": "tensor-normalization-axis-missing_positive",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "missing_positive",
-      "text": "The request calls the bundle untrusted, but the verified contract omits its trust level; review extraction destinations.",
+      "text": "The request describes row normalization, but the verified contract omits which axis should be normalized.",
       "relevantIds": [
-        "archive-root-containment-primary"
+        "tensor-normalization-axis-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-missing_positive",
+          "taskId": "tensor-normalization-axis-missing_positive",
           "revision": 1,
-          "path": "contracts/archive-root-containment-missing_positive-0.json",
-          "sha256": "2595f864d448242981635fd65d6a2360120803d92abd133835845f9074497f57"
+          "path": "contracts/tensor-normalization-axis-missing_positive-0.json",
+          "sha256": "5bc8bcf9b9cd99d5117f79a569cf8097f86fc3ac773499cd9e71bb6bd2f007ea"
         }
       ],
       "pairId": null,
       "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
     },
     {
-      "id": "archive-root-containment-low_overlap",
+      "id": "tensor-normalization-axis-low_overlap",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "low_overlap",
-      "text": "Do not let a packaged entry choose a filesystem location beyond the selected destination.",
+      "text": "Keep the reduction result aligned with the slices it is supposed to scale.",
       "relevantIds": [
-        "archive-root-containment-primary"
+        "tensor-normalization-axis-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-low_overlap",
+          "taskId": "tensor-normalization-axis-low_overlap",
           "revision": 1,
-          "path": "contracts/archive-root-containment-low_overlap-0.json",
-          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+          "path": "contracts/tensor-normalization-axis-low_overlap-0.json",
+          "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "archive-root-containment-hard_contradiction",
+      "id": "tensor-normalization-axis-hard_contradiction",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "hard_contradiction",
-      "text": "Handle entry destinations under the supplied archive operation and trust contract.",
+      "text": "Normalize the tensor along the axis declared in its attached shape and broadcasting contract.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-hard_contradiction",
+          "taskId": "tensor-normalization-axis-hard_contradiction",
           "revision": 1,
-          "path": "contracts/archive-root-containment-hard_contradiction-0.json",
-          "sha256": "0972c534f91ef9c30b4c649af2dc8ba6e2bbd8ee39172e9ad90bcddc68c08931"
+          "path": "contracts/tensor-normalization-axis-hard_contradiction-0.json",
+          "sha256": "755ee03a4fbb6acef49d164e5e8fc4ccc8e575133b30f6bf2b49c8856f9bd4c4"
         }
       ],
-      "pairId": "archive-root-containment-single-fact-flip",
+      "pairId": "tensor-normalization-axis-single-fact-flip",
       "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
     },
     {
-      "id": "archive-root-containment-insufficient_context",
+      "id": "tensor-normalization-axis-insufficient_context",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "insufficient_context",
-      "text": "The archive viewer behaves oddly.",
+      "text": "The array numbers look unusual.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-insufficient_context",
+          "taskId": "tensor-normalization-axis-insufficient_context",
           "revision": 1,
-          "path": "contracts/archive-root-containment-insufficient_context-0.json",
+          "path": "contracts/tensor-normalization-axis-insufficient_context-0.json",
           "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
         }
       ],
@@ -2035,246 +2035,246 @@
       "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
     },
     {
-      "id": "archive-root-containment-irrelevant_same_facts",
+      "id": "tensor-normalization-axis-irrelevant_same_facts",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "irrelevant_same_facts",
-      "text": "Change the archive-extraction toolbar icon without changing file writes.",
+      "text": "Change the tensor-normalization toolbar label without altering array operations.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-irrelevant_same_facts",
+          "taskId": "tensor-normalization-axis-irrelevant_same_facts",
           "revision": 1,
-          "path": "contracts/archive-root-containment-irrelevant_same_facts-0.json",
-          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+          "path": "contracts/tensor-normalization-axis-irrelevant_same_facts-0.json",
+          "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625"
         }
       ],
       "pairId": null,
       "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
     },
     {
-      "id": "archive-root-containment-conflicting_evidence",
+      "id": "tensor-normalization-axis-conflicting_evidence",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "conflicting_evidence",
-      "text": "Handle entry destinations under the supplied archive operation and trust contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "text": "Normalize the tensor along the axis declared in its attached shape and broadcasting contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-conflicting_evidence",
+          "taskId": "tensor-normalization-axis-conflicting_evidence",
           "revision": 1,
-          "path": "contracts/archive-root-containment-conflicting_evidence-0.json",
-          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+          "path": "contracts/tensor-normalization-axis-conflicting_evidence-0.json",
+          "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625"
         },
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-conflicting_evidence",
+          "taskId": "tensor-normalization-axis-conflicting_evidence",
           "revision": 1,
-          "path": "contracts/archive-root-containment-conflicting_evidence-1.json",
-          "sha256": "0972c534f91ef9c30b4c649af2dc8ba6e2bbd8ee39172e9ad90bcddc68c08931"
+          "path": "contracts/tensor-normalization-axis-conflicting_evidence-1.json",
+          "sha256": "755ee03a4fbb6acef49d164e5e8fc4ccc8e575133b30f6bf2b49c8856f9bd4c4"
         }
       ],
       "pairId": null,
       "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
     },
     {
-      "id": "archive-root-containment-stale_evidence",
+      "id": "tensor-normalization-axis-stale_evidence",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "stale_evidence",
-      "text": "Handle entry destinations under the supplied archive operation and trust contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "text": "Normalize the tensor along the axis declared in its attached shape and broadcasting contract. The source changed after this reference was recorded; obtain a current verified contract first.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-stale_evidence",
+          "taskId": "tensor-normalization-axis-stale_evidence",
           "revision": 1,
-          "path": "contracts/archive-root-containment-stale_evidence-0.json",
-          "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd"
+          "path": "contracts/tensor-normalization-axis-stale_evidence-0.json",
+          "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625"
         }
       ],
       "pairId": null,
       "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
     },
     {
-      "id": "archive-root-containment-no_applicable_candidate",
+      "id": "tensor-normalization-axis-no_applicable_candidate",
       "split": "holdout",
-      "family": "archive-root-containment",
+      "family": "tensor-normalization-axis",
       "kind": "no_applicable_candidate",
-      "text": "Handle entry destinations under the supplied archive operation and trust contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "text": "Normalize the tensor along the axis declared in its attached shape and broadcasting contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "archive-root-containment-no_applicable_candidate",
+          "taskId": "tensor-normalization-axis-no_applicable_candidate",
           "revision": 1,
-          "path": "contracts/archive-root-containment-no_applicable_candidate-0.json",
-          "sha256": "8b9bf826ec1b89549a7cfd2119f4970a18e22055c41c8a5c4d221d1d7660c00d"
+          "path": "contracts/tensor-normalization-axis-no_applicable_candidate-0.json",
+          "sha256": "121558b7dcca4bc49d83877a99c8567c0915e2a7f2e485bacb7ff49cd92c04cd"
         }
       ],
       "pairId": null,
       "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
     },
     {
-      "id": "pagination-total-order-literal",
+      "id": "bitmask-flag-union-literal",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "literal",
-      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract.",
+      "text": "Process these encoded values according to the supplied representation and flag operation contract.",
       "relevantIds": [
-        "pagination-total-order-primary"
+        "bitmask-flag-union-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-literal",
+          "taskId": "bitmask-flag-union-literal",
           "revision": 1,
-          "path": "contracts/pagination-total-order-literal-0.json",
-          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+          "path": "contracts/bitmask-flag-union-literal-0.json",
+          "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1"
         }
       ],
-      "pairId": "pagination-total-order-single-fact-flip",
+      "pairId": "bitmask-flag-union-single-fact-flip",
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "pagination-total-order-cross_language",
+      "id": "bitmask-flag-union-cross_language",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "cross_language",
-      "text": "游标分页排序键可能相同，如何避免跨页漏行？请核对排序契约。",
+      "text": "需要合并可能重叠的位标志，如何避免重复位产生算术进位？",
       "relevantIds": [
-        "pagination-total-order-primary"
+        "bitmask-flag-union-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-cross_language",
+          "taskId": "bitmask-flag-union-cross_language",
           "revision": 1,
-          "path": "contracts/pagination-total-order-cross_language-0.json",
-          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+          "path": "contracts/bitmask-flag-union-cross_language-0.json",
+          "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "pagination-total-order-paraphrase",
+      "id": "bitmask-flag-union-paraphrase",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "paraphrase",
-      "text": "Several records share a sort value; the next-page boundary must identify a precise position.",
+      "text": "Repeated switches should remain enabled once instead of adding their numeric encodings.",
       "relevantIds": [
-        "pagination-total-order-primary"
+        "bitmask-flag-union-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-paraphrase",
+          "taskId": "bitmask-flag-union-paraphrase",
           "revision": 1,
-          "path": "contracts/pagination-total-order-paraphrase-0.json",
-          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+          "path": "contracts/bitmask-flag-union-paraphrase-0.json",
+          "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "pagination-total-order-reverse_language",
+      "id": "bitmask-flag-union-reverse_language",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "reverse_language",
-      "text": "Offset pages drift while rows change; use the available consistent dataset snapshot.",
+      "text": "Check whether the current mask contains every required flag, not merely one of them.",
       "relevantIds": [
-        "pagination-total-order-secondary"
+        "bitmask-flag-union-secondary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-reverse_language",
+          "taskId": "bitmask-flag-union-reverse_language",
           "revision": 1,
-          "path": "contracts/pagination-total-order-reverse_language-0.json",
-          "sha256": "a2a665cb4bb05fdc28e63404b5a8ba9b412e14166bf83eadbb0a89a8660e5332"
+          "path": "contracts/bitmask-flag-union-reverse_language-0.json",
+          "sha256": "44ff97e9f02c9ef8783e7c59b6dd185b1934d046c8d272e78e24196f244c7b1d"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "pagination-total-order-missing_positive",
+      "id": "bitmask-flag-union-missing_positive",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "missing_positive",
-      "text": "The request mentions tied sort values, but key uniqueness is not established in the verified paging contract.",
+      "text": "The request mentions repeated flags, but the verified contract omits whether their bit positions can overlap.",
       "relevantIds": [
-        "pagination-total-order-primary"
+        "bitmask-flag-union-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-missing_positive",
+          "taskId": "bitmask-flag-union-missing_positive",
           "revision": 1,
-          "path": "contracts/pagination-total-order-missing_positive-0.json",
-          "sha256": "93639fb3b3ad3aeacb76e1f063a980c734f4c04846d23dd6862e5d52c7d87506"
+          "path": "contracts/bitmask-flag-union-missing_positive-0.json",
+          "sha256": "7c4226a9dfb1440f6e79a64b18a2aa7cdac5fa2dce774dcf097f33362649931e"
         }
       ],
       "pairId": null,
       "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
     },
     {
-      "id": "pagination-total-order-low_overlap",
+      "id": "bitmask-flag-union-low_overlap",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "low_overlap",
-      "text": "Moving the boundary past one record must not jump over other records with the same visible ordering value.",
+      "text": "Merge enabled switches without letting a duplicate turn into a different switch.",
       "relevantIds": [
-        "pagination-total-order-primary"
+        "bitmask-flag-union-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-low_overlap",
+          "taskId": "bitmask-flag-union-low_overlap",
           "revision": 1,
-          "path": "contracts/pagination-total-order-low_overlap-0.json",
-          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+          "path": "contracts/bitmask-flag-union-low_overlap-0.json",
+          "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "pagination-total-order-hard_contradiction",
+      "id": "bitmask-flag-union-hard_contradiction",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "hard_contradiction",
-      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract.",
+      "text": "Process these encoded values according to the supplied representation and flag operation contract.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-hard_contradiction",
+          "taskId": "bitmask-flag-union-hard_contradiction",
           "revision": 1,
-          "path": "contracts/pagination-total-order-hard_contradiction-0.json",
-          "sha256": "6164817f3566df2fcb4765f2a6ca9354c7e5b6f038e1757bbca9e9e7d1a53153"
+          "path": "contracts/bitmask-flag-union-hard_contradiction-0.json",
+          "sha256": "e0ef66b55e1ade9b654535be34c97e65779fc9e6080b151759c6098f7fb8c4af"
         }
       ],
-      "pairId": "pagination-total-order-single-fact-flip",
+      "pairId": "bitmask-flag-union-single-fact-flip",
       "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
     },
     {
-      "id": "pagination-total-order-insufficient_context",
+      "id": "bitmask-flag-union-insufficient_context",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "insufficient_context",
-      "text": "Some rows look duplicated.",
+      "text": "Some encoded options look odd.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-insufficient_context",
+          "taskId": "bitmask-flag-union-insufficient_context",
           "revision": 1,
-          "path": "contracts/pagination-total-order-insufficient_context-0.json",
+          "path": "contracts/bitmask-flag-union-insufficient_context-0.json",
           "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
         }
       ],
@@ -2282,246 +2282,246 @@
       "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
     },
     {
-      "id": "pagination-total-order-irrelevant_same_facts",
+      "id": "bitmask-flag-union-irrelevant_same_facts",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "irrelevant_same_facts",
-      "text": "Rewrite the pagination menu label without changing page ordering or fetches.",
+      "text": "Rename the flag-union settings label without changing mask calculations.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-irrelevant_same_facts",
+          "taskId": "bitmask-flag-union-irrelevant_same_facts",
           "revision": 1,
-          "path": "contracts/pagination-total-order-irrelevant_same_facts-0.json",
-          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+          "path": "contracts/bitmask-flag-union-irrelevant_same_facts-0.json",
+          "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1"
         }
       ],
       "pairId": null,
       "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
     },
     {
-      "id": "pagination-total-order-conflicting_evidence",
+      "id": "bitmask-flag-union-conflicting_evidence",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "conflicting_evidence",
-      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "text": "Process these encoded values according to the supplied representation and flag operation contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-conflicting_evidence",
+          "taskId": "bitmask-flag-union-conflicting_evidence",
           "revision": 1,
-          "path": "contracts/pagination-total-order-conflicting_evidence-0.json",
-          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+          "path": "contracts/bitmask-flag-union-conflicting_evidence-0.json",
+          "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1"
         },
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-conflicting_evidence",
+          "taskId": "bitmask-flag-union-conflicting_evidence",
           "revision": 1,
-          "path": "contracts/pagination-total-order-conflicting_evidence-1.json",
-          "sha256": "6164817f3566df2fcb4765f2a6ca9354c7e5b6f038e1757bbca9e9e7d1a53153"
+          "path": "contracts/bitmask-flag-union-conflicting_evidence-1.json",
+          "sha256": "e0ef66b55e1ade9b654535be34c97e65779fc9e6080b151759c6098f7fb8c4af"
         }
       ],
       "pairId": null,
       "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
     },
     {
-      "id": "pagination-total-order-stale_evidence",
+      "id": "bitmask-flag-union-stale_evidence",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "stale_evidence",
-      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "text": "Process these encoded values according to the supplied representation and flag operation contract. The source changed after this reference was recorded; obtain a current verified contract first.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-stale_evidence",
+          "taskId": "bitmask-flag-union-stale_evidence",
           "revision": 1,
-          "path": "contracts/pagination-total-order-stale_evidence-0.json",
-          "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7"
+          "path": "contracts/bitmask-flag-union-stale_evidence-0.json",
+          "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1"
         }
       ],
       "pairId": null,
       "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
     },
     {
-      "id": "pagination-total-order-no_applicable_candidate",
+      "id": "bitmask-flag-union-no_applicable_candidate",
       "split": "holdout",
-      "family": "pagination-total-order",
+      "family": "bitmask-flag-union",
       "kind": "no_applicable_candidate",
-      "text": "Prevent missing or repeated rows using the supplied paging and ordering contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "text": "Process these encoded values according to the supplied representation and flag operation contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "pagination-total-order-no_applicable_candidate",
+          "taskId": "bitmask-flag-union-no_applicable_candidate",
           "revision": 1,
-          "path": "contracts/pagination-total-order-no_applicable_candidate-0.json",
-          "sha256": "f42b44edfbf9b3cc913e692434b2963911bd861565fd9ac34e662acc50eea6d7"
+          "path": "contracts/bitmask-flag-union-no_applicable_candidate-0.json",
+          "sha256": "435152e37a16933b362b767ba098a91cb5979731fa0ff56aa9c0379cb6e86d9e"
         }
       ],
       "pairId": null,
       "rationale": "当前契约否定同族两条提醒的条件；其他任务族没有相关性，不存在应提供的经验。"
     },
     {
-      "id": "decimal-sum-rounding-literal",
+      "id": "html-context-escaping-literal",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "literal",
-      "text": "Process the measurement values according to the supplied aggregation and rounding contract.",
+      "text": "Keep the supplied content literal in the rendering location declared by the attached document contract.",
       "relevantIds": [
-        "decimal-sum-rounding-primary"
+        "html-context-escaping-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-literal",
+          "taskId": "html-context-escaping-literal",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-literal-0.json",
-          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+          "path": "contracts/html-context-escaping-literal-0.json",
+          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
         }
       ],
-      "pairId": "decimal-sum-rounding-single-fact-flip",
+      "pairId": "html-context-escaping-single-fact-flip",
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "decimal-sum-rounding-cross_language",
+      "id": "html-context-escaping-cross_language",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "cross_language",
-      "text": "十进制测量值累计后何时舍入？请遵循附带聚合契约。",
+      "text": "不可信字符串应安全放入带引号的HTML属性中，请按上下文转义。",
       "relevantIds": [
-        "decimal-sum-rounding-primary"
+        "html-context-escaping-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-cross_language",
+          "taskId": "html-context-escaping-cross_language",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-cross_language-0.json",
-          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+          "path": "contracts/html-context-escaping-cross_language-0.json",
+          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "decimal-sum-rounding-paraphrase",
+      "id": "html-context-escaping-paraphrase",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "paraphrase",
-      "text": "Small fractional readings should retain their digits until the final combined result is ready.",
+      "text": "A caller-supplied value must not terminate the surrounding attribute delimiter or form markup.",
       "relevantIds": [
-        "decimal-sum-rounding-primary"
+        "html-context-escaping-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-paraphrase",
+          "taskId": "html-context-escaping-paraphrase",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-paraphrase-0.json",
-          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+          "path": "contracts/html-context-escaping-paraphrase-0.json",
+          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "decimal-sum-rounding-reverse_language",
+      "id": "html-context-escaping-reverse_language",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "reverse_language",
-      "text": "The required result is the sum of individually rounded decimal samples, not the rounded exact total.",
+      "text": "Display an untrusted string as literal content inside an HTML text node.",
       "relevantIds": [
-        "decimal-sum-rounding-secondary"
+        "html-context-escaping-secondary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-reverse_language",
+          "taskId": "html-context-escaping-reverse_language",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-reverse_language-0.json",
-          "sha256": "8925035098d1b2368be0037c0b5783c73df5b4fcdf3c478b3e0a5e7b7a24ca47"
+          "path": "contracts/html-context-escaping-reverse_language-0.json",
+          "sha256": "15208e66c0676995fa23a631d782b4709722faa56c010e28aeb3e48f92b6133a"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "decimal-sum-rounding-missing_positive",
+      "id": "html-context-escaping-missing_positive",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "missing_positive",
-      "text": "The request says to round only the total, but the verified contract omits the rounding boundary.",
+      "text": "The request calls the content untrusted, but the verified document contract omits its trust level.",
       "relevantIds": [
-        "decimal-sum-rounding-primary"
+        "html-context-escaping-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-missing_positive",
+          "taskId": "html-context-escaping-missing_positive",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-missing_positive-0.json",
-          "sha256": "329614c8311c450124b2fee66199164d9fd37903019810c7fedce071bc60edf9"
+          "path": "contracts/html-context-escaping-missing_positive-0.json",
+          "sha256": "be0515bdde5d0de513d1a1a66275a9db94c841708d1205c85b42d10cb0dcdd5e"
         }
       ],
       "pairId": null,
       "rationale": "请求语义相关，但关键前提没有可核实事实；保守拒选应计为漏选成本，不改成负例。"
     },
     {
-      "id": "decimal-sum-rounding-low_overlap",
+      "id": "html-context-escaping-low_overlap",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "low_overlap",
-      "text": "Avoid accumulating the loss from trimming every reading before the final result is formed.",
+      "text": "Protect the boundary around the attribute value while preserving what the reader sees.",
       "relevantIds": [
-        "decimal-sum-rounding-primary"
+        "html-context-escaping-primary"
       ],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-low_overlap",
+          "taskId": "html-context-escaping-low_overlap",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-low_overlap-0.json",
-          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+          "path": "contracts/html-context-escaping-low_overlap-0.json",
+          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
         }
       ],
       "pairId": null,
       "rationale": "请求对应这条策略；契约条件提供适用依据，相关次提醒处理不同场景。"
     },
     {
-      "id": "decimal-sum-rounding-hard_contradiction",
+      "id": "html-context-escaping-hard_contradiction",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "hard_contradiction",
-      "text": "Process the measurement values according to the supplied aggregation and rounding contract.",
+      "text": "Keep the supplied content literal in the rendering location declared by the attached document contract.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-hard_contradiction",
+          "taskId": "html-context-escaping-hard_contradiction",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-hard_contradiction-0.json",
-          "sha256": "5682a0ae7ffeff312229d516f51dd3b05538f0f591f25663462ea50b06f096ed"
+          "path": "contracts/html-context-escaping-hard_contradiction-0.json",
+          "sha256": "ae0d1206cf9d9e6da2a408788002f0fba828999a18529fc826b99134d8455069"
         }
       ],
-      "pairId": "decimal-sum-rounding-single-fact-flip",
+      "pairId": "html-context-escaping-single-fact-flip",
       "rationale": "与literal正例文字完全相同，只翻转一个已提供契约事实；两条同族提醒均不适用。不能从文字相似直接提供。"
     },
     {
-      "id": "decimal-sum-rounding-insufficient_context",
+      "id": "html-context-escaping-insufficient_context",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "insufficient_context",
-      "text": "The measurements look unusual.",
+      "text": "The rendered content looks strange.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-insufficient_context",
+          "taskId": "html-context-escaping-insufficient_context",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-insufficient_context-0.json",
+          "path": "contracts/html-context-escaping-insufficient_context-0.json",
           "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa"
         }
       ],
@@ -2529,83 +2529,83 @@
       "rationale": "请求信息不足，契约也没有确认前提，不应自动选择经验。"
     },
     {
-      "id": "decimal-sum-rounding-irrelevant_same_facts",
+      "id": "html-context-escaping-irrelevant_same_facts",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "irrelevant_same_facts",
-      "text": "Change the display caption for decimal sums without touching arithmetic.",
+      "text": "Rename the HTML-escaping menu entry without changing rendering behavior.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-irrelevant_same_facts",
+          "taskId": "html-context-escaping-irrelevant_same_facts",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-irrelevant_same_facts-0.json",
-          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+          "path": "contracts/html-context-escaping-irrelevant_same_facts-0.json",
+          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
         }
       ],
       "pairId": null,
       "rationale": "沿用完整适用事实，但用户只改展示文字/图标、不改行为；条件符合不证明策略与当前意图相关。保留此反例以暴露条件门槛的局限。"
     },
     {
-      "id": "decimal-sum-rounding-conflicting_evidence",
+      "id": "html-context-escaping-conflicting_evidence",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "conflicting_evidence",
-      "text": "Process the measurement values according to the supplied aggregation and rounding contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
+      "text": "Keep the supplied content literal in the rendering location declared by the attached document contract. Two supplied contract sources disagree about a required fact; resolve the discrepancy before acting.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-conflicting_evidence",
+          "taskId": "html-context-escaping-conflicting_evidence",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-conflicting_evidence-0.json",
-          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+          "path": "contracts/html-context-escaping-conflicting_evidence-0.json",
+          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
         },
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-conflicting_evidence",
+          "taskId": "html-context-escaping-conflicting_evidence",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-conflicting_evidence-1.json",
-          "sha256": "5682a0ae7ffeff312229d516f51dd3b05538f0f591f25663462ea50b06f096ed"
+          "path": "contracts/html-context-escaping-conflicting_evidence-1.json",
+          "sha256": "ae0d1206cf9d9e6da2a408788002f0fba828999a18529fc826b99134d8455069"
         }
       ],
       "pairId": null,
       "rationale": "两个来源在关键事实冲突，没有优先级依据，不能任选其一作为适用证明。"
     },
     {
-      "id": "decimal-sum-rounding-stale_evidence",
+      "id": "html-context-escaping-stale_evidence",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "stale_evidence",
-      "text": "Process the measurement values according to the supplied aggregation and rounding contract. The source changed after this reference was recorded; obtain a current verified contract first.",
+      "text": "Keep the supplied content literal in the rendering location declared by the attached document contract. The source changed after this reference was recorded; obtain a current verified contract first.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-stale_evidence",
+          "taskId": "html-context-escaping-stale_evidence",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-stale_evidence-0.json",
-          "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213"
+          "path": "contracts/html-context-escaping-stale_evidence-0.json",
+          "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031"
         }
       ],
       "pairId": null,
       "rationale": "期望摘要与实际来源字节不符，属于证据完整性探针；不代表语义拒选能力。"
     },
     {
-      "id": "decimal-sum-rounding-no_applicable_candidate",
+      "id": "html-context-escaping-no_applicable_candidate",
       "split": "holdout",
-      "family": "decimal-sum-rounding",
+      "family": "html-context-escaping",
       "kind": "no_applicable_candidate",
-      "text": "Process the measurement values according to the supplied aggregation and rounding contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
+      "text": "Keep the supplied content literal in the rendering location declared by the attached document contract. None of the stored approaches is licensed by the supplied contract; handle this case without injecting one.",
       "relevantIds": [],
       "sourceRefs": [
         {
           "namespace": "holdout/contracts",
-          "taskId": "decimal-sum-rounding-no_applicable_candidate",
+          "taskId": "html-context-escaping-no_applicable_candidate",
           "revision": 1,
-          "path": "contracts/decimal-sum-rounding-no_applicable_candidate-0.json",
-          "sha256": "375ad027752e861eadc46c91af931a28ca61fc9753209370dd69dc7cd4252e57"
+          "path": "contracts/html-context-escaping-no_applicable_candidate-0.json",
+          "sha256": "c8a4fb073db2134b085ed957483d25ef341d65d1a0a894de9c4fca9aec520d49"
         }
       ],
       "pairId": null,
@@ -3135,315 +3135,315 @@
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-literal",
+      "taskId": "tensor-normalization-axis-literal",
       "revision": 1,
-      "path": "contracts/archive-root-containment-literal-0.json",
-      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-literal-0.json",
+      "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-cross_language",
+      "taskId": "tensor-normalization-axis-cross_language",
       "revision": 1,
-      "path": "contracts/archive-root-containment-cross_language-0.json",
-      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-cross_language-0.json",
+      "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-paraphrase",
+      "taskId": "tensor-normalization-axis-paraphrase",
       "revision": 1,
-      "path": "contracts/archive-root-containment-paraphrase-0.json",
-      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-paraphrase-0.json",
+      "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-reverse_language",
+      "taskId": "tensor-normalization-axis-reverse_language",
       "revision": 1,
-      "path": "contracts/archive-root-containment-reverse_language-0.json",
-      "sha256": "0451ac6607cde8ddb1decf82a99307d982a858d5a51a2fd607965f7f71255435",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"list\",\"allow_outside_root\":false,\"writes_payload\":false}}\n"
+      "path": "contracts/tensor-normalization-axis-reverse_language-0.json",
+      "sha256": "7199a47b17b5d51e6a8297ec98d20dd4edda5050a996fdc2aa1225360fb1e539",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"columns\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-missing_positive",
+      "taskId": "tensor-normalization-axis-missing_positive",
       "revision": 1,
-      "path": "contracts/archive-root-containment-missing_positive-0.json",
-      "sha256": "2595f864d448242981635fd65d6a2360120803d92abd133835845f9074497f57",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-missing_positive-0.json",
+      "sha256": "5bc8bcf9b9cd99d5117f79a569cf8097f86fc3ac773499cd9e71bb6bd2f007ea",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-low_overlap",
+      "taskId": "tensor-normalization-axis-low_overlap",
       "revision": 1,
-      "path": "contracts/archive-root-containment-low_overlap-0.json",
-      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-low_overlap-0.json",
+      "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-hard_contradiction",
+      "taskId": "tensor-normalization-axis-hard_contradiction",
       "revision": 1,
-      "path": "contracts/archive-root-containment-hard_contradiction-0.json",
-      "sha256": "0972c534f91ef9c30b4c649af2dc8ba6e2bbd8ee39172e9ad90bcddc68c08931",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":false,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-hard_contradiction-0.json",
+      "sha256": "755ee03a4fbb6acef49d164e5e8fc4ccc8e575133b30f6bf2b49c8856f9bd4c4",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":1,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-insufficient_context",
+      "taskId": "tensor-normalization-axis-insufficient_context",
       "revision": 1,
-      "path": "contracts/archive-root-containment-insufficient_context-0.json",
+      "path": "contracts/tensor-normalization-axis-insufficient_context-0.json",
       "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
       "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-irrelevant_same_facts",
+      "taskId": "tensor-normalization-axis-irrelevant_same_facts",
       "revision": 1,
-      "path": "contracts/archive-root-containment-irrelevant_same_facts-0.json",
-      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-irrelevant_same_facts-0.json",
+      "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-conflicting_evidence",
+      "taskId": "tensor-normalization-axis-conflicting_evidence",
       "revision": 1,
-      "path": "contracts/archive-root-containment-conflicting_evidence-0.json",
-      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-conflicting_evidence-0.json",
+      "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-conflicting_evidence",
+      "taskId": "tensor-normalization-axis-conflicting_evidence",
       "revision": 1,
-      "path": "contracts/archive-root-containment-conflicting_evidence-1.json",
-      "sha256": "0972c534f91ef9c30b4c649af2dc8ba6e2bbd8ee39172e9ad90bcddc68c08931",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":false,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-conflicting_evidence-1.json",
+      "sha256": "755ee03a4fbb6acef49d164e5e8fc4ccc8e575133b30f6bf2b49c8856f9bd4c4",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":1,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-stale_evidence",
+      "taskId": "tensor-normalization-axis-stale_evidence",
       "revision": 1,
-      "path": "contracts/archive-root-containment-stale_evidence-0.json",
-      "sha256": "cec3d56d586b8a1f029a904a7c9c740bf469b8d3cef03822f6046e33c4883efd",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"extract\",\"allow_outside_root\":false,\"writes_payload\":true}}\n "
+      "path": "contracts/tensor-normalization-axis-stale_evidence-0.json",
+      "sha256": "4314492dde898ae7dcbddee8bbaefae8a4c567e7f98b0127aac345dd4e3c4625",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":true,\"zero_denominators\":false}}\n "
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "archive-root-containment-no_applicable_candidate",
+      "taskId": "tensor-normalization-axis-no_applicable_candidate",
       "revision": 1,
-      "path": "contracts/archive-root-containment-no_applicable_candidate-0.json",
-      "sha256": "8b9bf826ec1b89549a7cfd2119f4970a18e22055c41c8a5c4d221d1d7660c00d",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_trust\":\"untrusted\",\"entries_are_paths\":true,\"operation_kind\":\"stream\",\"allow_outside_root\":false,\"writes_payload\":true}}\n"
+      "path": "contracts/tensor-normalization-axis-no_applicable_candidate-0.json",
+      "sha256": "121558b7dcca4bc49d83877a99c8567c0915e2a7f2e485bacb7ff49cd92c04cd",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"tensor_rank\":2,\"normalize_axis\":\"rows\",\"broadcasting_enabled\":false,\"zero_denominators\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-literal",
+      "taskId": "bitmask-flag-union-literal",
       "revision": 1,
-      "path": "contracts/pagination-total-order-literal-0.json",
-      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-literal-0.json",
+      "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-cross_language",
+      "taskId": "bitmask-flag-union-cross_language",
       "revision": 1,
-      "path": "contracts/pagination-total-order-cross_language-0.json",
-      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-cross_language-0.json",
+      "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-paraphrase",
+      "taskId": "bitmask-flag-union-paraphrase",
       "revision": 1,
-      "path": "contracts/pagination-total-order-paraphrase-0.json",
-      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-paraphrase-0.json",
+      "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-reverse_language",
+      "taskId": "bitmask-flag-union-reverse_language",
       "revision": 1,
-      "path": "contracts/pagination-total-order-reverse_language-0.json",
-      "sha256": "a2a665cb4bb05fdc28e63404b5a8ba9b412e14166bf83eadbb0a89a8660e5332",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"offset\",\"sort_unique\":true,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":true,\"snapshot_available\":true}}\n"
+      "path": "contracts/bitmask-flag-union-reverse_language-0.json",
+      "sha256": "44ff97e9f02c9ef8783e7c59b6dd185b1934d046c8d272e78e24196f244c7b1d",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"contains_all\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-missing_positive",
+      "taskId": "bitmask-flag-union-missing_positive",
       "revision": 1,
-      "path": "contracts/pagination-total-order-missing_positive-0.json",
-      "sha256": "93639fb3b3ad3aeacb76e1f063a980c734f4c04846d23dd6862e5d52c7d87506",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-missing_positive-0.json",
+      "sha256": "7c4226a9dfb1440f6e79a64b18a2aa7cdac5fa2dce774dcf097f33362649931e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-low_overlap",
+      "taskId": "bitmask-flag-union-low_overlap",
       "revision": 1,
-      "path": "contracts/pagination-total-order-low_overlap-0.json",
-      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-low_overlap-0.json",
+      "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-hard_contradiction",
+      "taskId": "bitmask-flag-union-hard_contradiction",
       "revision": 1,
-      "path": "contracts/pagination-total-order-hard_contradiction-0.json",
-      "sha256": "6164817f3566df2fcb4765f2a6ca9354c7e5b6f038e1757bbca9e9e7d1a53153",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":false,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-hard_contradiction-0.json",
+      "sha256": "e0ef66b55e1ade9b654535be34c97e65779fc9e6080b151759c6098f7fb8c4af",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"integer_counts\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-insufficient_context",
+      "taskId": "bitmask-flag-union-insufficient_context",
       "revision": 1,
-      "path": "contracts/pagination-total-order-insufficient_context-0.json",
+      "path": "contracts/bitmask-flag-union-insufficient_context-0.json",
       "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
       "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-irrelevant_same_facts",
+      "taskId": "bitmask-flag-union-irrelevant_same_facts",
       "revision": 1,
-      "path": "contracts/pagination-total-order-irrelevant_same_facts-0.json",
-      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-irrelevant_same_facts-0.json",
+      "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-conflicting_evidence",
+      "taskId": "bitmask-flag-union-conflicting_evidence",
       "revision": 1,
-      "path": "contracts/pagination-total-order-conflicting_evidence-0.json",
-      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-conflicting_evidence-0.json",
+      "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-conflicting_evidence",
+      "taskId": "bitmask-flag-union-conflicting_evidence",
       "revision": 1,
-      "path": "contracts/pagination-total-order-conflicting_evidence-1.json",
-      "sha256": "6164817f3566df2fcb4765f2a6ca9354c7e5b6f038e1757bbca9e9e7d1a53153",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":false,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-conflicting_evidence-1.json",
+      "sha256": "e0ef66b55e1ade9b654535be34c97e65779fc9e6080b151759c6098f7fb8c4af",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"integer_counts\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-stale_evidence",
+      "taskId": "bitmask-flag-union-stale_evidence",
       "revision": 1,
-      "path": "contracts/pagination-total-order-stale_evidence-0.json",
-      "sha256": "226e69c92242a17c0d33d39b7967a27743062fd78b7f66b2d8be6b58388f14f7",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"cursor\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n "
+      "path": "contracts/bitmask-flag-union-stale_evidence-0.json",
+      "sha256": "da659e3d61245954bc9b5d95d37f11ad4c9fd7f3dbcdc7517fc0a764034cffc1",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":false}}\n "
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "pagination-total-order-no_applicable_candidate",
+      "taskId": "bitmask-flag-union-no_applicable_candidate",
       "revision": 1,
-      "path": "contracts/pagination-total-order-no_applicable_candidate-0.json",
-      "sha256": "f42b44edfbf9b3cc913e692434b2963911bd861565fd9ac34e662acc50eea6d7",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"pagination_kind\":\"none\",\"sort_unique\":false,\"ordering_stable\":true,\"allow_duplicate_rows\":false,\"dataset_mutates\":false,\"snapshot_available\":false}}\n"
+      "path": "contracts/bitmask-flag-union-no_applicable_candidate-0.json",
+      "sha256": "435152e37a16933b362b767ba098a91cb5979731fa0ff56aa9c0379cb6e86d9e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"representation\":\"bit_flags\",\"operation\":\"union\",\"overlap_possible\":true,\"preserve_multiplicity\":true}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-literal",
+      "taskId": "html-context-escaping-literal",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-literal-0.json",
-      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-literal-0.json",
+      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-cross_language",
+      "taskId": "html-context-escaping-cross_language",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-cross_language-0.json",
-      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-cross_language-0.json",
+      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-paraphrase",
+      "taskId": "html-context-escaping-paraphrase",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-paraphrase-0.json",
-      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-paraphrase-0.json",
+      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-reverse_language",
+      "taskId": "html-context-escaping-reverse_language",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-reverse_language-0.json",
-      "sha256": "8925035098d1b2368be0037c0b5783c73df5b4fcdf3c478b3e0a5e7b7a24ca47",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"per_sample\",\"round_each_sample\":true}}\n"
+      "path": "contracts/html-context-escaping-reverse_language-0.json",
+      "sha256": "15208e66c0676995fa23a631d782b4709722faa56c010e28aeb3e48f92b6133a",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"text_node\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-missing_positive",
+      "taskId": "html-context-escaping-missing_positive",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-missing_positive-0.json",
-      "sha256": "329614c8311c450124b2fee66199164d9fd37903019810c7fedce071bc60edf9",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-missing_positive-0.json",
+      "sha256": "be0515bdde5d0de513d1a1a66275a9db94c841708d1205c85b42d10cb0dcdd5e",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-low_overlap",
+      "taskId": "html-context-escaping-low_overlap",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-low_overlap-0.json",
-      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-low_overlap-0.json",
+      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-hard_contradiction",
+      "taskId": "html-context-escaping-hard_contradiction",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-hard_contradiction-0.json",
-      "sha256": "5682a0ae7ffeff312229d516f51dd3b05538f0f591f25663462ea50b06f096ed",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"concatenate\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-hard_contradiction-0.json",
+      "sha256": "ae0d1206cf9d9e6da2a408788002f0fba828999a18529fc826b99134d8455069",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"plain_text\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-insufficient_context",
+      "taskId": "html-context-escaping-insufficient_context",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-insufficient_context-0.json",
+      "path": "contracts/html-context-escaping-insufficient_context-0.json",
       "sha256": "244e87561c4c0ebfff207e3ff595282c9b41662d54f14b6fe216bfa8b44aa9fa",
       "content": "{\"schemaVersion\":1,\"facts\":{}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-irrelevant_same_facts",
+      "taskId": "html-context-escaping-irrelevant_same_facts",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-irrelevant_same_facts-0.json",
-      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-irrelevant_same_facts-0.json",
+      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-conflicting_evidence",
+      "taskId": "html-context-escaping-conflicting_evidence",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-conflicting_evidence-0.json",
-      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-conflicting_evidence-0.json",
+      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-conflicting_evidence",
+      "taskId": "html-context-escaping-conflicting_evidence",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-conflicting_evidence-1.json",
-      "sha256": "5682a0ae7ffeff312229d516f51dd3b05538f0f591f25663462ea50b06f096ed",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"concatenate\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-conflicting_evidence-1.json",
+      "sha256": "ae0d1206cf9d9e6da2a408788002f0fba828999a18529fc826b99134d8455069",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"plain_text\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n"
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-stale_evidence",
+      "taskId": "html-context-escaping-stale_evidence",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-stale_evidence-0.json",
-      "sha256": "44bc3d54e3c29f7f5b56634ed4370ce075c79c1828e816cf802b971249212213",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"decimal_text\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n "
+      "path": "contracts/html-context-escaping-stale_evidence-0.json",
+      "sha256": "c81cb4b80a3ae50ecec3f61ce0a89ba1a32ab627fff2a80bd1f98de40a7ef031",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":false}}\n "
     },
     {
       "namespace": "holdout/contracts",
-      "taskId": "decimal-sum-rounding-no_applicable_candidate",
+      "taskId": "html-context-escaping-no_applicable_candidate",
       "revision": 1,
-      "path": "contracts/decimal-sum-rounding-no_applicable_candidate-0.json",
-      "sha256": "375ad027752e861eadc46c91af931a28ca61fc9753209370dd69dc7cd4252e57",
-      "content": "{\"schemaVersion\":1,\"facts\":{\"input_representation\":\"binary_bytes\",\"aggregation\":\"sum\",\"rounding_stage\":\"final_total\",\"round_each_sample\":false}}\n"
+      "path": "contracts/html-context-escaping-no_applicable_candidate-0.json",
+      "sha256": "c8a4fb073db2134b085ed957483d25ef341d65d1a0a894de9c4fca9aec520d49",
+      "content": "{\"schemaVersion\":1,\"facts\":{\"document_kind\":\"html\",\"insertion_context\":\"quoted_attribute\",\"value_trust\":\"untrusted\",\"markup_allowed\":true}}\n"
     }
   ]
 }
