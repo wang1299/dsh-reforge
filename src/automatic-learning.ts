@@ -37,7 +37,7 @@ export class AutomaticLearning {
       this.service.store.automatic.transition(s.id, s.state, { state: 'blocked', reason: 'manual_task_started' }); this.closeCapture(s);
     }
   }
-  begin(sessionId: string, turn: number, requests: { id: string; text: string }[]): Task | null {
+  begin(sessionId: string, turn: number, requests: { id: string; text: string }[], recordCorrection = true): Task | null {
     if (!this.enabled || !requests.length) return null;
     const store = this.service.store; const prior = this.forTurn(sessionId, turn);
     if (prior) return prior.state === 'open' && prior.taskId ? store.task(prior.taskId) : null;
@@ -56,7 +56,7 @@ export class AutomaticLearning {
         const task = taskSchema.parse({ schemaVersion: 1, id: randomUUID(), sessionId, summary: redact(requests[0]!.text.trim(), 256) || 'User request',
           scope: { ...snapshot(this.service.root).scope, dependencyDigest: base.dependencyDigest }, baseCommit: base.commit, state: 'open', createdAt: new Date().toISOString() });
         store.putTask(task); store.automatic.transition(segment.id, 'capturing', { taskId: task.id, base, state: 'open', reason: 'capturing_changes' });
-        if (/^(?:纠正\s*[:：]|不对[，,：:]|correction\s*:)/i.test(requests[0]!.text.trim())) this.service.correction(task.id, redact(requests[0]!.text.trim(), 512));
+        if (recordCorrection && /^(?:纠正\s*[:：]|不对[，,：:]|correction\s*:)/i.test(requests[0]!.text.trim())) this.service.correction(task.id, redact(requests[0]!.text.trim(), 512));
         return task;
       });
     } catch { store.automatic.transition(segment.id, 'capturing', { state: 'blocked', reason: 'capture_unavailable' }); return null; }

@@ -4,6 +4,9 @@ import type { EvolveService } from './service.js';
 import { redact, RevisionConflict } from './domain.js';
 import { renderPanel } from './panel-view.js';
 import { panelRequest } from './panel-api.js';
+import { ownerInputRequest } from './owner-input-api.js';
+import { OwnerInputError } from './owner-input-domain.js';
+import { ownerInputErrorMessage } from './owner-input-copy.js';
 
 async function body(request: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = []; let size = 0;
@@ -14,6 +17,7 @@ async function body(request: IncomingMessage): Promise<unknown> {
   return JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown;
 }
 export async function startPanel(service: EvolveService): Promise<{ url: string; origin: string; token: string; close: () => Promise<void> }> {
+  try { service.ownerInput.recover(); } catch { /* Keep the diagnostics page available without resetting owner metadata. */ }
   const token = randomBytes(32).toString('hex'); let origin = '';
   const server = createServer((request, response) => { void handle(request, response); });
   async function handle(request: IncomingMessage, response: ServerResponse): Promise<void> {
@@ -32,8 +36,10 @@ export async function startPanel(service: EvolveService): Promise<{ url: string;
       if (Buffer.byteLength(supplied) !== Buffer.byteLength(token) || !timingSafeEqual(Buffer.from(supplied), Buffer.from(token))) { send(401, { error: 'Local access token required' }); return; }
       if (request.method === 'POST' && (request.headers.origin !== origin || request.headers['content-type'] !== 'application/json')) { send(403, { error: 'Same-origin JSON required' }); return; }
       const value = request.method === 'POST' ? await body(request) : undefined;
-      const reply = panelRequest(service, path, request.method ?? 'GET', value); send(reply.status, reply.value);
-    } catch (error) { send(error instanceof RevisionConflict ? 409 : 400, { error: redact(error instanceof Error ? error.message : 'Invalid request', 1000) }); }
+      const reply = await ownerInputRequest(service, path, request.method ?? 'GET', value) ?? panelRequest(service, path, request.method ?? 'GET', value); send(reply.status, reply.value);
+    } catch (error) { send(error instanceof RevisionConflict ? 409 : 400, { error: error instanceof OwnerInputError
+      ? ownerInputErrorMessage(error.code) : redact(error instanceof Error ? error.message : 'Invalid request', 1000),
+      ...(error instanceof OwnerInputError ? { code: error.code } : {}) }); }
   }
   await new Promise<void>((resolveStart, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolveStart); });
   const address = server.address(); if (!address || typeof address === 'string') throw new Error('Missing local address');

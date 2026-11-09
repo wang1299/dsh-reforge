@@ -14,7 +14,9 @@ export interface SearchResult {
 export type CandidateReason = 'source_task' | 'candidate' | 'disabled' | 'missing_or_invalid_source_evidence'
   | 'incomplete_fact_sources' | 'missing_code_condition' | 'different_repository' | 'dependencies_changed'
   | 'code_condition_changed' | 'owner_irrelevant_context' | 'insufficient_anchors' | 'no_title_anchor' | 'low_bm25'
-  | 'lower_rank' | 'original_text' | 'owner_accepted_context';
+  | 'lower_rank' | 'original_text' | 'owner_accepted_context'
+  | 'owner_configuration_unavailable' | 'owner_rule_missing' | 'owner_rule_stale' | 'owner_context_missing'
+  | 'owner_source_changed' | 'owner_target_mismatch' | 'owner_goal_mismatch' | 'owner_conditions_unconfirmed';
 export interface CandidateExplanation {
   id: string; revision: number; title: string; reason: CandidateReason;
   textScore: number | null; combinedScore: number | null; anchors: number | null;
