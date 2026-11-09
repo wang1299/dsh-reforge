@@ -213,3 +213,34 @@ test('hard-linked ledger and linked study directory are rejected before opening 
   const parent = await root(); const alias = join(parent, 'linked-study'); await symlink(dir, alias, process.platform === 'win32' ? 'junction' : 'dir');
   assert.throws(() => StudyCostLedger.open(alias, b));
 });
+
+test('existing SQLite sidecars are never followed, modified, recovered or removed', async () => {
+  for (const suffix of ['-journal', '-wal', '-shm']) {
+    const { dir, b, ledger } = await approved(); ledger.close(); const before = await readFile(ledger.path);
+    const sentinel = join(await root(), 'external-sentinel.txt'); await writeFile(sentinel, 'synthetic sentinel must remain unchanged');
+    const sidecar = ledger.path + suffix; await link(sentinel, sidecar);
+    assert.throws(() => StudyCostLedger.open(dir, b)); assert.deepEqual(await readFile(ledger.path), before);
+    assert.equal(await readFile(sentinel, 'utf8'), 'synthetic sentinel must remain unchanged');
+    assert.equal(await readFile(sidecar, 'utf8'), 'synthetic sentinel must remain unchanged'); await unlink(sidecar);
+    const reopened = StudyCostLedger.open(dir, b);
+    try {
+      await writeFile(sidecar, 'ordinary residual sidecar'); assert.throws(() => reopened.reserve(b, key()));
+      assert.equal(await readFile(sidecar, 'utf8'), 'ordinary residual sidecar'); await unlink(sidecar);
+      assert.equal(reopened.state.calls.length, 0); assert.equal(reopened.state.phase, 'prepared');
+    } finally { reopened.close(); }
+    const fresh = await root(); const preexisting = join(fresh, 'cost-ledger.sqlite' + suffix); await writeFile(preexisting, 'create must stop');
+    assert.throws(() => StudyCostLedger.create(fresh, binding())); assert.equal(await readFile(preexisting, 'utf8'), 'create must stop');
+    await assert.rejects(readFile(join(fresh, 'cost-ledger.sqlite')), { code: 'ENOENT' });
+  }
+});
+
+test('overlapping guarded requests cannot both dispatch while one reservation is pending', async () => {
+  const { b, ledger } = await approved(); let sent = 0; let release!: (value: { status: number; body: string }) => void;
+  let entered!: () => void; const started = new Promise<void>(r => { entered = r; });
+  const transport: OfflineStudyTransport = { kind: 'offline-fixture', respond: async () => {
+    sent++; entered(); return new Promise(resolve => { release = resolve; });
+  } };
+  const first = call(ledger, b, transport); await started;
+  try { await assert.rejects(call(ledger, b, transport)); assert.equal(sent, 1); assert.equal(ledger.state.calls.length, 1); }
+  finally { release({ status: 200, body: response() }); await first; ledger.close(); }
+});

@@ -44,6 +44,14 @@ function regular(path: string) {
   const stat = lstatSync(path); requireCost(stat.isFile() && !stat.isSymbolicLink() && stat.nlink === 1 && stat.size <= 2_097_152);
   return stat;
 }
+function noSidecars(path: string): void {
+  for (const suffix of ['-journal', '-wal', '-shm']) {
+    try { lstatSync(path + suffix); } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') continue; throw error;
+    }
+    throw new CostPolicyError('Existing SQLite sidecar requires manual inspection');
+  }
+}
 function validate(value: unknown): State {
   const s = stateSchema.parse(value); const cost = s.calls.reduce((n, c) => n + c.charge, 0);
   requireCost(new Set(s.calls.map(c => c.id)).size === s.calls.length);
@@ -79,6 +87,7 @@ export class StudyCostLedger {
   private readonly fresh = new Set<string>();
   private constructor(readonly root: string, private readonly binding: StudyCostBinding, create: boolean) {
     this.root = ownedRoot(root); this.binding = bindingSchema.parse(binding); this.path = join(this.root, 'cost-ledger.sqlite');
+    noSidecars(this.path);
     this.lock = openSync(this.path + '.lock', 'wx', 0o600);
     let db: DatabaseSync | undefined;
     try {
@@ -116,6 +125,7 @@ export class StudyCostLedger {
   static open(root: string, binding: StudyCostBinding) { return new StudyCostLedger(root, binding, false); }
   private check(): void {
     requireCost(!this.closed && !this.poisoned && ownedRoot(this.root) === this.root);
+    noSidecars(this.path);
     const now = regular(this.path); requireCost(now.dev === this.fileIdentity.dev && now.ino === this.fileIdentity.ino);
     const lock = lstatSync(this.path + '.lock'); const held = fstatSync(this.lock);
     requireCost(lock.isFile() && !lock.isSymbolicLink() && lock.nlink === 1 && lock.dev === held.dev && lock.ino === held.ino);
