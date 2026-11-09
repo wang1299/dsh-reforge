@@ -20,7 +20,7 @@ pytest及依赖用固定纯Pythonwheel URL/SHA256安装到新`.probe-work`vendor
 
 在干净稳定提交上准备：未发布tgz与摘要/内容审核、所有仓库跟踪输入、实际dist、锁图中实际Node依赖代码/数据/native文件、Node可执行文件与版本、Python可执行/stdlib/native/vendor、worker、策略、模型参数、来源证明/库/HEAD/index和独立验收。没有用Git号替代实际文件字节。新增或链接/多硬链接/不支持路径拒绝或在明确闭包内记录，不读取用户home任意配置。
 
-完整字节摘要在开始/结束核对。每次HTTP前检查关键源码/执行/计划/candidate字节及全部冻结清单的路径/文件身份、size/mtime/ctime；出现变化停止，不重新推断或自动接受新版本。完整清单不包括整个OS/服务商内部实现，信任owner机器；不宣称抵抗owner篡改/回滚。guard和provider耗时分开，不能把离线/准备耗时称为模型延迟改善。
+完整字节摘要在开始/结束核对。每次HTTP前重读并核对计划摘要、来源snapshot/schema/index，检查关键源码、worker、包锁和SDK入口字节，同时重新枚举全部冻结清单的路径/文件身份、size/mtime/ctime。dist、candidate及其余依赖逐次核对元数据，起止核对全部字节；不能把它描述成每次对所有JS/包文件重新计算内容摘要。出现变化停止，不重新推断或自动接受新版本。完整清单不包括整个OS/服务商内部实现，信任owner机器；不宣称抵抗owner篡改/时间戳回滚。guard和provider耗时分开，不能把离线/准备耗时称为模型延迟改善。
 
 ## 固定授权入口
 

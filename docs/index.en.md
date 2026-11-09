@@ -1,8 +1,10 @@
 # DSH-Reforge documentation
 
+Authorized-study source entry: [frozen plans, one-shot grants, isolated credentials and bounded acceptance](evaluation/authorized-benefit-study.md#english). Full fake-provider qualification is separate from real-model results; paid execution requires a fresh reviewed plan and budget.
+
 Bounded repair study: [actual AgentLoop, independent acceptance and at most one repair turn](evaluation/bounded-repair-controller.md#english). Scripted controller rehearsal only; no real-model benefit or live spending authorization.
 
-Next benefit-study preparation: [six new task contracts, independent controls and actual scripted memory exposure](evaluation/benefit-preparation-v1.md#english). Zero HTTP, no real-model repair or benefit result; a new live runner and spending authorization remain required.
+T061 preparation snapshot: [six new task contracts, independent controls and actual scripted memory exposure](evaluation/benefit-preparation-v1.md#english). This earlier zero-HTTP stage is distinct from the later authorized-study entry above; no real-model repair or benefit result is implied.
 
 Source-only task flow: [inspect file facts, declare version-specific prerequisites, preview and submit the current task](evaluation/owner-intake-v1.md#english). Includes an actual AgentLoop zero-paid-API harness, bounded recovery and explicit limits; it is separate from the published alpha.2 package and real task-benefit evaluation.
 
@@ -36,6 +38,7 @@ Start with the video, run the same case, configure read-only access, authorize l
 | Understand evidence limits | [Requirements](product.md), [real-model pilot protocol](evaluation/real-model-pilot.md), [earlier evaluation](development/T008c-acceptance.md) |
 | Inspect study cost reservations and stop rules | [Offline accounting guard; no live authorization or new budget](evaluation/study-cost-guard.md#english) |
 | Exercise the official SDK and shared controller | [Loopback wiring, cancellation and historical graph preservation](evaluation/official-sdk-wire.md#english) |
+| Review a frozen paid-study plan before authorizing it | [One-plan authority and full zero-fee qualification (source)](evaluation/authorized-benefit-study.md#english) |
 | Participate or report an issue | [External pilot](community/pilot.md), [issue forms](https://github.com/wang1299/dsh-reforge/issues/new/choose), [security reporting](../SECURITY.md) |
 | Make a first contribution | [Contributing](../CONTRIBUTING.md), [newcomer tasks](community/newcomers.md) |
 

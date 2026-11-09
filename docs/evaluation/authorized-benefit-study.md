@@ -16,6 +16,8 @@
 
 使用干净、已提交的本仓库源码，Node24.19.0、Git、Python3.10，以及固定 npm lock。先完成正常代码检查，再运行完整资格模拟；不要一边模拟一边重编译或改源码。
 
+来源证明使用本机Python的pytest9.1.1；模型生成函数的验收另用准备时下载的固定vendor。先确认`python --version`为3.10，并在该解释器安装`python -m pip install pytest==9.1.1`。需要选择其他解释器时，将本机`EVOLVE_PYTHON`设为它的完整路径，再运行以下命令。
+
 ```powershell
 npm ci --ignore-scripts
 npm run check
@@ -27,6 +29,10 @@ npm run study:qualify
 
 每次创建新的`.probe-work/t065-live-path-fixture/run-*`，包含计划、模拟审批、账本、结构化测试结果和`qualification.json`。来源库只包含本仓库的合成案例，未加载用户数据库或旧profile。原始对话/HTTP正文不持久化；生成的有界函数和固定验收留在本机忽略目录。
 
+稳定代码`98fd9a0`的本机完整资格模拟已实际完成：36个独立session、71次SDK/本机HTTP/模拟provider请求、71笔有序占额，1项首过、35项最终过、1项预设已知失败、0unknown，三组参考数0/12/10。账本32660微元仅为模拟，真实模型费用0。全量15148项/269757965字节起止核对及独立只读复核匹配。最终文档提交和四组合CI状态见[任务记录](../tasks/T065-frozen-authorized-live-study.md)与[PR #144](https://github.com/wang1299/dsh-reforge/pull/144)，不将旧回执改标新SHA。
+
+本机资格模拟的trial阶段耗时513.020秒，其中438.801秒是冻结/准入检查，模拟provider仅0.396秒；这是本机协议开销，不能当作真实模型延迟、速度提升或预计付费时长。真实provider网络和任务效果尚待新预算下的实际验证。
+
 ## 准备可审查的真实计划
 
 ```powershell
@@ -35,6 +41,8 @@ npm run study:inspect -- --plan run-本次目录名
 ```
 
 prepare不读取Key，创建固定`.probe-work/t065-benefit-live/preparations/run-*`下的独立未授权账本。摘要列出源码提交、计划SHA256、24小时有效期、候选包SHA256、实际文件数量、3份来源证明、Python版本和23项控制。保持该工作区和执行环境不变；重建、源码/依赖/解释器变动、价格页变动或超期都需要重新准备。旧计划不删除。
+
+全部运行文件起止核对内容摘要；每次HTTP前复查完整路径、文件身份和时间/大小元数据，并重读计划及关键源码/worker/SDK入口。dist和candidate不是每次全量重算摘要，细节及可信owner/OS边界见ADR059。
 
 价格绑定人工核对的[官方flash峰值文档](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)原文摘要；同模型标签仍在但页面费率变化，也不能接受新计划。现策略按输入2/输出8元/百万保守结算，单次预留5.345728元、建议总上限10元、最多72请求。预留不是预计每次花费，token上界不是服务商账户硬限制；未知回执保留整笔，余量不足下一笔完整预留就停止。**T049旧10元许可不能复用。**
 
@@ -73,7 +81,11 @@ try {
 
 This unpublished source entry point separates preparation, read-only inspection, one-plan authorization and paid execution. `npm run study:qualify` uses the actual live branch, official SDK, durable accounting, frozen runtime and bounded Python worker with a mandatory fake provider. Its fixed36-trial control includes an immediate pass and a persistent known failure; expected71 synthetic requests are protocol evidence, never model improvement.
 
+The local98fd9a0 qualification completed36 distinct sessions and71 ordered SDK/loopback/fake-provider reservations, with35 final passes, one retained known failure and zero unknowns. All15148 frozen entries/269757965 bytes and the synthetic source-bank digest matched a separate read-only review. Actual provider requests and charges were zero;32660 micro-CNY was simulated. Of513.020 seconds,438.801 were guard work and0.396 fake-provider time: these are not measured model latency or speed gains. Final documentation-SHA and CI evidence are tracked separately inPR144.
+
 `study:prepare` creates a new unapproved plan under the fixed authority. It binds source and actual executable/dependency bytes, a reviewed official price-document hash, a private synthetic source snapshot and a24-hour expiry. Rebuilding or changing inputs invalidates the plan. Inspection does not recover or replay work. Explicit authorization requires the exact64-character plan digest, a newly approved cap and paid-call acknowledgement; it can bind only one ledger and cannot renew a started study. Historical grants are not reused.
+
+Complete runtime contents are hashed at start/end. Every request re-inventories identities, sizes and timestamps plus critical source/worker/SDK content and the persisted plan; dist and candidate content are not fully rehashed on every request. Owner/OS and non-rollback timestamps are trusted. Local source verification requires pytest9.1.1; generated-code acceptance uses the separately pinned vendor.
 
 After all checks and fresh authorization, enter the dedicated Key locally and invoke Node directly. Git/Python receive allowlisted environments; the SDK receives only a loopback token. Real fetch uses one fixed endpoint with no retry. Unknown usage retains its entire reservation and stops the batch. OS resource limits plus AST admission protect this bounded synthetic workload; they are not a general OS sandbox.
 

@@ -1,5 +1,7 @@
 # 本轮实现与验证状态
 
+2026-11-09 T065：[冻结计划与一次授权入口](../evaluation/authorized-benefit-study.md)已在稳定代码`98fd9a0`完成本机36项/71次fake-provider全流程、23项受限验收控制和独立只读核对；真实模型调用/费用均0。完整检查396项本机394通过、2权限skip，兼容10/10；四组合CI与最终文档提交以[PR #144](https://github.com/wang1299/dsh-reforge/pull/144)和[任务记录](../tasks/T065-frozen-authorized-live-study.md)为准。源码研究工具未发行、未取得本次新预算，协议演练不代表模型效果提升。T060已合并PR #134并按所有者单独授权更新GitHub Pages；后续源码合并/部署/发行分别核验。
+
 2026-11-06 T061：[新任务收益研究准备](../evaluation/benefit-preparation-v1.md)固定6项作者合成新题、3份独立来源和36项三组计划。原始/参考/错误修复分别失败/通过/失败；实际脚本AgentLoop携带经验0/6、6/6、5/6，条件拒选1题。不是模型生成或收益结果，live runner/新预算仍缺；检查、审查与CI以[T061](../tasks/T061-benefit-preparation.md)为准。基于待合并T060，未改发行包或部署。
 
 2026-11-06 T059：[工程事实/明确目标五臂对照](../evaluation/project-facts-v1.md)首轮留出已保存。自动投影支持32/48、成功事实96/96一致；自动＋目标相对dense正确7/24→11/24、误选9/48→0/48，原正确保留5/7、覆盖率33.3%→22.9%，仍漏13正例。各输入贡献及全部错误公开，字段/目标仍为额外输入。源码CLI/本机报告可用，未接默认DSH/公开npm；最终门槛见[T059](../tasks/T059-project-facts.md)。
