@@ -96,19 +96,57 @@ test('failed independent repair proof blocks automatic extraction without consum
   } finally { store.close(); }
 });
 
-test('a dead process capture becomes unknown on restart and repeated input never reopens it', async () => {
+test('only a confirmed ESRCH receipt recovers an automatic capture; live and inaccessible identities are never replayed', async () => {
+  const { f, store, service, verification, extraction } = await setup();
+  const probes = new Map<number, 'ESRCH' | 'EPERM' | 'alive'>([[1999999997, 'ESRCH'], [1999999998, 'EPERM'], [1999999999, 'alive']]);
+  const rows = [];
+  for (const [pid, receipt] of probes) {
+    const session = 'probe-' + receipt; service.automatic.begin(session, 1, [{ id: session, text: 'Fix rollback' }]);
+    const row = store.automatic.rows().find(r => r.sessionId === session)!; store.automatic.write({ ...row, ownerPid: pid }); rows.push({ ...row, receipt });
+  }
+  store.close(); const reopened = new Store(join(f.home, 'learning.sqlite')); const originalKill = process.kill;
+  try {
+    // Model the exact OS receipt, without assuming an exited PID cannot be reused on Windows.
+    process.kill = ((pid, signal) => {
+      const receipt = signal === 0 ? probes.get(pid) : undefined;
+      if (!receipt) return originalKill(pid, signal); if (receipt === 'alive') return true;
+      throw Object.assign(new Error('Synthetic process liveness receipt'), { code: receipt });
+    }) as typeof process.kill;
+    let restarted: EvolveService;
+    try { restarted = new EvolveService(reopened, f.repo, verification, true, extraction, true, true); }
+    finally { process.kill = originalKill; }
+    for (const row of rows) {
+      const current = reopened.automatic.rows().find(r => r.id === row.id)!; const dead = row.receipt === 'ESRCH';
+      assert.equal(current.state, dead ? 'unknown' : 'open'); assert.equal(reopened.task(row.taskId!)!.state, dead ? 'closed' : 'open');
+      assert.equal(restarted.automatic.begin(row.sessionId, 1, [{ id: row.sessionId, text: 'Fix rollback' }]), null);
+    }
+    assert.equal(await restarted.automatic.runNext(), false); assert.equal(reopened.learning.jobs().length, 0); assert.equal(reopened.extraction.grants().length, 0);
+  } finally { process.kill = originalKill; reopened.close(); }
+});
+
+test('actual exited-child recovery follows the current OS receipt, including a reused or inaccessible PID', async t => {
   const { f, store, service, verification, extraction } = await setup();
   service.automatic.begin('restart', 1, [{ id: 'restart', text: 'Fix rollback' }]);
   const old = store.automatic.rows()[0]!;
   const exitedPid = Number(execFileSync(process.execPath, ['-e', 'process.stdout.write(String(process.pid))'], { encoding: 'utf8', windowsHide: true }));
   store.automatic.write({ ...old, ownerPid: exitedPid }); store.close();
   const reopened = new Store(join(f.home, 'learning.sqlite'));
+  const originalKill = process.kill; let absent: boolean | undefined;
   try {
-    const restarted = new EvolveService(reopened, f.repo, verification, true, extraction, true, true);
-    assert.equal(reopened.automatic.rows()[0]!.state, 'unknown'); assert.equal(reopened.task(old.taskId!)!.state, 'closed');
+    process.kill = ((pid, signal) => {
+      if (pid !== exitedPid || signal !== 0) return originalKill(pid, signal);
+      try { const alive = originalKill(pid, signal); absent = false; return alive; }
+      catch (error) { absent = (error as NodeJS.ErrnoException).code === 'ESRCH'; throw error; }
+    }) as typeof process.kill;
+    let restarted: EvolveService;
+    try { restarted = new EvolveService(reopened, f.repo, verification, true, extraction, true, true); }
+    finally { process.kill = originalKill; }
+    assert.notEqual(absent, undefined, 'Observe the actual recovery probe, not an earlier racy lookup');
+    assert.equal(reopened.automatic.rows()[0]!.state, absent ? 'unknown' : 'open'); assert.equal(reopened.task(old.taskId!)!.state, absent ? 'closed' : 'open');
     assert.equal(restarted.automatic.begin('restart', 1, [{ id: 'restart', text: 'Fix rollback' }]), null); assert.equal(await restarted.automatic.runNext(), false);
     assert.equal(reopened.learning.jobs().length, 0); assert.equal(reopened.extraction.grants().length, 0);
-  } finally { reopened.close(); }
+    t.diagnostic(JSON.stringify({ exitedChild: true, currentOsConfirmedAbsent: absent, reusedOrUnconfirmedIdentityPreserved: !absent, automaticReplay: false }));
+  } finally { process.kill = originalKill; reopened.close(); }
 });
 
 test('changed frozen snapshot metadata cannot authorize verification or extraction', async () => {
