@@ -50,7 +50,7 @@ npm run study:rehearse
 
 命令只支持rehearse，在本仓库`.probe-work/t062-study-rehearsal/run-*`建立新目录，保留逐trial结果和controller-result.json。source/index/bank、相关源码、实际JS入口起止核对；记录runtime和method摘要，仍不等于live全部依赖冻结。报告分开记录已计划、已记录、缺失、未尝试、未知；无法核对丢失结果中的请求总数时写null，不当作0。中途失败返回不完整报告和非零退出，不自动重放。
 
-完整检查/独立审查/最终36项演练和四组合CI的实际终态见[T062任务回执](../tasks/T062-bounded-study-runner.md)，不能继承早期脚本版本的通过。
+本机最终完整检查351项（349通过、0失败、2项Windows符号链接权限跳过）、compat10/10；修正后36项/72脚本请求完整演练已终结，36个session独立，源码/实际JS/source head/index/bank保持。它们是工程验证计数，不是模型效果数字。独立审查及最终提交四组合CI的实际终态见[T062任务回执](../tasks/T062-bounded-study-runner.md)，不能继承早期脚本版本的通过。
 
 下一步仍是实现受授权的真实provider、独立持久费用占额、完整冻结/计量与未知停机，再给owner具体预算方案。旧T049的已完成10元授权不复用，本轮未读Key、旧profile、历史学习/费用/提炼记录，也未发付费请求或新发行物。
 
