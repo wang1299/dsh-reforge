@@ -1,5 +1,7 @@
 # DSH-Reforge 产品需求 v0.2
 
+T063（2026-11-09）：为后续真实研究增加默认未授权、绑定单个计划的独立持久费用占额和离线调用边界，先占额再传输，未知停止且重启不自动重放。仅合成transport验证，不读Key、不发真实HTTP、不复用T049预算；设计先于实现见[ADR057](decisions/057-study-cost-reservations.md)。
+
 T062（2026-11-09）：在冻结新题与输入预检之后增加最多两次的实际AgentLoop修复/独立pytest控制器，分别记录首次/最终通过、真实尝试与未知结果。脚本参考答案仅演练流程，仍无付费执行/预算授权；设计先于实现见[ADR056](decisions/056-bounded-agent-repair-study.md)。
 
 T061（2026-11-06）：为下一轮真实收益验证预先固定6项新合成任务、3份独立来源证明和36项三组计划；外部验收检验原始/参考/错误修复，实际脚本AgentLoop核对经验输入。预检零HTTP，不读旧授权/凭据，不把参考答案或送达当真实模型效果；设计见[ADR055](decisions/055-new-task-benefit-study-preparation.md)，真实执行需新预算与独立审查。
