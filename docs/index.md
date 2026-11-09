@@ -2,6 +2,10 @@
 
 [English](index.en.md) · [版本与发行状态](release-status.md)
 
+最新真实研究：[三组均10/12，42次实际请求，未观察到通过率提升](evaluation/benefit-live-20261109.md)。源码工作台的“效果对照”可只读导入本机报告；使用和边界见[研究报告阅读指南](evaluation/study-report-view.md)。
+
+最新工程性能：[运行检查P50减少48.7%及逐次测量](evaluation/runtime-freeze-performance.md)。这是单机公开Node闭包的检查性能，不是模型速度或经验收益；结果页已能解释各阶段耗时。
+
 第一次使用建议按“看视频 → 运行同款案例 → 只读配置 → 授权学习 → 核对结果”阅读。示例验证修复来源，自动学习验证运行路径，收益评价验证后续任务，三者不能互相替代。
 
 | 你要做什么 | 入口 |
@@ -21,6 +25,11 @@
 | 了解哪些经验应拒选及其代价 | [有依据的条件、三态判断与96条对照](evaluation/applicability-v1.md) |
 | 不手写事实JSON，核对工程条件与当前目标 | [真实文件检查页、五臂对照与漏选代价](evaluation/project-facts-v1.md) |
 | 从工作台检查文件、预览并提交当前任务（源码） | [输入流程、零费用宿主演练、条件与恢复边界](evaluation/owner-intake-v1.md) |
+| 复查下一轮真实效果试验准备 | [6项新题、独立验收控制与实际经验输入预检](evaluation/benefit-preparation-v1.md) |
+| 了解怎样独立验收、限制返工和处理未知结果 | [有界Agent修复控制器（当前为脚本演练）](evaluation/bounded-repair-controller.md) |
+| 核对未来真实研究怎样占额和停止 | [单次研究费用保护（离线验证，未获得新预算）](evaluation/study-cost-guard.md) |
+| 核对官方SDK实际请求、取消和费用保护接线 | [同一控制器的本机线路与历史依赖回归](evaluation/official-sdk-wire.md) |
+| 审查真实研究计划、授权边界和受限验收 | [冻结计划、一次授权与零费用完整模拟（源码）](evaluation/authorized-benefit-study.md) |
 | 参与试用或报告问题 | [外部试用](community/pilot.md)、[问题表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)、[安全报告](../SECURITY.md) |
 | 从一个小贡献开始 | [贡献指南](../CONTRIBUTING.md)、[新人任务](community/newcomers.md) |
 

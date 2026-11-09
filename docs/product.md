@@ -1,5 +1,15 @@
 # DSH-Reforge 产品需求 v0.2
 
+T065（2026-11-09）：为真实36项效果对照补固定一次性授权、实际执行环境冻结、Key隔离backend及资源受限Python验收；准备阶段仅合成fetch/授权、零付费调用，真实执行需具体计划完成后的新预算。设计先于实现见[ADR059](decisions/059-frozen-authorized-live-study.md)。
+
+T064（2026-11-09）：让官方DeepSeek SDK经过同一个有界修复控制器和费用保护，以本机模拟服务验证实际原始请求、流式解析、取消及零重试；本机HTTP与provider HTTP分别计数。仍无真实预算/Key/付费调用，设计先于实现见[ADR058](decisions/058-official-sdk-study-wire.md)。
+
+T063（2026-11-09）：为后续真实研究增加默认未授权、绑定单个计划的独立持久费用占额和离线调用边界，先占额再传输，未知停止且重启不自动重放。仅合成transport验证，不读Key、不发真实HTTP、不复用T049预算；设计先于实现见[ADR057](decisions/057-study-cost-reservations.md)。
+
+T062（2026-11-09）：在冻结新题与输入预检之后增加最多两次的实际AgentLoop修复/独立pytest控制器，分别记录首次/最终通过、真实尝试与未知结果。脚本参考答案仅演练流程，仍无付费执行/预算授权；设计先于实现见[ADR056](decisions/056-bounded-agent-repair-study.md)。
+
+T061（2026-11-06）：为下一轮真实收益验证预先固定6项新合成任务、3份独立来源证明和36项三组计划；外部验收检验原始/参考/错误修复，实际脚本AgentLoop核对经验输入。预检零HTTP，不读旧授权/凭据，不把参考答案或送达当真实模型效果；设计见[ADR055](decisions/055-new-task-benefit-study-preparation.md)，真实执行需新预算与独立审查。
+
 T060（2026-11-06）：真实工作台按“任务/文件/属性/目标→预览→owner确认提交当前对话”组织，在模型前绑定实际消息/任务身份并检查owner明确声明的经验条件。旧经验不自动补条件，原SQLite v9及授权保持；新增独立有界owner元数据与不可自动重放的回执。设计/验收见[ADR054](decisions/054-owner-task-input-and-live-conditions.md)，真实模型收益仍另验。
 
 T059（2026-11-06）：从明确绑定的有限draft-07工程Schema读取字段必填/可空/声明类型，单独检查owner明确任务目标；不支持/过期保持未知，不从可选/default推断应用行为。新工件留出对照分离人工事实、自动获取与额外目标的贡献，源码入口解释来源和缺项；正常DSH接入与真实收益仍分开验收，见[ADR053](decisions/053-project-schema-facts-and-goals.md)。
@@ -409,5 +419,9 @@ T009已由PR #28完成设计；T010实现G01/G07显式引用切片，不含自�
 T030 切片已合并，见 [验收](development/T030-acceptance.md)／[PR #70](https://github.com/wang1299/dsh-reforge/pull/70)。原生 DSH 前端由 T031 接入，实际能力与交付见 [T031 验收](development/T031-acceptance.md)；首次配置向导、宿主在线心跳及真实用户可用性评价仍待后续任务，不把说明页面描述为这些能力。未发布。
 
 ## 12. 文档维护约定
+
+T067 / [ADR061](decisions/061-runtime-inventory-concurrency-and-timing.md) 增补：运行清单以有界并发核对相同独立路径，继续拒绝变化、别名和未知，不缓存旧核对结果；性能须对照冻结串行oracle并报告实际分母。效果对照可选展示检查、请求至完整响应和其余流程耗时，缺失不推断。工程耗时改善与经验收益分开验证。
+
+T066 / [ADR060](decisions/060-actionable-study-feedback-and-report.md) 增补：研究准入失败只保留有限规则与 AST 类型诊断；原白名单、首轮输入和两轮上限不变。效果对照页本机只读导入有界报告，区分流程完成、任务验收和峰值费用上界，按固定分母展示三组及失败/未知/未尝试。导入结构核验不是独立账本核验，也不能触发模型、授权或重放。实现和实际验收另行记录。
 
 需求与架构采用稳定编号、明确契约、异常矩阵和验收追踪。目标与当前实现分列，设计不得替代实际运行证据；文档版本独立于 npm、SQLite 和评价格式。见[ADR012](decisions/012-detailed-design-baseline.md)。
