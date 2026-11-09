@@ -14,7 +14,7 @@ import { studyArms, studyCases, studyFixtureVersion, studySchedule, studySources
 const repository = fileURLToPath(new URL('../../', import.meta.url));
 export async function rehearseBenefitStudy(parent = join(repository, '.probe-work/t062-study-rehearsal'), python = process.env.EVOLVE_PYTHON ?? 'python') {
   const root = await newStudyRoot(parent); const began = Date.now();
-  const scripts = ['benefit-study-cases', 'benefit-study-preflight', 'benefit-study-files', 'benefit-trial-controller', 'benefit-study-runner', 'pilot-fixtures'];
+  const scripts = ['benefit-study-cases', 'benefit-study-preflight', 'benefit-study-files', 'benefit-trial-controller', 'study-controller-driver', 'benefit-study-runner', 'pilot-fixtures'];
   const snapshot = async () => {
     const paths = ['package.json', 'package-lock.json', 'tsconfig.json', ...scripts.map(name => 'scripts/' + name + '.ts'),
       ...(await readdir(join(repository, 'src'))).filter(name => name.endsWith('.ts')).map(name => 'src/' + name)].sort();

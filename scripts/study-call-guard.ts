@@ -85,24 +85,43 @@ export function studyUsageReceipt(stream: string) {
   } catch { return null; }
 }
 
-export interface OfflineStudyTransport { kind: 'offline-fixture'; respond: (frozenRequest: string) => Promise<{ status: number; body: string }> }
+export interface OfflineStudyTransport { kind: 'offline-fixture'; respond: (frozenRequest: string, signal: AbortSignal) => Promise<{ status: number; body: string }> }
 export function studyWireRequest(request: unknown): string {
   const raw = JSON.stringify(requestSchema.parse(request));
   if (Buffer.byteLength(raw) > policy.maxRequestBytes) throw new Error('Study request too large');
   return raw;
 }
-export async function guardedOfflineStudyCall(input: {
-  ledger: StudyCostLedger; binding: StudyCostBinding; identity: StudyCallIdentity; request: unknown;
-  checkFrozen: () => Promise<{ planDigest: string }>; transport: OfflineStudyTransport;
-}) {
+interface GuardInput {
+  ledger: StudyCostLedger; binding: StudyCostBinding; identity: StudyCallIdentity;
+  checkFrozen: () => Promise<{ planDigest: string }>; transport: OfflineStudyTransport; signal?: AbortSignal; deadlineMs?: number;
+}
+function abortable<T>(operation: Promise<T>, signal: AbortSignal): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const abort = () => { signal.removeEventListener('abort', abort); reject(new Error('Study call cancelled')); }; signal.addEventListener('abort', abort, { once: true });
+    operation.then(value => { signal.removeEventListener('abort', abort); resolve(value); }, error => { signal.removeEventListener('abort', abort); reject(error); });
+    if (signal.aborted) abort();
+  });
+}
+export async function guardedOfflineStudyCall(input: GuardInput & { request: unknown }) {
+  return guardWire(input, studyWireRequest(input.request));
+}
+export async function guardedOfflineWireCall(input: GuardInput & { wire: string }) {
+  if (Buffer.byteLength(input.wire) > policy.maxRequestBytes) throw new Error('Study request too large');
+  requestSchema.parse(uniqueJson(input.wire)); return guardWire(input, input.wire);
+}
+async function guardWire(input: GuardInput, raw: string) {
   if (input.transport.kind !== 'offline-fixture') throw new Error('Offline transport required');
-  const raw = studyWireRequest(input.request); const binding = structuredClone(input.binding); const identity = structuredClone(input.identity);
+  const binding = structuredClone(input.binding); const identity = structuredClone(input.identity);
   const ledger = input.ledger; const respond = input.transport.respond;
   if (digest(raw) !== identity.inputDigest) throw new Error('Study wire request mismatch');
-  const frozen = await input.checkFrozen(); if (frozen.planDigest !== binding.planDigest) throw new Error('Study freeze changed');
-  const id = ledger.reserve(binding, identity); let resolved = false;
+  const deadline = z.number().int().min(1).max(120000).parse(input.deadlineMs ?? 10000);
+  const controller = new AbortController(); const signal = input.signal ? AbortSignal.any([controller.signal, input.signal]) : controller.signal;
+  const timer = setTimeout(() => controller.abort(), deadline); let id: string | undefined; let resolved = false;
   try {
-    const response = await respond(raw);
+    signal.throwIfAborted(); const frozen = await abortable(input.checkFrozen(), signal);
+    if (frozen.planDigest !== binding.planDigest) throw new Error('Study freeze changed'); signal.throwIfAborted();
+    id = ledger.reserve(binding, identity);
+    const response = await abortable(respond(raw, signal), signal); signal.throwIfAborted();
     if (response.status !== 200) { ledger.hold(id, 'http_error'); resolved = true; throw new Error('Study HTTP receipt rejected'); }
     const receipt = studyUsageReceipt(response.body);
     if (!receipt) { ledger.hold(id, 'invalid_receipt'); resolved = true; throw new Error('Study usage receipt incomplete'); }
@@ -110,7 +129,7 @@ export async function guardedOfflineStudyCall(input: {
     if (receipt.usage.output > policy.requestedOutput) throw new Error('Study output limit exceeded');
     return { body: response.body, receipt, requestId: id, kind: 'offline-fixture' as const };
   } catch {
-    if (!resolved) { try { ledger.hold(id, 'transport_unknown'); } catch { /* Failed writes leave the original committed reservation. */ } }
+    if (id && !resolved) { try { ledger.hold(id, 'transport_unknown'); } catch { /* Failed writes leave the original committed reservation. */ } }
     throw new Error('Study call stopped; never replay automatically');
-  }
+  } finally { clearTimeout(timer); }
 }

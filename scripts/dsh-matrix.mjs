@@ -86,6 +86,7 @@ try {
     run(stage, ['run', typecheckOnly ? 'typecheck' : 'check']);
     if (!typecheckOnly) {
       run(stage, ['run', 'study:rehearse']);
+      run(stage, ['run', 'study:wire']);
       run(stage, ['run', 'compat']); run(stage, ['run', 'demo']);
       run(stage, ['run', 'install-probe', '--', archive]);
       run(stage, ['run', 'install-probe', '--', archive, '--learning']);

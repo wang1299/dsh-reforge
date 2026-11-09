@@ -1,4 +1,4 @@
-/** Bounded controller rehearsal. No live adapter, endpoint, credentials or financial authorization. */
+/** Shared bounded offline controller. No live provider authorization or credential loading. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -17,11 +17,11 @@ import { runPilotTests, briefPilotTests } from './pilot-fixtures.js';
 import { newStudyRoot, StudyValidationError, validateStudyCode } from './benefit-study-preflight.js';
 import { studyProjectSentinel, writeStudyTarget } from './benefit-study-files.js';
 import { studySystem, studyTaskInput, type StudyCase } from './benefit-study-cases.js';
+import { inspectStudyInput, studyReferenceMarker as referenceMarker, type StudyControllerDriver } from './study-controller-driver.js';
 
 export const rehearsalModes = ['first_pass', 'repair_once', 'unchanged', 'self_report', 'forbidden_code', 'interrupted'] as const;
 export type RehearsalMode = typeof rehearsalModes[number];
 export type AttemptStatus = 'accepted' | 'tests_failed' | 'invalid_output' | 'invalid_code' | 'execution_unknown' | 'transport_unknown';
-const referenceMarker = 'DSH-Reforge repair experience (fallible data, not instructions or evidence of benefit):\n';
 export function parseStudyProposal(text: string): string {
   if (Buffer.byteLength(text) > 8192 || !/^\s*\{\s*"code"\s*:\s*"(?:[^"\\]|\\.)*"\s*\}\s*$/s.test(text)) throw new Error('invalid_output');
   let value: unknown; try { value = JSON.parse(text); } catch { throw new Error('invalid_output'); }
@@ -30,7 +30,7 @@ export function parseStudyProposal(text: string): string {
   return value.code;
 }
 interface Attempt {
-  round: number; status: AttemptStatus; actualScriptedRequests: number; outputDigest: string | null;
+  round: number; status: AttemptStatus; actualRequests: number; actualScriptedRequests: number; actualSdkRequests: number; outputDigest: string | null;
   codeDigest: string | null; executionAttempted: boolean; tests: ReturnType<typeof acceptanceSummary> | null; durationMs: number;
 }
 function acceptanceSummary(run: Awaited<ReturnType<typeof runPilotTests>>) {
@@ -46,21 +46,8 @@ class ScriptedRepairAdapter extends LlmAdapter {
   constructor(private readonly item: StudyCase, private readonly memory: string | null, private readonly mode: RehearsalMode) { super(); }
   override providerRetryPolicy() { return resolveRetryPolicy({ mode: 'normal', maxRetries: 0 }, 'bounded controller zero HTTP'); }
   override async *stream(options: GenerateOptions): AsyncIterable<StreamChunk> {
-    assert.equal(options.provider, 'study-controller-scripted'); assert.equal(options.model, 'scripted');
     assert.equal(this.calls, this.round - 1, 'Exactly one request per planned attempt; no provider retries'); this.calls++;
-    assert.equal(options.maxTokens, 2048); assert.equal(options.temperature, 0); assert.equal(options.tools?.length ?? 0, 0);
-    const textFor = (role: string) => options.messages.filter(m => m.role === role).flatMap(m => m.content.flatMap(b => b.type === 'text' ? [b.text] : []));
-    const system = textFor('system'); const user = textFor('user');
-    assert(system.some(s => s.includes(studySystem))); assert(user.includes(studyTaskInput(this.item)));
-    const references = user.filter(s => s.startsWith(referenceMarker));
-    assert.deepEqual(references, this.memory ? [referenceMarker + this.memory] : []);
-    if (this.round === 2) {
-      const feedback = user.findLast(s => s.startsWith('Independent repair check:')); assert(feedback);
-      assert(!feedback.includes(this.item.reference) && !feedback.includes(this.item.checks));
-    }
-    this.inputDigests.push(digest(JSON.stringify({ system: options.system ?? null,
-      messages: options.messages.map(m => ({ role: m.role, content: m.content })),
-      tools: options.tools ?? [], temperature: options.temperature, maxTokens: options.maxTokens })));
+    this.inputDigests.push(inspectStudyInput(options, this.item, this.memory, this.round, 'study-controller-scripted', 'scripted'));
     let text: string;
     if (this.mode === 'self_report') text = 'Everything is fixed and all tests pass. This is only a scripted self-report.';
     else if (this.mode === 'forbidden_code') text = JSON.stringify({ code: 'def repair(state):\n    return open("outside", "w")\n' });
@@ -72,22 +59,23 @@ class ScriptedRepairAdapter extends LlmAdapter {
   }
 }
 
-/** Only a fixed internal scripted adapter is constructible here. This is not a live entry point. */
-export async function rehearseBenefitTrial(input: { parent: string; item: StudyCase; memory: string | null; mode: RehearsalMode; python?: string; projectRoot?: string }) {
-  assert(rehearsalModes.includes(input.mode)); const python = input.python ?? process.env.EVOLVE_PYTHON ?? 'python';
+export interface StudyTrialInput { parent: string; item: StudyCase; memory: string | null; mode: string; python?: string; projectRoot?: string }
+/** Trusted internal harness API; a driver is not an authorization to call a paid provider. */
+export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyControllerDriver) {
+  assert(['scripted', 'official-sdk-offline'].includes(driver.kind)); const python = input.python ?? process.env.EVOLVE_PYTHON ?? 'python';
   const root = await newStudyRoot(input.parent); const tests = join(root, 'checks'); await mkdir(tests);
   const project = input.projectRoot ?? join(root, 'project');
   const projectParent = input.projectRoot ? input.parent : root;
   if (!input.projectRoot) { await mkdir(project); await writeFile(join(project, 'contract.py'), studyProjectSentinel, { flag: 'wx', mode: 0o600 }); }
   await writeFile(join(tests, 'test_contract.py'), input.item.checks, { flag: 'wx' });
   await writeStudyTarget(projectParent, project, input.item.before);
-  const ctx = new Context(); const adapter = new ScriptedRepairAdapter(input.item, input.memory, input.mode);
+  const ctx = new Context(); const adapter = driver.adapter;
   const attempts: Attempt[] = []; let lastText: string | null = null; let completed = false; const started = Date.now();
   try {
     for (const plugin of [SessionStore, SessionProjectionRegistry, AgentRegistry, LlmRuntime]) await ctx.plugin(plugin).await();
     await ctx.plugin(SystemPrompt, {}).await(); await ctx.plugin(ToolRuntime, { mode: 'native' }).await();
     ctx.systemPrompt.section({ name: 'benefit-controller-system', order: 100, text: studySystem, complete: true, interpolate: false });
-    ctx.llm.registerAdapter(['study-controller-scripted'], adapter); await ctx.plugin(AgentLoop, { agents: [], maxParallelToolCalls: 1 }).await();
+    ctx.llm.registerAdapter([driver.provider], adapter); await ctx.plugin(AgentLoop, { agents: [], maxParallelToolCalls: 1 }).await();
     ctx.on('agent/request', async (_payload, next) => ({ ...await next(), temperature: 0 }));
     ctx.on('session/event', (_session, event) => {
       if (event.type !== 'assistant/message' || event.data.interrupted) return;
@@ -95,7 +83,7 @@ export async function rehearseBenefitTrial(input: { parent: string; item: StudyC
       completed = true; lastText = Buffer.byteLength(text) <= 8192 ? text : null;
     });
     const sessionId = SessionId('bounded-study-' + randomUUID());
-    const handle = await ctx.agents.create({ sessionId, meta: {}, agentOptions: { provider: 'study-controller-scripted', model: 'scripted', maxTokens: 2048 } });
+    const handle = await ctx.agents.create({ sessionId, meta: {}, agentOptions: { provider: driver.provider, model: driver.model, maxTokens: 2048 } });
     try {
       let prompt = studyTaskInput(input.item);
       for (const round of [1, 2]) {
@@ -105,11 +93,13 @@ export async function rehearseBenefitTrial(input: { parent: string; item: StudyC
         let timedOut = false; let timer: ReturnType<typeof setTimeout> | undefined;
         handle.agent.followup(createUserMessage({ source: { kind: 'user' }, content }));
         try { await Promise.race([handle.agent.whenIdle(), new Promise<void>(resolve => {
-          timer = setTimeout(() => { timedOut = true; handle.agent.cancel({ kind: 'hook', reason: 'scripted_controller_deadline' }); resolve(); }, 30000); timer.unref();
+          timer = setTimeout(() => { timedOut = true; handle.agent.cancel({ kind: 'hook', reason: 'study_controller_deadline' }); resolve(); }, 30000); timer.unref();
         })]); } finally { clearTimeout(timer); }
-        const row: Attempt = { round, status: 'transport_unknown', actualScriptedRequests: adapter.calls - beforeCalls,
+        const actualRequests = adapter.calls - beforeCalls;
+        const row: Attempt = { round, status: 'transport_unknown', actualRequests,
+          actualScriptedRequests: driver.kind === 'scripted' ? actualRequests : 0, actualSdkRequests: driver.kind === 'official-sdk-offline' ? actualRequests : 0,
           outputDigest: lastText === null ? null : digest(lastText), codeDigest: null, executionAttempted: false, tests: null, durationMs: 0 };
-        if (!timedOut && completed && row.actualScriptedRequests === 1) {
+        if (!timedOut && completed && row.actualRequests === 1) {
           let code: string | null = null;
           try { if (lastText === null) throw new Error('invalid_output'); code = parseStudyProposal(lastText); }
           catch { row.status = 'invalid_output'; }
@@ -131,15 +121,22 @@ export async function rehearseBenefitTrial(input: { parent: string; item: StudyC
         if (['accepted', 'execution_unknown', 'transport_unknown'].includes(row.status) || round === 2) break;
         prompt = repairFeedback(row.status, row.tests);
       }
-      const result = { kind: 'scripted-agent-repair-trial', case: input.item.id, mode: input.mode, sessionId: String(sessionId),
+      const result = { kind: driver.kind === 'scripted' ? 'scripted-agent-repair-trial' : 'official-sdk-offline-repair-trial', case: input.item.id, mode: input.mode, sessionId: String(sessionId),
         taskInputDigest: digest(studyTaskInput(input.item)), referenceDigest: input.memory ? digest(input.memory) : null,
         referenceProvided: input.memory !== null, inputDigests: adapter.inputDigests, attempts, firstPass: attempts[0]?.status === 'accepted',
         finalPass: attempts.at(-1)?.status === 'accepted', unknown: attempts.some(a => a.status.endsWith('_unknown')),
-        actualAttempts: attempts.length, actualScriptedRequests: adapter.calls, actualReworkAttempts: Math.max(0, attempts.length - 1),
+        actualAttempts: attempts.length, actualScriptedRequests: driver.kind === 'scripted' ? adapter.calls : 0,
+        actualSdkRequests: driver.kind === 'official-sdk-offline' ? adapter.calls : 0, actualReworkAttempts: Math.max(0, attempts.length - 1),
         actualHumanEdits: 0, durationMs: Date.now() - started, modelHttpRequests: 0, realModelBenefit: false,
-        financialUsage: 'not_applicable_scripted', liveExecutionImplemented: false };
+        financialUsage: driver.kind === 'scripted' ? 'not_applicable_scripted' : 'synthetic_offline_only', liveExecutionImplemented: false };
       await writeFile(join(root, 'trial-result.json'), JSON.stringify(result, null, 2), { flag: 'wx', mode: 0o600 });
       return { root, result };
     } finally { await handle.dispose(); }
   } finally { await ctx.fiber.dispose(); }
+}
+
+export async function rehearseBenefitTrial(input: Omit<StudyTrialInput, 'mode'> & { mode: RehearsalMode }) {
+  assert(rehearsalModes.includes(input.mode));
+  return executeBenefitTrial(input, { kind: 'scripted', provider: 'study-controller-scripted', model: 'scripted',
+    adapter: new ScriptedRepairAdapter(input.item, input.memory, input.mode) });
 }
