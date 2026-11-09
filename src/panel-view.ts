@@ -11,6 +11,7 @@ import { ownerGoalLabels } from './owner-input-copy.js';
 import { studyAdmissionContract } from './study-admission-contract.js';
 import { parseStudyReport } from './study-report.js';
 import { installStudyReport, studyReportStyles } from './study-report-view.js';
+import { studyReportExample } from './study-report-example.js';
 
 /** Local presentation only; dynamic records are constructed as text nodes. */
 export function renderPanel(nonce: string, bridge?: { channel: string; parentOrigin: string }): string {
@@ -75,7 +76,8 @@ async function api(path,method='GET',data){if(nativeBridge)return nativeRequest(
 const ownerView=(${installOwnerInput.toString()})($('owner-input'),{request:api,experiences:()=>state?.experiences||[]},${JSON.stringify(ownerGoalLabels)});
 const studyAdmissionContract=${studyAdmissionContract.toString()};
 const readStudyReport=${parseStudyReport.toString()};
-(${installStudyReport.toString()})($('study'),readStudyReport);
+const exampleStudyReport=${studyReportExample.toString()};
+(${installStudyReport.toString()})($('study'),readStudyReport,exampleStudyReport);
 async function action(path,data,control){if(waiting())return;writing=true;const locked=[...$('detail').querySelectorAll('button,input,select,textarea'),$('cleanup')].map(el=>[el,el.disabled]);for(const [el]of locked)el.disabled=true;const label=control?.textContent;if(control){control.setAttribute('aria-busy','true');control.textContent='正在保存…';control.append(icon('loader'));}message('正在保存，请等待本次操作结果。','busy');try{await api(path,'POST',data);if(reading)await readRequest;const synced=await refresh();if(!synced){message('保存请求已返回，但未能读取最新记录。当前编辑已保留，请先刷新核对，避免重复操作。','warning');return;}const editsDetail=path!=='/api/cleanup';if(editsDetail)dirty=false;if(selected&&editsDetail){renderDetail();$('detail-heading')?.focus();}message(path==='/api/cleanup'?'已清理未引用的过期记录。':'已保存，记录已更新。','success');}catch(error){message('保存结果待核对：'+error.message+'。当前编辑已保留，请核对后再操作；不会自动重试。','warning');}finally{for(const [el,disabled]of locked)el.disabled=disabled;if(control){control.textContent=label;control.setAttribute('aria-busy','false');}writing=false;}}
 function showView(view){if(waiting())return;if(dirty){message('有尚未保存的编辑。请先保存，或选择“放弃未保存编辑”。');return;}activeView=view;selected=null;renderNavigation();if(view==='learning')$('learning-area').open=true;if(state)renderLists();message('');}
 function navigate(view,filter){if(dirty){showView(view);return;}if(filter)$('filter').value=filter;showView(view);}

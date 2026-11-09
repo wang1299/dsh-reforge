@@ -42,10 +42,11 @@ function browser() {
   };
   const exp = { id: 'experience-one', revision: 1, status: 'candidate', title: '<img src=x onerror=alert(1)>', strategy: 'Restore the prior state', observedFacts: ['A correction was recorded'], inferences: [], recommendations: [], scope: { repoId: 'repo', requiredFiles: { 'ledger.py': 'a'.repeat(64) } }, sourceTaskId: 'source', verificationId: null, createdAt: '2026-10-20T00:00:00Z' };
   const current = { experiences: [exp], tasks: [{ id: 'source', summary: '转账失败时恢复余额' }, { id: 'target', summary: '库存异常后数量不正确' }], applications: [{ id: 'application-one', taskId: 'target', experienceId: exp.id, revision: 1, createdAt: exp.createdAt }], feedback: [] as { id: string; applicationId: string; outcome: string; note: string; createdAt: string }[], evidence: [{ id: 'source-evidence', taskId: 'source', repoId: 'repo', kind: 'correction', note: 'restore balance', digest: 'd' }], verifications: {}, histories: { [exp.id]: [exp] }, provenance: { [exp.id]: { 1: { complete: false, facts: [{ factIndex: 0, factDigest: 'f' }], citations: [] } } }, learningJobs: [{ id: 'job-one', state: 'succeeded', input: { taskId: 'source', baseCommit: 'a'.repeat(40), fixCommit: 'b'.repeat(40), sources: [], observations: [] } }], evidenceBundles: [], extractionJobs: [{ id: 'extraction-one', evidenceJobId: 'job-one', state: 'candidate', reason: 'extracted', candidateId: exp.id, policy: { provider: 'offline', model: 'fixture' } }], extractionGrants: [] };
-  const posts: { path: string; body: Record<string, unknown> }[] = [];
+  const posts: { path: string; body: Record<string, unknown> }[] = [], reads: string[] = [];
   let offline = false; let postStatus = 409; let postHold: Promise<void> | null = null; let readHold: Promise<void> | null = null;
   const context = createContext({ document, TextEncoder, URLSearchParams, Intl, Date, JSON, crypto: { randomUUID }, location: { hash: '#token=fixture', pathname: '/' }, history: { replaceState: () => undefined }, setInterval: () => undefined,
     fetch: async (path: string, init: { method: string; body?: string }) => {
+      if (init.method !== 'POST') reads.push(path);
       if (offline) throw new Error('Synthetic offline');
       if (init.method === 'POST') { posts.push({ path, body: JSON.parse(init.body!) as Record<string, unknown> }); if (postHold) await postHold; if (postStatus === 0) throw new Error('Synthetic interrupted response'); return { ok: postStatus === 200, json: async () => ({ error: 'Experience changed; refresh before editing' }) }; }
       if (readHold) await readHold;
@@ -58,10 +59,47 @@ function browser() {
   const control = (label: string) => descendants(get('detail')).find(e => e.attributes.get('aria-label') === label)!;
   const click = async (text: string) => { const control = descendants(get('detail')).find(e => e.tag === 'button' && e.textContent === text); assert.ok(control); await control.onclick!(); };
   const clickRecordCandidate = async () => { const button = descendants(get('evidence-jobs')).find(e => e.tag === 'button' && e.textContent === '查看候选经验'); assert.ok(button); await button.onclick!(); };
-  return { get, current, posts, run, control, click, clickRecordCandidate, descendants, offline: () => { offline = true; }, unknownWrites: () => { postStatus = 0; }, acknowledgeWrites: () => { postStatus = 200; },
+  return { get, current, posts, reads, run, control, click, clickRecordCandidate, descendants, offline: () => { offline = true; }, unknownWrites: () => { postStatus = 0; }, acknowledgeWrites: () => { postStatus = 200; },
     holdWrites: () => { let release!: () => void; postHold = new Promise<void>(done => { release = done; }); return () => { postHold = null; release(); }; },
     holdReads: () => { let release!: () => void; readHold = new Promise<void>(done => { release = done; }); return () => { readHold = null; release(); }; } };
 }
+
+test('the first report opens a clearly synthetic example without a file, network or product-state writes', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("showView('study')");
+  const before = JSON.stringify(b.current), reads = [...b.reads]; b.offline();
+  await b.get('study-report-example').onclick!();
+  assert.equal(b.get('study-report-content').hidden, false);
+  assert.match(b.get('study').textContent, /内置合成示例/); assert.match(b.get('study').textContent, /未读取文件或运行任务/);
+  assert.match(b.get('study').textContent, /预制模拟金额，未产生费用/); assert.match(b.get('study').textContent, /18 \/ 36 已记录/);
+  assert.match(b.get('study').textContent, /12 \/ 36 通过/); assert.match(b.get('study').textContent, /示例未知占额 ¥5.345728/);
+  assert(b.descendants(b.get('study')).filter(e => e.className === 'study-attempt').every(e => e.textContent.startsWith('示例 第 ') && e.textContent.includes('示例设定：')));
+  assert(!/本机文件已通过|文件标记：|源码 aaaa/.test(b.get('study').textContent));
+  const filter = b.get('study-report-filter'); filter.value = 'unknown'; filter.onchange!();
+  assert.match(b.get('study').textContent, /显示 1 \/ 12 组同题配对/);
+  filter.value = 'unattempted'; filter.onchange!(); assert.match(b.get('study').textContent, /显示 6 \/ 12 组同题配对/);
+  const clear = b.descendants(b.get('study')).find(e => e.tag === 'button' && e.textContent === '清除本页报告')!;
+  await clear.onclick!(); assert.equal(b.get('study-report-content').hidden, true);
+  assert(!b.get('study').textContent.includes('5.345728')); assert(!b.get('study').textContent.includes('内置合成示例'));
+  assert.deepEqual(b.reads, reads); assert.equal(b.posts.length, 0); assert.equal(JSON.stringify(b.current), before);
+});
+
+test('example selection defeats late file success or failure; imported labels cannot impersonate the built-in example', async () => {
+  for (const lateFailure of [false, true]) {
+    const b = browser(); await b.run('refresh()'); await b.run("showView('study')");
+    const file = b.get('study-report-file'); let finish!: (value: string) => void, reject!: (reason: Error) => void;
+    file.files = [{ size: 100, text: () => new Promise((resolve, fail) => { finish = resolve; reject = fail; }) }];
+    const pending = file.onchange!(); await b.get('study-report-example').onclick!();
+    const text = JSON.stringify({ ...studyReportFixture(), origin: 'example', builtIn: true });
+    if (lateFailure) reject(new Error('Synthetic late read')); else finish(text);
+    await pending;
+    assert.match(b.get('study').textContent, /内置合成示例/); assert(!b.get('study').textContent.includes('无法读取'));
+    file.files = [{ size: Buffer.byteLength(text), text: async () => text }]; await file.onchange!();
+    assert.match(b.get('study').textContent, /文件标记：真实模型请求 · 本机文件 · 源码 aaaaaaaaaaaa/);
+    assert.match(b.get('study').textContent, /本机文件已通过结构一致性检查/);
+    assert(!b.get('study').textContent.includes('内置合成示例')); assert(!b.get('study').textContent.includes('示例未知占额'));
+    assert.equal(b.posts.length, 0);
+  }
+});
 
 test('report import, filter, polling and clear stay local and preserve all denominator rows', async () => {
   const b = browser(); await b.run('refresh()'); await b.run("showView('study')");
