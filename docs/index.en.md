@@ -1,5 +1,7 @@
 # DSH-Reforge documentation
 
+Bounded repair study: [actual AgentLoop, independent acceptance and at most one repair turn](evaluation/bounded-repair-controller.md#english). Scripted controller rehearsal only; no real-model benefit or live spending authorization.
+
 Next benefit-study preparation: [six new task contracts, independent controls and actual scripted memory exposure](evaluation/benefit-preparation-v1.md#english). Zero HTTP, no real-model repair or benefit result; a new live runner and spending authorization remain required.
 
 Source-only task flow: [inspect file facts, declare version-specific prerequisites, preview and submit the current task](evaluation/owner-intake-v1.md#english). Includes an actual AgentLoop zero-paid-API harness, bounded recovery and explicit limits; it is separate from the published alpha.2 package and real task-benefit evaluation.
