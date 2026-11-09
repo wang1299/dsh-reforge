@@ -1,5 +1,7 @@
 # DSH-Reforge 产品需求 v0.2
 
+T065（2026-11-09）：为真实36项效果对照补固定一次性授权、实际执行环境冻结、Key隔离backend及资源受限Python验收；准备阶段仅合成fetch/授权、零付费调用，真实执行需具体计划完成后的新预算。设计先于实现见[ADR059](decisions/059-frozen-authorized-live-study.md)。
+
 T064（2026-11-09）：让官方DeepSeek SDK经过同一个有界修复控制器和费用保护，以本机模拟服务验证实际原始请求、流式解析、取消及零重试；本机HTTP与provider HTTP分别计数。仍无真实预算/Key/付费调用，设计先于实现见[ADR058](decisions/058-official-sdk-study-wire.md)。
 
 T063（2026-11-09）：为后续真实研究增加默认未授权、绑定单个计划的独立持久费用占额和离线调用边界，先占额再传输，未知停止且重启不自动重放。仅合成transport验证，不读Key、不发真实HTTP、不复用T049预算；设计先于实现见[ADR057](decisions/057-study-cost-reservations.md)。
