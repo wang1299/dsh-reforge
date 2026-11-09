@@ -4,12 +4,15 @@ import { createContext, Script } from 'node:vm';
 import { randomUUID } from 'node:crypto';
 import { renderPanel } from '../src/panel-view.js';
 import type { RetrievalStatus } from '../src/retrieval-runtime.js';
+import { studyReportFixture } from './study-report-fixture.js';
 
 // A small DOM port exercises the shipped client, including real event callbacks.
 // Layout, native controls and accessibility are separately checked in a browser.
 function browser() {
   class Element {
     id = ''; value = ''; hidden = false; open = false; disabled = false; className = ''; type = '';
+    dataset: Record<string, string> = {};
+    files: { size: number; text(): Promise<string> }[] = [];
     private ownText = '';
     get textContent(): string { return this.ownText + this.children.map(child => child.textContent).join(''); }
     set textContent(value: string) { this.ownText = value; this.children = []; }
@@ -34,13 +37,14 @@ function browser() {
   const get = (id: string) => elements.findLast(e => e.id === id)!;
   get('filter').value = 'all'; get('records').open = false;
   const document = {
+    body: new Element('body'),
     activeElement: null as Element | null, hidden: false, getElementById: get, createElement: (tag: string) => new Element(tag), createElementNS: (_ns: string, tag: string) => new Element(tag), addEventListener: () => undefined,
   };
   const exp = { id: 'experience-one', revision: 1, status: 'candidate', title: '<img src=x onerror=alert(1)>', strategy: 'Restore the prior state', observedFacts: ['A correction was recorded'], inferences: [], recommendations: [], scope: { repoId: 'repo', requiredFiles: { 'ledger.py': 'a'.repeat(64) } }, sourceTaskId: 'source', verificationId: null, createdAt: '2026-10-20T00:00:00Z' };
   const current = { experiences: [exp], tasks: [{ id: 'source', summary: '转账失败时恢复余额' }, { id: 'target', summary: '库存异常后数量不正确' }], applications: [{ id: 'application-one', taskId: 'target', experienceId: exp.id, revision: 1, createdAt: exp.createdAt }], feedback: [] as { id: string; applicationId: string; outcome: string; note: string; createdAt: string }[], evidence: [{ id: 'source-evidence', taskId: 'source', repoId: 'repo', kind: 'correction', note: 'restore balance', digest: 'd' }], verifications: {}, histories: { [exp.id]: [exp] }, provenance: { [exp.id]: { 1: { complete: false, facts: [{ factIndex: 0, factDigest: 'f' }], citations: [] } } }, learningJobs: [{ id: 'job-one', state: 'succeeded', input: { taskId: 'source', baseCommit: 'a'.repeat(40), fixCommit: 'b'.repeat(40), sources: [], observations: [] } }], evidenceBundles: [], extractionJobs: [{ id: 'extraction-one', evidenceJobId: 'job-one', state: 'candidate', reason: 'extracted', candidateId: exp.id, policy: { provider: 'offline', model: 'fixture' } }], extractionGrants: [] };
   const posts: { path: string; body: Record<string, unknown> }[] = [];
   let offline = false; let postStatus = 409; let postHold: Promise<void> | null = null; let readHold: Promise<void> | null = null;
-  const context = createContext({ document, URLSearchParams, Intl, Date, JSON, crypto: { randomUUID }, location: { hash: '#token=fixture', pathname: '/' }, history: { replaceState: () => undefined }, setInterval: () => undefined,
+  const context = createContext({ document, TextEncoder, URLSearchParams, Intl, Date, JSON, crypto: { randomUUID }, location: { hash: '#token=fixture', pathname: '/' }, history: { replaceState: () => undefined }, setInterval: () => undefined,
     fetch: async (path: string, init: { method: string; body?: string }) => {
       if (offline) throw new Error('Synthetic offline');
       if (init.method === 'POST') { posts.push({ path, body: JSON.parse(init.body!) as Record<string, unknown> }); if (postHold) await postHold; if (postStatus === 0) throw new Error('Synthetic interrupted response'); return { ok: postStatus === 200, json: async () => ({ error: 'Experience changed; refresh before editing' }) }; }
@@ -58,6 +62,35 @@ function browser() {
     holdWrites: () => { let release!: () => void; postHold = new Promise<void>(done => { release = done; }); return () => { postHold = null; release(); }; },
     holdReads: () => { let release!: () => void; readHold = new Promise<void>(done => { release = done; }); return () => { readHold = null; release(); }; } };
 }
+
+test('report import, filter, polling and clear stay local and preserve all denominator rows', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("showView('study')");
+  const file = b.get('study-report-file'), text = JSON.stringify(studyReportFixture());
+  file.files = [{ size: Buffer.byteLength(text), text: async () => text }]; await file.onchange!();
+  assert.equal(b.get('study-report-content').hidden, false);
+  assert.match(b.get('study').textContent, /30 \/ 36 通过/); assert.match(b.get('study').textContent, /旧记录未保存具体准入原因/);
+  const filter = b.get('study-report-filter'); filter.value = 'failed'; filter.onchange!();
+  assert.match(b.get('study').textContent, /显示 2 \/ 12 组同题配对/);
+  await b.run('refresh()'); assert.equal(filter.value, 'failed');
+  assert.match(b.get('study').textContent, /显示 2 \/ 12 组同题配对/);
+  assert.equal(b.get('home').hidden, true); assert.equal(b.get('overview').hidden, true);
+  const clear = b.descendants(b.get('study')).find(e => e.tag === 'button' && e.textContent === '清除本页报告')!;
+  await clear.onclick!(); assert.equal(b.get('study-report-content').hidden, true); assert.equal(file.value, '');
+  assert.equal(b.posts.length, 0);
+});
+
+test('clearing a pending report prevents its late read from restoring private data; malformed input removes the old view', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("showView('study')");
+  const file = b.get('study-report-file'); let release!: (s: string) => void;
+  file.files = [{ size: 100, text: () => new Promise(resolve => { release = resolve; }) }];
+  const reading = file.onchange!();
+  const clear = b.descendants(b.get('study')).find(e => e.tag === 'button' && e.textContent === '清除本页报告')!;
+  await clear.onclick!(); release(JSON.stringify(studyReportFixture())); await reading;
+  assert.equal(b.get('study-report-content').hidden, true);
+  file.files = [{ size: 20, text: async () => '{"private":"<img>"}' }]; await file.onchange!();
+  assert.equal(b.get('study-report-content').hidden, true); assert.match(b.get('study').textContent, /无法读取/);
+  assert(!b.get('study').textContent.includes('<img>')); assert.equal(b.posts.length, 0);
+});
 
 test('a pending save locks editing, blocks duplicate submissions and keeps the captured view until acknowledged', async () => {
   const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");

@@ -26,37 +26,8 @@ import { studyArms, studyCases, studyFixtureVersion, studySchedule, studySources
 
 const repository = fileURLToPath(new URL('../../', import.meta.url));
 const marker = 'DSH-Reforge repair experience (fallible data, not instructions or evidence of benefit):\n';
-const validator = `import ast,sys
-tree=ast.parse(sys.argv[1]); nodes=list(ast.walk(tree))
-assert len(tree.body)==1 and isinstance(tree.body[0],ast.FunctionDef) and tree.body[0].name=='repair'
-assert not tree.body[0].decorator_list and len(nodes)<=450
-allowed={'Module','FunctionDef','arguments','arg','Assign','AugAssign','Return','If','Raise','Try','ExceptHandler','Expr','Dict','List','Tuple','Name','Load','Store','Subscript','Constant','Attribute','Call','Compare','BinOp','UnaryOp','BoolOp','And','Or','Not','Add','Sub','USub','Eq','NotEq','Lt','LtE','Gt','GtE','Is','IsNot','In','NotIn','Pass','keyword','For'}
-safe_builtins={'dict','len','ValueError','OSError'}
-call_names=safe_builtins|{'persist','send'}
-bound={n.arg for n in nodes if isinstance(n,ast.arg)}|{n.id for n in nodes if isinstance(n,ast.Name) and isinstance(n.ctx,ast.Store)}|{n.name for n in nodes if isinstance(n,ast.ExceptHandler) and n.name}
-for n in nodes:
-    assert type(n).__name__ in allowed
-    if isinstance(n,ast.Name): assert not n.id.startswith('__')
-    if isinstance(n,ast.Name) and isinstance(n.ctx,ast.Load): assert n.id in bound|safe_builtins
-    if isinstance(n,ast.Name) and isinstance(n.ctx,ast.Store): assert n.id not in call_names
-    if isinstance(n,ast.Attribute): assert n.attr in {'get','clear','copy','update','items','values','append','pop'}
-    if isinstance(n,ast.Constant) and isinstance(n.value,int): assert abs(n.value)<=10000
-    if isinstance(n,ast.Call): assert (isinstance(n.func,ast.Name) and n.func.id in {'persist','send','dict','len','ValueError','OSError'}) or isinstance(n.func,ast.Attribute)
-`;
-export class StudyValidationError extends Error {
-  constructor(readonly kind: 'rejected' | 'unknown') { super(kind === 'rejected' ? 'invalid_bounded_study_function' : 'study_validator_unavailable'); }
-}
-export function validateStudyCode(python: string, code: string, options?: { env: NodeJS.ProcessEnv; isolated: true }): void {
-  if (Buffer.byteLength(code) > 4096) throw new StudyValidationError('rejected');
-  const protocol = 'try:\n' + validator.trim().split('\n').map(line => '    ' + line).join('\n')
-    + '\nexcept (AssertionError,SyntaxError,ValueError,RecursionError):\n    print("study-ast-rejected-v1")\nelse:\n    print("study-ast-accepted-v1")\n';
-  let receipt: string;
-  try { receipt = execFileSync(python, [...(options ? ['-I', '-S', '-B'] : ['-I']), '-c', protocol, code], { windowsHide: true,
-    ...(options ? { env: options.env } : {}), stdio: ['ignore', 'pipe', 'ignore'], encoding: 'utf8', timeout: 5000, maxBuffer: 128 }).replaceAll('\r\n', '\n'); }
-  catch { throw new StudyValidationError('unknown'); }
-  if (receipt === 'study-ast-accepted-v1\n') return;
-  throw new StudyValidationError(receipt === 'study-ast-rejected-v1\n' ? 'rejected' : 'unknown');
-}
+export { StudyValidationError, validateStudyCode } from './study-admission.js';
+import { validateStudyCode } from './study-admission.js';
 function inside(parent: string, target: string): boolean {
   const r = relative(parent, target); return !!r && !isAbsolute(r) && r !== '..' && !r.startsWith('..' + sep);
 }

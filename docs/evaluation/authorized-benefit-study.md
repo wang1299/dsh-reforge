@@ -4,6 +4,8 @@
 
 这是未发行源码的研究入口，独立于正常 DSH 对话和插件学习授权。它把同一官方 SDK、修复控制器、独立测试和研究账本连接起来。**准备和模拟通过不代表真实模型有效，也不产生付费许可。** 公开 alpha.2 不包含这些源码工具；当前实际检查与待办见任务记录。
 
+**2026-11-09真实结果已完成**：[36项/42次真实请求，三组均10/12，无通过率或返工改善](benefit-live-20261109.md)。峰值费用上界0.052672元，非实际账单；原计划completed，不可复用或重放。下文的模拟及授权前状态是历史阶段，不能当作额外真实结果。新实验须另审冻结计划及预算。
+
 | 阶段 | 做什么 | 会产生模型费用吗 |
 |---|---|---|
 | prepare | 固定来源库、36项顺序、23项验收控制、候选包及实际运行文件；默认未授权账本 | 不会；只下载固定 Python wheels 和公开价格文档 |
@@ -31,7 +33,7 @@ npm run study:qualify
 
 稳定代码`98fd9a0`的本机完整资格模拟已实际完成：36个独立session、71次SDK/本机HTTP/模拟provider请求、71笔有序占额，1项首过、35项最终过、1项预设已知失败、0unknown，三组参考数0/12/10。账本32660微元仅为模拟，真实模型费用0。全量15148项/269757965字节起止核对及独立只读复核匹配。最终文档提交和四组合CI状态见[任务记录](../tasks/T065-frozen-authorized-live-study.md)与[PR #144](https://github.com/wang1299/dsh-reforge/pull/144)，不将旧回执改标新SHA。
 
-本机资格模拟的trial阶段耗时513.020秒，其中438.801秒是冻结/准入检查，模拟provider仅0.396秒；这是本机协议开销，不能当作真实模型延迟、速度提升或预计付费时长。真实provider网络和任务效果尚待新预算下的实际验证。
+本机资格模拟的trial阶段耗时513.020秒，其中438.801秒是冻结/准入检查，模拟provider仅0.396秒；这是本机协议开销，不能当作真实模型延迟、速度提升或预计付费时长。该模拟阶段尚未调用真实provider；后来取得新预算的实际结果单列于上方链接。
 
 ## 准备可审查的真实计划
 
@@ -78,6 +80,8 @@ try {
 完整36项表示协议执行完毕，不表示36项都通过。模拟模式始终标记`simulatedAmountsOnly`，不能用于简历的模型提升数字。真实执行后也只有6项作者可见合成任务、各两次重复；须报告负结果、不确定性和覆盖损失，不能声称外部用户、盲测或普遍效果。guard与provider耗时分开，模型别名不证明底层权重固定。旧产品数据、预算、未知费用和提炼次数不重置。
 
 ## English
+
+The separately authorized first real run has now completed: [36 trials,42 actual requests,10/12 acceptance in every arm and no observed acceptance/rework benefit](benefit-live-20261109.md#english). CNY0.052672 is the peak-price upper bound, not a verified invoice. The completed plan cannot be replayed or reused for another study. The following qualification record describes the earlier zero-paid-call stage.
 
 This unpublished source entry point separates preparation, read-only inspection, one-plan authorization and paid execution. `npm run study:qualify` uses the actual live branch, official SDK, durable accounting, frozen runtime and bounded Python worker with a mandatory fake provider. Its fixed36-trial control includes an immediate pass and a persistent known failure; expected71 synthetic requests are protocol evidence, never model improvement.
 

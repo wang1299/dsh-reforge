@@ -19,6 +19,7 @@ import { studyProjectSentinel, writeStudyTarget } from './benefit-study-files.js
 import { studySystem, studyTaskInput, type StudyCase } from './benefit-study-cases.js';
 import { inspectStudyInput, studyReferenceMarker as referenceMarker, type StudyControllerDriver } from './study-controller-driver.js';
 import type { StudyExecutionPort } from './study-bounded-python.js';
+import { studyAdmissionContract, type StudyAdmissionDiagnostic } from '../src/study-admission-contract.js';
 
 export const rehearsalModes = ['first_pass', 'repair_once', 'unchanged', 'self_report', 'forbidden_code', 'interrupted'] as const;
 export type RehearsalMode = typeof rehearsalModes[number];
@@ -33,14 +34,17 @@ export function parseStudyProposal(text: string): string {
 export interface Attempt {
   round: number; status: AttemptStatus; actualRequests: number; actualScriptedRequests: number; actualSdkRequests: number; outputDigest: string | null;
   codeDigest: string | null; executionAttempted: boolean; tests: ReturnType<typeof acceptanceSummary> | null; durationMs: number;
+  admission?: StudyAdmissionDiagnostic;
 }
 function acceptanceSummary(run: Awaited<ReturnType<typeof runPilotTests>>) {
   return { ...briefPilotTests(run), passed: passes(run), cases: run.cases.map(c => ({ id: c.id.split('::').at(-1)!.slice(0, 96), status: c.status })) };
 }
-export function repairFeedback(status: AttemptStatus, tests: Attempt['tests']): string {
+export function repairFeedback(status: AttemptStatus, tests: Attempt['tests'], admission?: StudyAdmissionDiagnostic): string {
   assert(['tests_failed', 'invalid_output', 'invalid_code'].includes(status), 'Unknown work is not an automatic retry');
   return 'Independent repair check: ' + status + '. One final repair attempt is allowed. Re-check the original task contract; return only the complete repair function as the same JSON shape.\n'
-    + JSON.stringify({ status, cases: tests?.cases.slice(0, 8).map(c => ({ id: c.id.replace(/[^A-Za-z0-9_]/g, '_').slice(0, 96), status: c.status })) ?? [] });
+    + JSON.stringify({ status, cases: tests?.cases.slice(0, 8).map(c => ({ id: c.id.replace(/[^A-Za-z0-9_]/g, '_').slice(0, 96), status: c.status })) ?? [],
+      ...(status === 'invalid_code' && studyAdmissionContract().read(admission) ? { admission: studyAdmissionContract().read(admission) } : {}) })
+    + (status === 'invalid_code' ? '\n' + studyAdmissionContract().allowedSubset : '');
 }
 class ScriptedRepairAdapter extends LlmAdapter {
   calls = 0; round = 0; readonly inputDigests: string[] = [];
@@ -110,7 +114,14 @@ export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyC
           if (code !== null) {
             row.codeDigest = digest(code);
             try { if (execution) execution.validate(code); else validateStudyCode(python, code); }
-            catch (error) { row.status = error instanceof StudyValidationError && error.kind === 'rejected' ? 'invalid_code' : 'execution_unknown'; code = null; }
+            catch (error) {
+              row.status = error instanceof StudyValidationError && error.kind === 'rejected' ? 'invalid_code' : 'execution_unknown';
+              if (error instanceof StudyValidationError && error.kind === 'rejected' && error.diagnostic !== undefined) {
+                const admission = studyAdmissionContract().read(error.diagnostic);
+                if (admission) row.admission = admission; else row.status = 'execution_unknown';
+              }
+              code = null;
+            }
           }
           if (code !== null) {
             await writeFile(join(root, 'proposal-' + round + '.py'), code, { flag: 'wx', mode: 0o600 });
@@ -124,7 +135,7 @@ export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyC
         }
         row.durationMs = Date.now() - began; attempts.push(row);
         if (['accepted', 'execution_unknown', 'transport_unknown'].includes(row.status) || round === 2) break;
-        prompt = repairFeedback(row.status, row.tests);
+        prompt = repairFeedback(row.status, row.tests, row.admission);
       }
       const result = { kind: driver.kind === 'scripted' ? 'scripted-agent-repair-trial' : driver.kind === 'official-sdk-offline'
         ? 'official-sdk-offline-repair-trial' : driver.scope === 'live' ? 'real-provider-repair-trial' : 'live-path-fixture-repair-trial', case: input.item.id, mode: input.mode, sessionId: String(sessionId),
