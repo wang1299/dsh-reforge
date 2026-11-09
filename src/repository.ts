@@ -1,10 +1,19 @@
 import { execFileSync } from 'node:child_process';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve } from 'node:path';
 import { digest, relativePath, shaSchema, type Scope } from './domain.js';
 
+interface RepositoryGitContext { env: NodeJS.ProcessEnv; config: readonly string[] }
+const gitContext = new AsyncLocalStorage<RepositoryGitContext>();
+/** Internal scoped execution, including nested source-verification calls; normal product defaults remain. */
+export function withRepositoryGitContext<T>(context: RepositoryGitContext, fn: () => T): T {
+  return gitContext.run({ env: { ...context.env }, config: [...context.config] }, fn);
+}
 export function git(root: string, args: string[]): string {
-  return execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, windowsHide: true }).trim();
+  const context = gitContext.getStore(); const config = context?.config.flatMap(value => ['-c', value]) ?? [];
+  return execFileSync('git', [...config, '-C', root, ...args], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024,
+    windowsHide: true, ...(context ? { env: context.env } : {}) }).trim();
 }
 export function safeFile(root: string, input: string): string {
   const path = relativePath.parse(input);

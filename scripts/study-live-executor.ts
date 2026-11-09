@@ -14,6 +14,7 @@ import { pricingDocumentDigest, readLiveStudyPlan, verifyLiveStudyPlan } from '.
 import { createStudyProviderBackend } from './study-provider-backend.js';
 import { createStudySdkRelay } from './study-sdk-relay.js';
 import { sdkFixtureStream, type SdkFixtureMode } from './study-offline-sdk.js';
+import { withStudyGit } from './study-git.js';
 
 type TrialResult = Awaited<ReturnType<typeof executeBenefitTrial>>;
 type Relay = Awaited<ReturnType<typeof createStudySdkRelay>>;
@@ -24,10 +25,13 @@ interface Receipt extends Planned {
 }
 interface Recorded extends Planned { index: number; folder: string; referenceProvided: boolean; result: TrialResult['result'] }
 type Input = { authority: StudyAuthority; root: string; digest: string }
-  & ({ scope: 'live' } | { scope: 'fixture'; mode: SdkFixtureMode });
+  & ({ scope: 'live' } | { scope: 'fixture'; mode: SdkFixtureMode | 'qualification' });
 
 export class StudyKeyMissing extends Error { constructor() { super('Set DSH_REFORGE_STUDY_KEY locally after approval; never send it in chat.'); } }
 export async function executePreparedStudy(input: Input) {
+  return withStudyGit(() => executeFrozenStudy(input));
+}
+async function executeFrozenStudy(input: Input) {
   assert.equal(input.authority.scope, input.scope);
   const { plan, locator } = await readLiveStudyPlan(input.authority, input.root); assert.equal(input.digest, locator.binding.planDigest);
   try { await lstat(join(plan.root, 'study-result.json')); throw new Error('This study already has an execution result'); }
@@ -41,7 +45,7 @@ export async function executePreparedStudy(input: Input) {
     let key: string;
     if (input.scope === 'live') { key = process.env.DSH_REFORGE_STUDY_KEY ?? ''; delete process.env.DSH_REFORGE_STUDY_KEY; if (!key) throw new StudyKeyMissing(); }
     else key = 'synthetic-only-study-key';
-    let fixtureItem = studyCases[0]!; let fixtureRound = 0;
+    let fixtureItem = studyCases[0]!; let fixtureRound = 0; let fixtureIndex = 0;
     const backend = input.scope === 'live' ? createStudyProviderBackend({ scope: 'live', lease, ledger, binding: locator.binding, key })
       : createStudyProviderBackend({ scope: 'fixture', lease, ledger, binding: locator.binding, key,
         fetch: async (_url, options) => {
@@ -50,7 +54,8 @@ export async function executePreparedStudy(input: Input) {
             const signal = options.signal!; const abort = () => reject(new Error('Fixture cancelled'));
             signal.addEventListener('abort', abort, { once: true }); if (signal.aborted) abort();
           });
-          return new Response(sdkFixtureStream(fixtureItem, input.mode, fixtureRound), {
+          const mode = input.mode === 'qualification' ? fixtureIndex === 0 ? 'first_pass' : fixtureIndex === 1 ? 'unchanged' : 'repair_once' : input.mode;
+          return new Response(sdkFixtureStream(fixtureItem, mode, fixtureRound), {
             status: input.mode === 'http_error' ? 503 : 200, headers: { 'content-type': 'text/event-stream' } });
         } });
     key = ''; bank = await restoreStudyBank(plan.bank.snapshot, plan.bank.snapshotDigest);
@@ -70,7 +75,7 @@ export async function executePreparedStudy(input: Input) {
       entered.add(index); let sdk: Relay | undefined; let trial: TrialResult | undefined;
       const receipt: Receipt = { ...planned, index, resultRecorded: false, countsComplete: true, failureReason: null, observedSdkRequests: 0, wire: null };
       try {
-        const item = studyCases.find(c => c.id === planned.case)!; fixtureItem = item;
+        const item = studyCases.find(c => c.id === planned.case)!; fixtureItem = item; fixtureIndex = index;
         await writeStudyTarget(plan.bank.root, plan.bank.repo, item.before);
         const selected = await selectStudyReference(bank, plan.bank.repo, item, planned.arm, plan.python.executable);
         schemaDigest = digest(await readFile(join(plan.bank.repo, 'context.schema.json')));
@@ -83,7 +88,7 @@ export async function executePreparedStudy(input: Input) {
             fixtureRound = round; const start = Date.now();
             try { return await backend.transport.respond(wire, signal); } finally { providerMs += Date.now() - start; }
           } });
-        trial = await executeBenefitTrial({ parent: plan.bank.root, projectRoot: plan.bank.repo, item, memory: selected.memory,
+        trial = await executeBenefitTrial({ parent: plan.root, projectRoot: plan.bank.repo, projectOwner: plan.bank.root, item, memory: selected.memory,
           mode: input.scope === 'live' ? 'real-provider' : input.mode, python: plan.python.executable }, sdk.driver);
         receipt.resultRecorded = true;
       } catch { receipt.failureReason = sdk ? 'controller_result_unavailable' : 'pre_controller_failure'; }

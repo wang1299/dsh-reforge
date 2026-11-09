@@ -4,6 +4,8 @@
 
 本增量让实际官方DeepSeekAdapter经过同一套AgentLoop修复控制器。它请求固定的127.0.0.1模拟服务，响应为预设合成内容，**没有连接付费provider、读取Key或取得新预算**。不能用脚本答案通过率说明模型能力提升。
 
+后续源码的固定授权、完整运行环境冻结与受限验收见[T065运行指南](authorized-benefit-study.md)；下文保留T064当时的检查范围，不作为T065完成证明。
+
 ```mermaid
 flowchart LR
   A[统一任务与已选参考] --> B[实际AgentLoop]

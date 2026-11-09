@@ -1,4 +1,4 @@
-/** Shared bounded offline controller. No live provider authorization or credential loading. */
+/** Shared bounded repair controller. Provider authorization and credentials stay in the outer guarded backend. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -60,7 +60,7 @@ class ScriptedRepairAdapter extends LlmAdapter {
   }
 }
 
-export interface StudyTrialInput { parent: string; item: StudyCase; memory: string | null; mode: string; python?: string; projectRoot?: string; execution?: StudyExecutionPort }
+export interface StudyTrialInput { parent: string; item: StudyCase; memory: string | null; mode: string; python?: string; projectRoot?: string; projectOwner?: string; execution?: StudyExecutionPort }
 /** Trusted internal harness API; a driver is not an authorization to call a paid provider. */
 export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyControllerDriver) {
   assert(['scripted', 'official-sdk-offline', 'official-sdk-live'].includes(driver.kind)); const python = input.python ?? process.env.EVOLVE_PYTHON ?? 'python';
@@ -68,7 +68,8 @@ export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyC
   if (driver.kind === 'official-sdk-live') assert(execution?.kind === 'bounded-study-v1', 'Live studies require the bounded worker');
   const root = await newStudyRoot(input.parent); const tests = join(root, 'checks'); await mkdir(tests);
   const project = input.projectRoot ?? join(root, 'project');
-  const projectParent = input.projectRoot ? input.parent : root;
+  assert(!input.projectOwner || input.projectRoot, 'A separate project owner requires an explicit existing project');
+  const projectParent = input.projectRoot ? input.projectOwner ?? input.parent : root;
   if (!input.projectRoot) { await mkdir(project); await writeFile(join(project, 'contract.py'), studyProjectSentinel, { flag: 'wx', mode: 0o600 }); }
   await writeFile(join(tests, 'test_contract.py'), input.item.checks, { flag: 'wx' });
   await writeStudyTarget(projectParent, project, input.item.before);

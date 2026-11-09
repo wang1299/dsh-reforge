@@ -75,7 +75,7 @@ export async function newStudyRoot(parent: string): Promise<string> {
 }
 function commit(repo: string, files: string[], message: string): void {
   git(repo, ['add', '--', ...files]);
-  execFileSync('git', ['-C', repo, '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=', 'commit', '-m', message], { windowsHide: true, stdio: 'ignore' });
+  git(repo, ['-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=', 'commit', '-m', message]);
 }
 function schemaFor(item?: StudyCase): object {
   const properties = Object.assign({}, ...studySources.map(s => s.schema.properties), item?.schema.properties);
@@ -84,7 +84,7 @@ function schemaFor(item?: StudyCase): object {
   return { $schema: 'http://json-schema.org/draft-07/schema#', type: 'object', properties, required: [...required] };
 }
 
-export async function createStudySourceBank(root: string, python: string) {
+export async function createStudySourceBank(root: string, python: string, validationEnvironment?: NodeJS.ProcessEnv) {
   const repo = join(root, 'project'); await mkdir(repo); await mkdir(join(repo, 'tests'));
   await writeFile(join(repo, 'requirements.txt'), '# synthetic standard library fixtures; externally supplied pytest\n');
   await writeFile(join(repo, 'contract.py'), 'STUDY = "benefit-preparation-v1"\n');
@@ -96,14 +96,15 @@ export async function createStudySourceBank(root: string, python: string) {
     const acceptance = join(root, 'source-' + source.id); await mkdir(acceptance);
     await writeFile(join(acceptance, 'test_acceptance.py'), source.acceptance);
   }
-  execFileSync('git', ['init', '-b', 'codex/benefit-fixture', repo], { windowsHide: true, stdio: 'ignore' });
+  git(repo, ['init', '-b', 'codex/benefit-fixture']);
   git(repo, ['config', 'user.name', 'DSH-Reforge Synthetic Study']); git(repo, ['config', 'user.email', 'study@example.invalid']);
   git(repo, ['config', 'core.autocrlf', 'false']); commit(repo, ['.'], 'three independent synthetic source failures');
   const store = new Store(':memory:');
   try {
     const proofs = [];
     for (const source of studySources) {
-      validateStudyCode(python, source.before); validateStudyCode(python, source.reference);
+      const validation = validationEnvironment ? { env: validationEnvironment, isolated: true as const } : undefined;
+      validateStudyCode(python, source.before, validation); validateStudyCode(python, source.reference, validation);
       const service = new EvolveService(store, repo, { trusted: true, python, acceptanceDir: join(root, 'source-' + source.id),
         regressionPath: 'tests/' + source.id, timeoutMs: 15000 });
       const task = service.begin('source-' + source.id, source.title);

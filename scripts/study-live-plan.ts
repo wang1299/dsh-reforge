@@ -19,6 +19,7 @@ import { StudyAuthority, writeExclusiveStudyJson, type StudyPlanLocator } from '
 import { StudyCostLedger, studyCostPolicy } from './study-cost-ledger.js';
 import { freezeStudyRuntime, verifyStudyRuntime, type StudyFreezeRoot, type StudyRuntimeFreeze } from './study-runtime-freeze.js';
 import { makeStudyDirectory, ownedStudyPath, studyRepository as repository } from './study-owned-path.js';
+import { withStudyGit } from './study-git.js';
 
 type PythonInfo = Awaited<ReturnType<typeof resolveStudyPython>>;
 type Selection = typeof studySchedule[number] & Awaited<ReturnType<typeof selectStudyReference>> & { schemaDigest: string };
@@ -33,15 +34,20 @@ export interface PreparedStudyPlan {
   freeze: StudyRuntimeFreeze;
 }
 const priceFile = join(repository, 'compat/study-runtime/pricing.json');
+export function assertReviewedStudyPriceDocument(bytes: Uint8Array, snapshot: { catalogVersion: string; reviewedDocumentSha256: string }) {
+  assert.match(snapshot.reviewedDocumentSha256, /^[a-f0-9]{64}$/);
+  assert.equal(digest(Buffer.from(bytes)), snapshot.reviewedDocumentSha256, 'Official price document differs from the manually reviewed source; review before preparing or spending');
+  assert(Buffer.from(bytes).toString('utf8').includes(snapshot.catalogVersion));
+}
 export async function pricingDocumentDigest(scope: 'live' | 'fixture'): Promise<string> {
-  const pricing = JSON.parse(await readFile(priceFile, 'utf8')) as { url: string; model: string; catalogVersion: string; inputMicroCnyPerToken: number; outputMicroCnyPerToken: number };
+  const pricing = JSON.parse(await readFile(priceFile, 'utf8')) as { url: string; model: string; catalogVersion: string; reviewedDocumentSha256: string; inputMicroCnyPerToken: number; outputMicroCnyPerToken: number };
   assert.equal(pricing.model, studyCostPolicy.model); assert.equal(pricing.inputMicroCnyPerToken, 2); assert.equal(pricing.outputMicroCnyPerToken, 8);
   assert.equal(pricing.url, 'https://api-docs.deepseek.com/zh-cn/quick_start/pricing/');
   if (scope === 'fixture') return digest('synthetic price document fixture ' + JSON.stringify(pricing));
   const response = await fetch(pricing.url, { redirect: 'error', signal: AbortSignal.timeout(10000) }); assert.equal(response.status, 200);
   const parts: Uint8Array[] = []; let size = 0; assert(response.body);
   for await (const part of response.body) { size += part.length; assert(size <= 1048576); parts.push(part); }
-  const bytes = Buffer.concat(parts); assert(bytes.toString('utf8').includes(pricing.catalogVersion), 'Current provider catalog must match the reviewed snapshot');
+  const bytes = Buffer.concat(parts); assertReviewedStudyPriceDocument(bytes, pricing);
   return digest(bytes);
 }
 export function requireCleanStudyProcess(): void {
@@ -53,7 +59,7 @@ async function exists(path: string) { try { await lstat(path); return true; } ca
 async function freezeRoots(root: string, python: PythonInfo, scope: 'live' | 'fixture'): Promise<StudyFreezeRoot[]> {
   const checkout = git(repository, ['rev-parse', '--show-toplevel']);
   if (scope === 'live') assert.equal(await realpath(checkout), await realpath(repository), 'Live execution requires a real source worktree');
-  const tracked = execFileSync('git', ['-C', checkout, 'ls-files', '--full-name', '-z'], { windowsHide: true, encoding: 'utf8' }).split('\0').filter(Boolean);
+  const tracked = git(checkout, ['ls-files', '--full-name', '-z']).split('\0').filter(Boolean);
   const roots: StudyFreezeRoot[] = [{ name: 'checkout-source', path: await realpath(checkout), files: tracked }];
   if (await realpath(checkout) !== await realpath(repository)) {
     const copied = []; for (const path of tracked) if (await exists(join(repository, path))) copied.push(path);
@@ -101,6 +107,9 @@ async function candidatePackage(root: string, npmCli: string) {
   assert(hashes.size > 20); return { ...audit, path };
 }
 export async function prepareLiveStudy(authority: StudyAuthority, npmCli: string, command = process.env.EVOLVE_PYTHON ?? 'python') {
+  return withStudyGit(() => prepareFrozenStudy(authority, npmCli, command));
+}
+async function prepareFrozenStudy(authority: StudyAuthority, npmCli: string, command: string) {
   requireCleanStudyProcess(); assert.equal(git(repository, ['status', '--porcelain']), '', 'Commit all study source before preparation');
   await authority.initialize(); assert(!(await exists(authority.approvalPath)), 'Preserve the existing one-shot authority');
   const root = await newStudyRoot(join(authority.root, 'preparations')); const python = await resolveStudyPython(command);
@@ -108,7 +117,7 @@ export async function prepareLiveStudy(authority: StudyAuthority, npmCli: string
   const temp = join(root, 'execution-temp'); const limits = await probeStudyPython(python.executable, temp);
   const execution = boundedStudyExecution(python.executable, vendor, temp);
   const controls = await qualifyBoundedStudyControls(join(root, 'controls'), execution); assert.equal(controls.count, 23);
-  const bankRoot = await makeStudyDirectory(join(root, 'bank')); const bank = await createStudySourceBank(bankRoot, python.executable);
+  const bankRoot = await makeStudyDirectory(join(root, 'bank')); const bank = await createStudySourceBank(bankRoot, python.executable, studyChildEnvironment(temp));
   try {
     const snapshot = join(bankRoot, 'snapshot.json'); const saved = await saveStudyBank(bank.store, snapshot);
     const initial = await readFile(join(bank.repo, 'context.schema.json')); const selections: Selection[] = [];
@@ -133,6 +142,9 @@ export async function prepareLiveStudy(authority: StudyAuthority, npmCli: string
   } finally { bank.store.close(); }
 }
 export async function readLiveStudyPlan(authority: StudyAuthority, root: string) {
+  return withStudyGit(() => readFrozenStudyPlan(authority, root));
+}
+async function readFrozenStudyPlan(authority: StudyAuthority, root: string) {
   const locator = await authority.locate(root); const path = await ownedStudyPath(join(root, 'plan.json'));
   assert((await lstat(path)).size <= 16777216); const envelope = JSON.parse(await readFile(path, 'utf8')) as { plan: PreparedStudyPlan; binding: StudyPlanLocator['binding'] };
   assert.deepEqual(envelope.binding, locator.binding); assert.equal(digest(JSON.stringify(envelope.plan)), locator.binding.planDigest);
@@ -145,6 +157,9 @@ export async function readLiveStudyPlan(authority: StudyAuthority, root: string)
   return { plan, locator };
 }
 export async function verifyLiveStudyPlan(authority: StudyAuthority, plan: PreparedStudyPlan, full = false, schemaDigest = plan.bank.initialSchemaDigest) {
+  return withStudyGit(() => verifyFrozenStudyPlan(authority, plan, full, schemaDigest));
+}
+async function verifyFrozenStudyPlan(authority: StudyAuthority, plan: PreparedStudyPlan, full: boolean, schemaDigest: string) {
   assert.deepEqual((await readLiveStudyPlan(authority, plan.root)).plan, plan, 'Persisted study plan changed');
   requireCleanStudyProcess(); assert.equal(git(repository, ['rev-parse', 'HEAD']), plan.sourceCommit); assert.equal(git(repository, ['status', '--porcelain']), '');
   const python = await resolveStudyPython(process.env.EVOLVE_PYTHON ?? 'python'); assert.deepEqual(python, plan.python);

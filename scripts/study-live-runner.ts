@@ -38,10 +38,10 @@ export async function qualifyLiveStudy(npmCli: string) {
   const { plan, locator } = await readLiveStudyPlan(authority, prepared.plan.root);
   const unapproved = StudyCostLedger.inspect(plan.root, locator.binding); assert.equal(unapproved.phase, 'unapproved');
   await authority.approve(locator, 10000000, true, () => verifyLiveStudyPlan(authority, plan, true));
-  const outcome = await executePreparedStudy({ scope: 'fixture', authority, root: plan.root, digest: locator.binding.planDigest, mode: 'repair_once' });
-  const { report } = outcome; assert(report.complete && report.frozenUnchanged); assert.equal(report.durableReservations, 72);
-  assert.equal(report.counts.providerHttpRequests, 0); assert.equal(report.counts.fixtureHttpRequests, 72);
-  assert(report.trials.every(t => JSON.stringify(t.result.attempts.map(a => a.status)) === '["tests_failed","accepted"]'));
+  const outcome = await executePreparedStudy({ scope: 'fixture', authority, root: plan.root, digest: locator.binding.planDigest, mode: 'qualification' });
+  const { report } = outcome; assert(report.complete && report.frozenUnchanged); assert.equal(report.durableReservations, 71);
+  assert.equal(report.counts.providerHttpRequests, 0); assert.equal(report.counts.fixtureHttpRequests, 71);
+  assert(report.trials.every(t => JSON.stringify(t.result.attempts.map(a => a.status)) === (t.index === 0 ? '["accepted"]' : t.index === 1 ? '["tests_failed","tests_failed"]' : '["tests_failed","accepted"]')));
   const receipt = { ...studyPlanSummary(plan, locator), result: join(plan.root, 'study-result.json'), complete: report.complete,
     recordedTrials: report.recordedTrials, fixtureHttpRequests: report.counts.fixtureHttpRequests, providerHttpRequests: 0, durableReservations: report.durableReservations,
     simulatedAmountsOnly: true, realModelBenefit: false };

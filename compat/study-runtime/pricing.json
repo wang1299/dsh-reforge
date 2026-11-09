@@ -1,5 +1,6 @@
 {
   "reviewedOn": "2026-11-09",
+  "reviewedDocumentSha256": "6205cf5d53a7903827bf21938eefb6a8ab6041bb5a73fcf43e4bdd6adc8d344b",
   "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
   "model": "deepseek-flash",
   "catalogVersion": "DeepSeek-V4.1-Flash-1017",
