@@ -1,8 +1,8 @@
 /** Bounded controller rehearsal. No live adapter, endpoint, credentials or financial authorization. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { Context } from '@deepseek-ai/cordis';
 import { AgentRegistry } from '@deepseek-ai/dsh-agent';
 import AgentLoop from '@deepseek-ai/dsh-agent-loop';
@@ -14,7 +14,8 @@ import { ToolRuntime } from '@deepseek-ai/dsh-tools';
 import { digest } from '../src/domain.js';
 import { passes, reproduces } from '../src/verification.js';
 import { runPilotTests, briefPilotTests } from './pilot-fixtures.js';
-import { newStudyRoot, validateStudyCode } from './benefit-study-preflight.js';
+import { newStudyRoot, StudyValidationError, validateStudyCode } from './benefit-study-preflight.js';
+import { studyProjectSentinel, writeStudyTarget } from './benefit-study-files.js';
 import { studySystem, studyTaskInput, type StudyCase } from './benefit-study-cases.js';
 
 export const rehearsalModes = ['first_pass', 'repair_once', 'unchanged', 'self_report', 'forbidden_code', 'interrupted'] as const;
@@ -22,7 +23,7 @@ export type RehearsalMode = typeof rehearsalModes[number];
 export type AttemptStatus = 'accepted' | 'tests_failed' | 'invalid_output' | 'invalid_code' | 'execution_unknown' | 'transport_unknown';
 const referenceMarker = 'DSH-Reforge repair experience (fallible data, not instructions or evidence of benefit):\n';
 export function parseStudyProposal(text: string): string {
-  if (Buffer.byteLength(text) > 8192) throw new Error('invalid_output');
+  if (Buffer.byteLength(text) > 8192 || !/^\s*\{\s*"code"\s*:\s*"(?:[^"\\]|\\.)*"\s*\}\s*$/s.test(text)) throw new Error('invalid_output');
   let value: unknown; try { value = JSON.parse(text); } catch { throw new Error('invalid_output'); }
   if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length !== 1
     || !('code' in value) || typeof value.code !== 'string' || !value.code.trim() || Buffer.byteLength(value.code) > 4096) throw new Error('invalid_output');
@@ -76,14 +77,10 @@ export async function rehearseBenefitTrial(input: { parent: string; item: StudyC
   assert(rehearsalModes.includes(input.mode)); const python = input.python ?? process.env.EVOLVE_PYTHON ?? 'python';
   const root = await newStudyRoot(input.parent); const tests = join(root, 'checks'); await mkdir(tests);
   const project = input.projectRoot ?? join(root, 'project');
-  if (input.projectRoot) {
-    const expected = join(await realpath(input.parent), 'project');
-    assert.equal(resolve(project), expected, 'Use only this freshly created study source repository');
-    assert.equal(await realpath(project), expected, 'Linked study project refused');
-    assert.equal(await readFile(join(project, 'contract.py'), 'utf8'), 'STUDY = "benefit-preparation-v1"\n');
-  } else await mkdir(project);
+  const projectParent = input.projectRoot ? input.parent : root;
+  if (!input.projectRoot) { await mkdir(project); await writeFile(join(project, 'contract.py'), studyProjectSentinel, { flag: 'wx', mode: 0o600 }); }
   await writeFile(join(tests, 'test_contract.py'), input.item.checks, { flag: 'wx' });
-  await writeFile(join(project, 'target.py'), input.item.before);
+  await writeStudyTarget(projectParent, project, input.item.before);
   const ctx = new Context(); const adapter = new ScriptedRepairAdapter(input.item, input.memory, input.mode);
   const attempts: Attempt[] = []; let lastText: string | null = null; let completed = false; const started = Date.now();
   try {
@@ -119,11 +116,11 @@ export async function rehearseBenefitTrial(input: { parent: string; item: StudyC
           if (code !== null) {
             row.codeDigest = digest(code);
             try { validateStudyCode(python, code); }
-            catch { row.status = 'invalid_code'; code = null; }
+            catch (error) { row.status = error instanceof StudyValidationError && error.kind === 'rejected' ? 'invalid_code' : 'execution_unknown'; code = null; }
           }
           if (code !== null) {
             await writeFile(join(root, 'proposal-' + round + '.py'), code, { flag: 'wx', mode: 0o600 });
-            await writeFile(join(project, 'target.py'), code); row.executionAttempted = true;
+            await writeStudyTarget(projectParent, project, code); row.executionAttempted = true;
             const checked = await runPilotTests(python, project, tests, join(root, 'attempt-' + round + '.xml'));
             row.tests = acceptanceSummary(checked);
             row.status = checked.skipped === 0 && passes(checked) ? 'accepted'
