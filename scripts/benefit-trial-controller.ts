@@ -18,6 +18,7 @@ import { newStudyRoot, StudyValidationError, validateStudyCode } from './benefit
 import { studyProjectSentinel, writeStudyTarget } from './benefit-study-files.js';
 import { studySystem, studyTaskInput, type StudyCase } from './benefit-study-cases.js';
 import { inspectStudyInput, studyReferenceMarker as referenceMarker, type StudyControllerDriver } from './study-controller-driver.js';
+import type { StudyExecutionPort } from './study-bounded-python.js';
 
 export const rehearsalModes = ['first_pass', 'repair_once', 'unchanged', 'self_report', 'forbidden_code', 'interrupted'] as const;
 export type RehearsalMode = typeof rehearsalModes[number];
@@ -59,7 +60,7 @@ class ScriptedRepairAdapter extends LlmAdapter {
   }
 }
 
-export interface StudyTrialInput { parent: string; item: StudyCase; memory: string | null; mode: string; python?: string; projectRoot?: string }
+export interface StudyTrialInput { parent: string; item: StudyCase; memory: string | null; mode: string; python?: string; projectRoot?: string; execution?: StudyExecutionPort }
 /** Trusted internal harness API; a driver is not an authorization to call a paid provider. */
 export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyControllerDriver) {
   assert(['scripted', 'official-sdk-offline'].includes(driver.kind)); const python = input.python ?? process.env.EVOLVE_PYTHON ?? 'python';
@@ -105,13 +106,14 @@ export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyC
           catch { row.status = 'invalid_output'; }
           if (code !== null) {
             row.codeDigest = digest(code);
-            try { validateStudyCode(python, code); }
+            try { if (input.execution) input.execution.validate(code); else validateStudyCode(python, code); }
             catch (error) { row.status = error instanceof StudyValidationError && error.kind === 'rejected' ? 'invalid_code' : 'execution_unknown'; code = null; }
           }
           if (code !== null) {
             await writeFile(join(root, 'proposal-' + round + '.py'), code, { flag: 'wx', mode: 0o600 });
             await writeStudyTarget(projectParent, project, code); row.executionAttempted = true;
-            const checked = await runPilotTests(python, project, tests, join(root, 'attempt-' + round + '.xml'));
+            const xml = join(root, 'attempt-' + round + '.xml');
+            const checked = input.execution ? await input.execution.run(project, tests, xml) : await runPilotTests(python, project, tests, xml);
             row.tests = acceptanceSummary(checked);
             row.status = checked.skipped === 0 && passes(checked) ? 'accepted'
               : checked.skipped === 0 && reproduces(checked) ? 'tests_failed' : 'execution_unknown';

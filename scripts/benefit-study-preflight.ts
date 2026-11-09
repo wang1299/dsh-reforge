@@ -46,13 +46,13 @@ for n in nodes:
 export class StudyValidationError extends Error {
   constructor(readonly kind: 'rejected' | 'unknown') { super(kind === 'rejected' ? 'invalid_bounded_study_function' : 'study_validator_unavailable'); }
 }
-export function validateStudyCode(python: string, code: string): void {
+export function validateStudyCode(python: string, code: string, options?: { env: NodeJS.ProcessEnv; isolated: true }): void {
   if (Buffer.byteLength(code) > 4096) throw new StudyValidationError('rejected');
   const protocol = 'try:\n' + validator.trim().split('\n').map(line => '    ' + line).join('\n')
     + '\nexcept (AssertionError,SyntaxError,ValueError,RecursionError):\n    print("study-ast-rejected-v1")\nelse:\n    print("study-ast-accepted-v1")\n';
   let receipt: string;
-  try { receipt = execFileSync(python, ['-I', '-c', protocol, code], { windowsHide: true,
-    stdio: ['ignore', 'pipe', 'ignore'], encoding: 'utf8', timeout: 5000, maxBuffer: 128 }).replaceAll('\r\n', '\n'); }
+  try { receipt = execFileSync(python, [...(options ? ['-I', '-S', '-B'] : ['-I']), '-c', protocol, code], { windowsHide: true,
+    ...(options ? { env: options.env } : {}), stdio: ['ignore', 'pipe', 'ignore'], encoding: 'utf8', timeout: 5000, maxBuffer: 128 }).replaceAll('\r\n', '\n'); }
   catch { throw new StudyValidationError('unknown'); }
   if (receipt === 'study-ast-accepted-v1\n') return;
   throw new StudyValidationError(receipt === 'study-ast-rejected-v1\n' ? 'rejected' : 'unknown');
