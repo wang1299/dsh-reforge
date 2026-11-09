@@ -30,6 +30,18 @@ test('partial reports preserve unknown and unattempted rows including missing co
   }
 });
 
+test('an incomplete response keeps its full unknown monetary reservation visible', () => {
+  const r = studyReportFixture({ attempted: 4, unknownAt: 3 });
+  r.trials[3]!.result.attempts[0]!.status = 'transport_unknown';
+  r.arms.plain!.knownPeakUpperMicroCny -= 280; r.arms.plain!.usage.input -= 100; r.arms.plain!.usage.output -= 10;
+  r.arms.plain!.unknownHeldMicroCny = 5_345_728;
+  r.financial.settledUpperBound -= 280; r.financial.unknownReserved = 5_345_728; r.financial.phase = 'unknown';
+  r.counts.completedBodies--;
+  const view = parseStudyReport(JSON.stringify(r));
+  assert.equal(view.held, 5_345_728); assert.equal(view.upper, 840); assert.equal(view.calls, 4); assert.equal(view.responses, 3);
+  assert.equal(view.arms[1]!.unknown, 1); assert.equal(view.arms[1]!.unattempted, 10);
+});
+
 test('report reader rejects contradictory aggregates, duplicate rows, fake success, malformed diagnostics and oversized input', () => {
   const rejects = (mutate: (r: ReturnType<typeof studyReportFixture>) => void) => {
     const r = studyReportFixture(); mutate(r); assert.throws(() => parseStudyReport(JSON.stringify(r)), /^Error: study_report_invalid$/);
