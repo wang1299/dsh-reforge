@@ -18,6 +18,12 @@ async function inventory(roots: StudyFreezeRoot[]): Promise<InventoryEntry[]> {
     const root = resolve(spec.path); const rootStat = await lstat(root);
     assert(rootStat.isDirectory() && !rootStat.isSymbolicLink() && samePath(await realpath(root), root), 'Frozen root must be a canonical real directory');
     const skip = new Set(spec.skip ?? []);
+    const queue: string[] = [], seen = new Set<string>(); let cursor = 0;
+    let failure: { error: unknown } | null = null;
+    const enqueue = (path: string) => {
+      if (failure || skip.has(relative(root, path).split(sep).join('/')) || seen.has(path)) return;
+      seen.add(path); assert(seen.size <= 40000, 'Runtime inventory limit'); queue.push(path);
+    };
     async function walk(path: string): Promise<void> {
       const local = relative(root, path).split(sep).join('/'); if (skip.has(local)) return;
       assert(samePath(await realpath(dirname(path)), dirname(path)), 'Runtime parent directory alias is not allowed');
@@ -27,7 +33,7 @@ async function inventory(roots: StudyFreezeRoot[]): Promise<InventoryEntry[]> {
       const stat = await lstat(path);
       if (stat.isDirectory() && !stat.isSymbolicLink()) {
         entries.set(path, { path, group: spec.name, kind: 'directory' });
-        for (const name of (await readdir(path)).sort()) await walk(join(path, name));
+        for (const name of (await readdir(path)).sort()) enqueue(join(path, name));
       } else if (stat.isSymbolicLink()) {
         assert(spec.allowFileLinks, 'Runtime link is not allowed'); const target = await realpath(path);
         assert(inside(root, target), 'Runtime link leaves its frozen root'); const targetStat = await lstat(target);
@@ -40,8 +46,19 @@ async function inventory(roots: StudyFreezeRoot[]): Promise<InventoryEntry[]> {
       assert(entries.size <= 40000, 'Runtime inventory limit');
     }
     if (spec.files) {
-      for (const file of [...spec.files].sort()) { const path = resolve(root, file); assert(inside(root, path) && path !== root); await walk(path); }
-    } else await walk(root);
+      for (const file of [...spec.files].sort()) { const path = resolve(root, file); assert(inside(root, path) && path !== root); enqueue(path); }
+    } else enqueue(root);
+    // No cached metadata. Every distinct path still gets the original realpath/lstat checks.
+    const active = new Set<Promise<void>>();
+    while ((!failure && cursor < queue.length) || active.size) {
+      while (!failure && cursor < queue.length && active.size < 16) {
+        const task = walk(queue[cursor++]!).catch(error => { failure ??= { error }; }).finally(() => { active.delete(task); });
+        active.add(task);
+      }
+      if (active.size) await Promise.race(active);
+    }
+    // Drain already-dispatched I/O before rejecting; no orphaned work escapes this boundary.
+    if (failure) throw (failure as { error: unknown }).error;
   }
   for (const entry of entries.values()) if (entry.kind === 'link') {
     assert(entries.get(entry.target!)?.kind === 'file', 'Runtime leaf link target must be explicitly covered as a regular file');

@@ -92,6 +92,18 @@ test('clearing a pending report prevents its late read from restoring private da
   assert(!b.get('study').textContent.includes('<img>')); assert.equal(b.posts.length, 0);
 });
 
+test('timing stays a local disclosure, explains provider boundaries and clears its projected values', async () => {
+  const b = browser(); await b.run('refresh()'); await b.run("showView('study')");
+  const file = b.get('study-report-file'), text = JSON.stringify({ ...studyReportFixture(), elapsedMs: 416521, guardMs: 320755, providerMs: 49500 });
+  file.files = [{ size: Buffer.byteLength(text), text: async () => text }]; await file.onchange!();
+  assert.match(b.get('study').textContent, /运行检查320.8 秒 · 77.0%/);
+  assert.match(b.get('study').textContent, /请求与完整响应49.5 秒 · 11.9%/);
+  assert.match(b.get('study').textContent, /不等于纯模型推理/);
+  const clear = b.descendants(b.get('study')).find(e => e.tag === 'button' && e.textContent === '清除本页报告')!;
+  await clear.onclick!(); assert(!b.get('study').textContent.includes('320.8')); assert(!b.get('study').textContent.includes('文件标记'));
+  assert.equal(b.posts.length, 0);
+});
+
 test('a pending save locks editing, blocks duplicate submissions and keeps the captured view until acknowledged', async () => {
   const b = browser(); await b.run('refresh()'); await b.run("openExperience('experience-one')");
   const strategy = b.control('处理策略'); strategy.value = 'Keep this submitted draft'; b.get('detail').listeners.get('input')!();

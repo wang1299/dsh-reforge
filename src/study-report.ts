@@ -15,6 +15,7 @@ export interface StudyReportView {
   scope: 'live' | 'fixture'; sourceCommit: string; complete: boolean; frozenUnchanged: boolean;
   attempted: number; recorded: number; calls: number; responses: number; upper: number; held: number;
   arms: ReportArmSummary[]; rows: { case: string; repeat: number; cells: ReportCell[] }[];
+  timing: { elapsedMs: number; guardMs: number; providerMs: number; otherMs: number } | null;
 }
 
 /** Pure, bounded allowlist projection. Structure consistency is NOT independent evidence verification. */
@@ -35,6 +36,10 @@ export function parseStudyReport(text: string): StudyReportView {
   if (typeof r.sourceCommit !== 'string' || !/^[a-f0-9]{40}$/.test(r.sourceCommit)) fail();
   equal(r.plannedTrials, 36);
   const complete = bool(r.complete), frozenUnchanged = bool(r.frozenUnchanged);
+  const timing = [r.elapsedMs, r.guardMs, r.providerMs].every(value => value === undefined) ? null : {
+    elapsedMs: num(r.elapsedMs, 86_400_000), guardMs: num(r.guardMs, 86_400_000), providerMs: num(r.providerMs, 86_400_000), otherMs: 0,
+  };
+  if (timing) { if (timing.guardMs + timing.providerMs > timing.elapsedMs) fail(); timing.otherMs = timing.elapsedMs - timing.guardMs - timing.providerMs; }
   const cases = ['preferences_patch', 'role_batch', 'outbox_receipt', 'delivery_batch', 'nullable_deadline', 'required_deadline'];
   const arms: ReportArm[] = ['none', 'plain', 'reforge'];
   const orders: ReportArm[][] = [['none', 'plain', 'reforge'], ['plain', 'reforge', 'none'], ['reforge', 'none', 'plain'],
@@ -136,6 +141,6 @@ export function parseStudyReport(text: string): StudyReportView {
     if (cells.some(c => c.outcome === 'unknown')) fail();
   }
   return { scope, sourceCommit: r.sourceCommit as string, complete, frozenUnchanged, attempted: receipts.length, recorded: trials.length,
-    calls, responses, upper, held, arms: summaries, rows: cases.flatMap(id => [1, 2].map(repeat => ({ case: id, repeat,
+    calls, responses, upper, held, timing, arms: summaries, rows: cases.flatMap(id => [1, 2].map(repeat => ({ case: id, repeat,
       cells: arms.map(arm => cells.find(c => c.case === id && c.repeat === repeat && c.arm === arm)!) }))) };
 }

@@ -26,6 +26,7 @@ export function installStudyReport(root: HTMLElement, parse: typeof parseStudyRe
   const metrics = el('div', undefined, 'study-metrics');
   const compare = el('div', undefined, 'study-arms');
   const scope = el('p', '', 'study-scope');
+  const timing = el('details', undefined, 'study-timing surface');
   const filter = el('select'); filter.id = 'study-report-filter';
   for (const [value, text] of [['all', '全部配对'], ['failed', '含已知失败'], ['unknown', '含未知结果'], ['unattempted', '含未尝试']]) {
     const option = el('option', text); option.value = value!; filter.append(option);
@@ -35,7 +36,7 @@ export function installStudyReport(root: HTMLElement, parse: typeof parseStudyRe
   const count = el('p', '', 'muted'); count.setAttribute('role', 'status');
   const rows = el('div', undefined, 'study-pairs');
   content.append(scope, metrics, el('p', '本机文件已通过结构一致性检查；本页未独立核对原始账本、测试或服务商账单。', 'notice warning'),
-    el('h2', '相同任务，三组对照'), compare, el('p', '每组固定 12 项。失败、未知和未尝试均保留在分母；提供参考不等于采用或受益。6 类作者可见合成任务各重复 2 次，不能代表外部任务或普遍效果。', 'muted'), toolbar, count, rows);
+    timing, el('h2', '相同任务，三组对照'), compare, el('p', '每组固定 12 项。失败、未知和未尝试均保留在分母；提供参考不等于采用或受益。6 类作者可见合成任务各重复 2 次，不能代表外部任务或普遍效果。', 'muted'), toolbar, count, rows);
   root.append(box, content);
   function cellView(cell: ReportCell) {
     const article = el('article', undefined, 'study-cell'); article.dataset.outcome = cell.outcome;
@@ -76,6 +77,20 @@ export function installStudyReport(root: HTMLElement, parse: typeof parseStudyRe
     ]) { const card = el('article', undefined, 'study-metric'); card.dataset.tone = tone; card.append(el('h3', title, 'study-metric-label'), el('strong', value), el('p', note, 'muted')); metrics.append(card); }
     if (r.held) metrics.append(el('p', '未知费用预留 ' + money(r.held) + '，未退回或归零。', 'notice warning'));
     if (!r.frozenUnchanged) metrics.append(el('p', '运行冻结检查未保持一致，不能作有效收益比较。', 'notice warning'));
+    timing.replaceChildren(el('summary', '时间花在哪里'));
+    if (!r.timing) timing.append(el('p', '报告未记录完整耗时，无法拆分；不会从调用次数推测。', 'muted'));
+    else {
+      const t = r.timing;
+      timing.append(el('p', '任务试验阶段共 ' + (t.elapsedMs / 1000).toFixed(1) + ' 秒；不包括之前的安装与研究准备。', 'muted'));
+      for (const [label, ms] of [['运行检查', t.guardMs], ['请求与完整响应', t.providerMs], ['其余流程', t.otherMs]] as const) {
+        const part = el('div', undefined, 'study-timing-row'), percent = t.elapsedMs ? ms / t.elapsedMs * 100 : 0;
+        const line = el('p', undefined, 'study-time-label'); line.append(el('span', label), el('span', (ms / 1000).toFixed(1) + ' 秒 · ' + percent.toFixed(1) + '%'));
+        const progress = el('progress'); progress.max = t.elapsedMs || 1; progress.value = ms;
+        progress.setAttribute('aria-label', label); progress.setAttribute('aria-valuetext', (ms / 1000).toFixed(1) + '秒，占' + percent.toFixed(1) + '%');
+        part.append(line, progress); timing.append(part);
+      }
+      timing.append(el('p', r.scope === 'fixture' ? '夹具计时用于排查协议开销，不能当作模型速度。' : '请求与完整响应包含网络和接收等待，不等于纯模型推理；其余流程尚未细分。', 'muted'));
+    }
     compare.replaceChildren();
     const baseline = r.arms[0]!.final;
     for (const a of r.arms) {
@@ -92,7 +107,7 @@ export function installStudyReport(root: HTMLElement, parse: typeof parseStudyRe
     }
     renderRows();
   }
-  function reset() { report = null; content.hidden = true; metrics.replaceChildren(); compare.replaceChildren(); rows.replaceChildren(); clear.disabled = true; filter.value = 'all'; }
+  function reset() { report = null; content.hidden = true; metrics.replaceChildren(); compare.replaceChildren(); rows.replaceChildren(); timing.replaceChildren(); timing.open = false; scope.textContent = ''; count.textContent = ''; clear.disabled = true; filter.value = 'all'; }
   clear.onclick = () => { generation++; reset(); input.value = ''; error.hidden = true; status.textContent = '已从本页移除报告。'; input.focus(); };
   filter.onchange = renderRows;
   input.onchange = async () => {
@@ -112,6 +127,7 @@ export function installStudyReport(root: HTMLElement, parse: typeof parseStudyRe
 }
 
 export const studyReportStyles = `
+.study-timing{padding:16px 18px;margin:16px 0 24px}.study-timing summary{cursor:pointer;font-weight:600;color:var(--reforge-brand)}.study-timing[open] summary{margin-bottom:12px}.study-timing-row{margin:16px 0}.study-time-label{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.study-time-label span:last-child{font-variant-numeric:tabular-nums;color:var(--evolve-muted)}.study-timing progress{width:100%;height:8px;accent-color:var(--reforge-brand)}
 .study-import{padding:20px;margin-bottom:20px}.study-import label{display:block;font-weight:600;margin:16px 0 8px}.study-import input{max-width:100%;margin:0 12px 12px 0}.study-import input::file-selector-button{font:inherit;border:1px solid var(--evolve-border);border-radius:6px;padding:8px 12px;background:var(--evolve-background);color:var(--evolve-text);margin-right:12px;cursor:pointer}.study-error{color:var(--reforge-danger)}
 .study-scope{font-weight:600;margin:16px 0}.study-metrics,.study-arms,.study-pair-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.study-metrics{margin-bottom:16px}.study-metric,.study-cell{border:1px solid var(--evolve-border);border-radius:6px;background:var(--evolve-background);padding:18px;min-width:0}.study-metric{border-top:3px solid var(--reforge-brand)}.study-metric[data-tone=success]{border-top-color:var(--reforge-success)}.study-metric[data-tone=warning]{border-top-color:var(--reforge-warning)}.study-metric strong{font-size:1.6rem;font-variant-numeric:tabular-nums}.study-metrics>.notice{grid-column:1/-1}.study-arms{margin:16px 0}.study-arm{padding:18px;min-width:0}.study-score{font-size:1.3rem;font-weight:650}.study-arm dl{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:.9rem;margin:16px 0 0}.study-arm dt{color:var(--evolve-muted)}.study-arm dd{margin:0;font-variant-numeric:tabular-nums}.study-toolbar{display:flex;align-items:center;gap:12px;margin:24px 0 8px;flex-wrap:wrap}.study-pairs{display:grid;gap:22px;margin-top:18px}.study-cell h4{font-size:1rem;margin:0 0 10px}.study-outcome{display:inline-block;padding:3px 9px;border-radius:4px;background:var(--reforge-brand-bg);color:var(--reforge-brand);font-weight:600}.study-cell[data-outcome=accepted] .study-outcome{background:var(--reforge-success-bg);color:var(--reforge-success)}.study-cell[data-outcome=failed] .study-outcome{background:var(--reforge-danger-bg);color:var(--reforge-danger)}.study-cell[data-outcome=unknown] .study-outcome{background:var(--reforge-warning-bg);color:var(--reforge-warning)}.study-cell[data-outcome=unattempted] .study-outcome{background:var(--evolve-surface);color:var(--evolve-muted)}.study-cell details{margin-top:14px}.study-cell summary{cursor:pointer;color:var(--reforge-brand)}.study-attempt{border-top:1px solid var(--evolve-border);padding-top:10px;margin-top:10px}
 @media(max-width:700px){.study-metrics,.study-arms,.study-pair-grid{grid-template-columns:1fr}.study-import,.study-metric,.study-arm,.study-cell{padding:16px}.study-import input{width:100%}.study-arm dl{grid-template-columns:1fr auto}}

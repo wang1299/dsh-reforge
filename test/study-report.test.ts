@@ -72,6 +72,20 @@ test('finite admission metadata survives projection while legacy reasons stay un
   assert.equal(attempts[1]!.admission, null);
 });
 
+test('timing projection preserves explicit boundaries and missing timing stays unknown', () => {
+  const raw = { ...studyReportFixture(), elapsedMs: 416521, guardMs: 320755, providerMs: 49500 };
+  const view = parseStudyReport(JSON.stringify(raw));
+  assert.deepEqual(view.timing, { elapsedMs: 416521, guardMs: 320755, providerMs: 49500, otherMs: 46266 });
+  assert.equal(parseStudyReport(JSON.stringify(studyReportFixture())).timing, null);
+  assert.deepEqual(parseStudyReport(JSON.stringify({ ...studyReportFixture(), elapsedMs: 0, guardMs: 0, providerMs: 0 })).timing,
+    { elapsedMs: 0, guardMs: 0, providerMs: 0, otherMs: 0 });
+  for (const times of [{ elapsedMs: 1 }, { elapsedMs: 1, guardMs: 1, providerMs: 1 },
+    { elapsedMs: 5, guardMs: -1, providerMs: 1 }, { elapsedMs: 86400001, guardMs: 0, providerMs: 0 },
+    { elapsedMs: 5, guardMs: '1', providerMs: 1 }, { elapsedMs: 5.1, guardMs: 1, providerMs: 1 }]) {
+    assert.throws(() => parseStudyReport(JSON.stringify({ ...studyReportFixture(), ...times })), /study_report_invalid/);
+  }
+});
+
 test('shipped standalone and native pages contain a self-contained report reader under existing CSP', () => {
   for (const bridge of [undefined, { channel: 'synthetic', parentOrigin: 'http://127.0.0.1:5555' }]) {
     const html = renderPanel('testnonce', bridge);
