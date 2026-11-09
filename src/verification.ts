@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join, relative, isAbsolute, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { digest, redact, relativePath, shaSchema, verificationSchema, type TestRun, type Verification } from './domain.js';
-import { git, snapshot } from './repository.js';
+import { git, gitBytes, snapshot } from './repository.js';
 import { WorkspaceSnapshots, type WorkspaceVersion } from './workspace-snapshots.js';
 
 export interface VerificationPolicy {
@@ -13,6 +13,17 @@ export interface VerificationPolicy {
   acceptanceDir: string;
   regressionPath: string;
   timeoutMs: number;
+  probeEnvironment?: NodeJS.ProcessEnv;
+}
+/** Optional isolated source-study probes; environment values are never part of persisted verification. */
+export function verificationRuntime(policy: Pick<VerificationPolicy, 'python' | 'probeEnvironment'>) {
+  const isolated = policy.probeEnvironment;
+  const options = { encoding: 'utf8' as const, windowsHide: true, ...(isolated ? {
+    env: { ...isolated, PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1', PYTEST_ADDOPTS: '', PYTEST_PLUGINS: '' }, timeout: 5000, maxBuffer: 4096,
+  } : {}) };
+  const prefix = isolated ? ['-I', '-B'] : [];
+  return { node: process.version, python: execFileSync(policy.python, [...prefix, '--version'], options).trim(),
+    pytest: execFileSync(policy.python, [...prefix, '-m', 'pytest', '--version'], options).trim(), platform: process.platform };
 }
 export function parsePytest(exitCode: number | null, xml: string, durationMs: number, timedOut: boolean, output: string): TestRun {
   const suite = xml.match(/<testsuite\s[^>]*>/)?.[0];
@@ -73,7 +84,7 @@ async function materialize(root: string, commit: string, target: string): Promis
     const match = entry.match(/^(\d+) blob ([a-f0-9]{40})\t(.+)$/);
     if (!match || match[1] === '120000') throw new Error('Snapshot contains symlink or unsupported entry');
     const path = relativePath.parse(match[3]);
-    const bytes = execFileSync('git', ['-C', root, 'cat-file', 'blob', match[2]!], { maxBuffer: 4 * 1024 * 1024, windowsHide: true });
+    const bytes = gitBytes(root, ['cat-file', 'blob', match[2]!], 4 * 1024 * 1024);
     total += bytes.length;
     if (total > 64 * 1024 * 1024) throw new Error('MVP snapshot limit: 64 MiB');
     await mkdir(resolve(target, path, '..'), { recursive: true });
@@ -169,10 +180,7 @@ async function verifyPair(root: string, taskId: string, baseCommit: string, fixC
     check();
     const verified = verifiedCases(base, fixed) && passes(regression);
     const environment = {
-      node: process.version,
-      python: execFileSync(policy.python, ['--version'], { encoding: 'utf8', windowsHide: true }).trim(),
-      pytest: execFileSync(policy.python, ['-m', 'pytest', '--version'], { encoding: 'utf8', windowsHide: true }).trim(),
-      platform: process.platform, dependencyDigest, ...capture,
+      ...verificationRuntime(policy), dependencyDigest, ...capture,
     };
     return verificationSchema.parse({
       schemaVersion: 2, id: randomUUID(), sourceTaskId: taskId, repoId: current.scope.repoId, baseCommit, fixCommit, acceptanceDigest,

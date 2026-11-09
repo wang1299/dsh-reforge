@@ -11,9 +11,13 @@ export function withRepositoryGitContext<T>(context: RepositoryGitContext, fn: (
   return gitContext.run({ env: { ...context.env }, config: [...context.config] }, fn);
 }
 export function git(root: string, args: string[]): string {
+  return gitBytes(root, args).toString('utf8').trim();
+}
+/** Binary blobs must not pass through text decoding or whitespace normalization. */
+export function gitBytes(root: string, args: string[], maxBuffer = 8 * 1024 * 1024): Buffer {
   const context = gitContext.getStore(); const config = context?.config.flatMap(value => ['-c', value]) ?? [];
-  return execFileSync('git', [...config, '-C', root, ...args], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024,
-    windowsHide: true, ...(context ? { env: context.env } : {}) }).trim();
+  return execFileSync('git', [...config, '-C', root, ...args], { maxBuffer,
+    windowsHide: true, ...(context ? { env: context.env } : {}) });
 }
 export function safeFile(root: string, input: string): string {
   const path = relativePath.parse(input);

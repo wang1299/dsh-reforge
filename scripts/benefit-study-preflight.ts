@@ -106,7 +106,7 @@ export async function createStudySourceBank(root: string, python: string, valida
       const validation = validationEnvironment ? { env: validationEnvironment, isolated: true as const } : undefined;
       validateStudyCode(python, source.before, validation); validateStudyCode(python, source.reference, validation);
       const service = new EvolveService(store, repo, { trusted: true, python, acceptanceDir: join(root, 'source-' + source.id),
-        regressionPath: 'tests/' + source.id, timeoutMs: 15000 });
+        regressionPath: 'tests/' + source.id, timeoutMs: 15000, ...(validationEnvironment ? { probeEnvironment: validationEnvironment } : {}) });
       const task = service.begin('source-' + source.id, source.title);
       const fact = 'The authored original ' + source.id + ' implementation violates its explicit failure/edge-path contract.';
       const correction = service.correction(task.id, fact);
