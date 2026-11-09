@@ -1,0 +1,9 @@
+{
+  "reviewedOn": "2026-11-09",
+  "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "model": "deepseek-flash",
+  "catalogVersion": "DeepSeek-V4.1-Flash-1017",
+  "inputMicroCnyPerToken": 2,
+  "outputMicroCnyPerToken": 8,
+  "note": "Peak non-cache rates; catalog snapshot is not proof of immutable backend model identity."
+}

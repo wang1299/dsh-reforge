@@ -19,7 +19,7 @@ export async function saveStudyBank(store: Store, path: string) {
   const snapshot: BankSnapshot = { schema: 1, tasks: store.tasks(), evidence: store.evidenceRecords(),
     verifications: experiences.map(e => store.verification(e.verificationId!)!),
     revisions: experiences.flatMap(e => store.history(e.id).map(revision => ({ experience: revision, citations: store.citations(revision.id, revision.revision) }))) };
-  shape.parse(snapshot); assert(Buffer.byteLength(JSON.stringify(snapshot)) <= 524288); await writeExclusiveStudyJson(path, snapshot);
+  shape.parse(snapshot); assert(Buffer.byteLength(JSON.stringify(snapshot, null, 2) + '\n') <= 524288); await writeExclusiveStudyJson(path, snapshot);
   return { fileDigest: digest(await readFile(path)), experienceDigest: digest(JSON.stringify(experiences)) };
 }
 export async function restoreStudyBank(path: string, expected: string): Promise<Store> {

@@ -87,6 +87,7 @@ try {
     if (!typecheckOnly) {
       run(stage, ['run', 'study:rehearse']);
       run(stage, ['run', 'study:wire']);
+      run(stage, ['run', 'study:qualify']);
       run(stage, ['run', 'compat']); run(stage, ['run', 'demo']);
       run(stage, ['run', 'install-probe', '--', archive]);
       run(stage, ['run', 'install-probe', '--', archive, '--learning']);

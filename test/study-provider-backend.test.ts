@@ -74,3 +74,24 @@ test('a fixture lease cannot use the live network or omit its approval callback'
     assert.equal(backend.snapshot().networkAttempts, 0); assert.equal(f.ledger.summary.calls, 0);
   } finally { f.ledger.close(); }
 });
+
+test('split and Unicode-escaped Keys, including nested proposal JSON, are rejected before SDK delivery', async () => {
+  const sample = sdkFixtureStream(studyCases[0]!, 'first_pass', 1);
+  const data = (text: string) => 'data: ' + JSON.stringify({ type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text } }) + '\n\n';
+  const replaceText = (replacement: string) => sample.replace(/data: \{"type":"content_block_delta"[^\n]+\n\n/, replacement);
+  const encoded = [...key].map(char => '\\u' + char.charCodeAt(0).toString(16).padStart(4, '0')).join('');
+  const cases = [replaceText(data(key.slice(0, 12)) + data(key.slice(12))),
+    replaceText(data(key).replace(key, encoded)),
+    replaceText(data('{"code":"' + encoded + '"}'))];
+  for (const body of cases) {
+    assert(!body.includes(key)); const f = await fixture();
+    const backend = createStudyProviderBackend({ ...f, scope: 'fixture', key,
+      fetch: async () => new Response(body, { headers: { 'content-type': 'text/event-stream' } }) });
+    try {
+      await assert.rejects(guardedStudyWireCall({ ledger: f.ledger, binding: f.binding, identity: { trialIndex: 0, round: 1, inputDigest: digest(wire) }, wire,
+        transport: backend.transport, requireAuthorization: backend.authorize, checkFrozen: async () => ({ planDigest: f.binding.planDigest }) }));
+      assert.equal(f.ledger.summary.phase, 'unknown'); assert.equal(f.ledger.summary.unknownReserved, studyCostPolicy.reservation);
+      assert.equal(backend.snapshot().completedBodies, 0); assert(!JSON.stringify(f.ledger.state).includes(key));
+    } finally { f.ledger.close(); }
+  }
+});

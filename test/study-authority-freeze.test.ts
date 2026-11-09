@@ -69,3 +69,21 @@ test('runtime freeze rejects linked roots, hard links and private environment fi
   const privateRoot = await newStudyRoot(parent); await writeFile(join(privateRoot, '.env'), 'synthetic sentinel');
   await assert.rejects(freezeStudyRuntime([{ name: 'fixture', path: privateRoot }]), /private configuration/);
 });
+
+test('explicit freeze files and roots cannot traverse a pre-existing intermediate directory alias', async () => {
+  const owner = await newStudyRoot(parent); const outside = await newStudyRoot(parent); const nested = join(outside, 'nested'); await mkdir(nested);
+  await writeFile(join(outside, 'code.js'), 'preserve outside bytes'); await writeFile(join(nested, 'code.js'), 'preserve nested bytes');
+  const alias = join(owner, 'linked'); await symlink(outside, alias, process.platform === 'win32' ? 'junction' : 'dir');
+  await assert.rejects(freezeStudyRuntime([{ name: 'fixture', path: owner, files: ['linked/code.js'] }]), /alias/);
+  await assert.rejects(freezeStudyRuntime([{ name: 'fixture', path: join(alias, 'nested'), files: ['code.js'] }]), /canonical/);
+  assert.equal(await readFile(join(outside, 'code.js'), 'utf8'), 'preserve outside bytes');
+});
+
+test('every critical path must exist as a covered non-directory before any freeze is accepted', async () => {
+  const root = await newStudyRoot(parent); const file = join(root, 'code.js'); await writeFile(file, 'fixture');
+  await assert.rejects(freezeStudyRuntime([{ name: 'fixture', path: root, files: [] }], [file]), /Critical/);
+  await assert.rejects(freezeStudyRuntime([{ name: 'fixture', path: root }], [join(root, 'missing.js')]), /Critical/);
+  await assert.rejects(freezeStudyRuntime([{ name: 'fixture', path: root }], [root]), /Critical/);
+  const frozen = await freezeStudyRuntime([{ name: 'fixture', path: root }], [file]);
+  frozen.critical.push(join(root, 'missing.js')); await assert.rejects(verifyStudyRuntime(frozen), /Critical/);
+});
