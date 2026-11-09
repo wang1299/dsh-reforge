@@ -37,7 +37,7 @@ npm run study:wire
 
 命令只接受固定`offline-wire`，不接受live、Key路径或其他参数。每次创建新的`.probe-work/t064-sdk-rehearsal/run-*`，其中`offline-plan.json`绑定题目、顺序、系统、实际源码/JS/SDK入口及来源；`sdk-wire-result.json`记录各trial与attempt，不保存原始HTTP体或完整对话。源码manifest包含当前实际字节，不能仅用Git提交号代替它；尚未覆盖所有传递依赖或证明底层模型版本固定。
 
-首次实现`607fe86`的实际本机演练完成36trial、72请求和72笔合成占额；外部审计确认36个session、两轮失败→通过、wire摘要与账本顺序相同、源码/执行入口起止一致，参考数none/plain/reforge为0/12/10。这是旧SHA的线路证据；修正后的最终检查、两个平台与两个SDK图以任务/PR实际记录为准，不把旧回执改标新提交。
+首次实现`607fe86`的实际本机演练完成36trial、72请求和72笔合成占额；单独核对脚本确认36个session、两轮失败→通过、wire摘要与账本顺序相同、源码/执行入口起止一致，参考数none/plain/reforge为0/12/10。这是旧SHA的线路证据；修正后的最终检查、两个平台与两个SDK图以任务/PR实际记录为准，不把旧回执改标新提交。
 
 ## 保留历史评测，另验当前依赖图
 
