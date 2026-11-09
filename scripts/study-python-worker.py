@@ -51,7 +51,8 @@ def install_limits():
         observed = Extended()
         if not kernel.QueryInformationJobObject(job, 9, ctypes.byref(observed), ctypes.sizeof(observed), None):
             raise RuntimeError("limits unavailable")
-        if observed.basic.flags & info.basic.flags != info.basic.flags or observed.process_memory != MEMORY or observed.basic.active != 1:
+        if (observed.basic.flags & info.basic.flags != info.basic.flags or observed.process_memory != MEMORY
+                or observed.basic.active != 1 or observed.basic.process_time != 8 * 10_000_000):
             raise RuntimeError("limits mismatch")
         _job_handle = job
         return "windows-job"

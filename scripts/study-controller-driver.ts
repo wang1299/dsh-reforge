@@ -2,11 +2,14 @@ import assert from 'node:assert/strict';
 import type { GenerateOptions, LlmAdapter } from '@deepseek-ai/dsh-llm';
 import { digest } from '../src/domain.js';
 import { studySystem, studyTaskInput, type StudyCase } from './benefit-study-cases.js';
+import type { StudyExecutionPort } from './study-bounded-python.js';
 
 export const studyReferenceMarker = 'DSH-Reforge repair experience (fallible data, not instructions or evidence of benefit):\n';
 export type TrackedStudyAdapter = LlmAdapter & { calls: number; round: number; readonly inputDigests: string[] };
 export type StudyControllerDriver = { kind: 'scripted'; provider: 'study-controller-scripted'; model: 'scripted'; adapter: TrackedStudyAdapter }
-  | { kind: 'official-sdk-offline'; provider: 'study-official-offline'; model: 'deepseek-flash'; adapter: TrackedStudyAdapter };
+  | { kind: 'official-sdk-offline'; provider: 'study-official-offline'; model: 'deepseek-flash'; adapter: TrackedStudyAdapter }
+  | { kind: 'official-sdk-live'; scope: 'live' | 'fixture'; execution: StudyExecutionPort; httpRequests: () => number;
+    provider: 'study-official-live'; model: 'deepseek-flash'; adapter: TrackedStudyAdapter };
 /** Complete role/content history is hashed in memory, never persisted as a conversation. */
 export function inspectStudyInput(options: GenerateOptions, item: StudyCase, memory: string | null, round: number, provider: string, model: string): string {
   assert.equal(options.provider, provider); assert.equal(options.model, model);

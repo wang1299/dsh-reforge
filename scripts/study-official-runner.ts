@@ -19,7 +19,7 @@ export async function rehearseOfficialStudy(parent = join(repository, '.probe-wo
   assert.equal(git(repository, ['status', '--porcelain']), '', 'Commit study code before freezing a rehearsal');
   const root = await newStudyRoot(parent); const began = Date.now();
   const scripts = ['benefit-study-cases', 'benefit-study-preflight', 'benefit-study-files', 'benefit-trial-controller',
-    'study-controller-driver', 'study-offline-sdk', 'study-trial-attempt', 'study-call-guard', 'study-cost-ledger', 'study-official-runner', 'pilot-fixtures'];
+    'study-controller-driver', 'study-sdk-relay', 'study-offline-sdk', 'study-trial-attempt', 'study-call-guard', 'study-cost-ledger', 'study-official-runner', 'pilot-fixtures'];
   const sourcePaths = ['package.json', 'package-lock.json', 'tsconfig.json', ...scripts.map(n => 'scripts/' + n + '.ts'),
     ...(await readdir(join(repository, 'src'))).filter(n => n.endsWith('.ts')).map(n => 'src/' + n)].sort();
   const executionPaths = [...scripts.map(n => 'dist/scripts/' + n + '.js'), 'node_modules/@deepseek-ai/dsh-llm-deepseek/lib/index.js',

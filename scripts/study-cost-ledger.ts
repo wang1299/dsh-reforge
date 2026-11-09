@@ -25,7 +25,8 @@ const stateSchema = z.object({ schema: z.literal(1), policy: z.literal(studyCost
 export type StudyCostBinding = z.infer<typeof bindingSchema>;
 export type StudyCallIdentity = z.infer<typeof identitySchema>;
 export type StudyUsage = z.infer<typeof studyUsageSchema>;
-type State = z.infer<typeof stateSchema>;
+export type StudyCostState = z.infer<typeof stateSchema>;
+type State = StudyCostState;
 type UnknownReason = 'transport_unknown' | 'http_error' | 'invalid_receipt';
 const probe = resolve(fileURLToPath(new URL('../../.probe-work/', import.meta.url)));
 const table = 'CREATE TABLE study_cost(id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL)';
@@ -123,6 +124,23 @@ export class StudyCostLedger {
   }
   static create(root: string, binding: StudyCostBinding) { return new StudyCostLedger(root, binding, true); }
   static open(root: string, binding: StudyCostBinding) { return new StudyCostLedger(root, binding, false); }
+  /** Inspection never acquires a write lock, recovers a journal or changes a started study. */
+  static inspect(root: string, binding: StudyCostBinding): StudyCostState {
+    const path = join(ownedRoot(root), 'cost-ledger.sqlite'); bindingSchema.parse(binding); noSidecars(path); regular(path);
+    const fd = openSync(path, 'r'); const header = Buffer.alloc(100);
+    try { requireCost(readSync(fd, header, 0, 100, 0) === 100); } finally { closeSync(fd); }
+    requireCost(header.subarray(0, 16).toString('binary') === 'SQLite format 3\0' && header.readUInt32BE(60) === 1
+      && header.readUInt32BE(68) === 0x52463633 && header[18] === 1 && header[19] === 1);
+    const db = new DatabaseSync(path, { readOnly: true });
+    try {
+      requireCost(db.prepare('PRAGMA quick_check').get()!.quick_check === 'ok');
+      const schema = db.prepare("SELECT type,name,sql FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%'").all();
+      requireCost(schema.length === 1 && schema[0]!.type === 'table' && schema[0]!.name === 'study_cost' && schema[0]!.sql === table);
+      requireCost(db.prepare('SELECT count(*) AS n FROM study_cost').get()!.n === 1);
+      const state = validate(JSON.parse(String(db.prepare('SELECT body FROM study_cost WHERE id=1').get()?.body)));
+      requireCost(sameBinding(state.binding, binding)); return state;
+    } finally { db.close(); }
+  }
   private check(): void {
     requireCost(!this.closed && !this.poisoned && ownedRoot(this.root) === this.root);
     noSidecars(this.path);

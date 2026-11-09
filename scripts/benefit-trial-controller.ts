@@ -63,7 +63,9 @@ class ScriptedRepairAdapter extends LlmAdapter {
 export interface StudyTrialInput { parent: string; item: StudyCase; memory: string | null; mode: string; python?: string; projectRoot?: string; execution?: StudyExecutionPort }
 /** Trusted internal harness API; a driver is not an authorization to call a paid provider. */
 export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyControllerDriver) {
-  assert(['scripted', 'official-sdk-offline'].includes(driver.kind)); const python = input.python ?? process.env.EVOLVE_PYTHON ?? 'python';
+  assert(['scripted', 'official-sdk-offline', 'official-sdk-live'].includes(driver.kind)); const python = input.python ?? process.env.EVOLVE_PYTHON ?? 'python';
+  const execution = driver.kind === 'official-sdk-live' ? driver.execution : input.execution;
+  if (driver.kind === 'official-sdk-live') assert(execution?.kind === 'bounded-study-v1', 'Live studies require the bounded worker');
   const root = await newStudyRoot(input.parent); const tests = join(root, 'checks'); await mkdir(tests);
   const project = input.projectRoot ?? join(root, 'project');
   const projectParent = input.projectRoot ? input.parent : root;
@@ -94,11 +96,11 @@ export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyC
         let timedOut = false; let timer: ReturnType<typeof setTimeout> | undefined;
         handle.agent.followup(createUserMessage({ source: { kind: 'user' }, content }));
         try { await Promise.race([handle.agent.whenIdle(), new Promise<void>(resolve => {
-          timer = setTimeout(() => { timedOut = true; handle.agent.cancel({ kind: 'hook', reason: 'study_controller_deadline' }); resolve(); }, 30000); timer.unref();
+          timer = setTimeout(() => { timedOut = true; handle.agent.cancel({ kind: 'hook', reason: 'study_controller_deadline' }); resolve(); }, driver.kind === 'official-sdk-live' ? 150000 : 30000); timer.unref();
         })]); } finally { clearTimeout(timer); }
         const actualRequests = adapter.calls - beforeCalls;
         const row: Attempt = { round, status: 'transport_unknown', actualRequests,
-          actualScriptedRequests: driver.kind === 'scripted' ? actualRequests : 0, actualSdkRequests: driver.kind === 'official-sdk-offline' ? actualRequests : 0,
+          actualScriptedRequests: driver.kind === 'scripted' ? actualRequests : 0, actualSdkRequests: driver.kind !== 'scripted' ? actualRequests : 0,
           outputDigest: lastText === null ? null : digest(lastText), codeDigest: null, executionAttempted: false, tests: null, durationMs: 0 };
         if (!timedOut && completed && row.actualRequests === 1) {
           let code: string | null = null;
@@ -106,14 +108,14 @@ export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyC
           catch { row.status = 'invalid_output'; }
           if (code !== null) {
             row.codeDigest = digest(code);
-            try { if (input.execution) input.execution.validate(code); else validateStudyCode(python, code); }
+            try { if (execution) execution.validate(code); else validateStudyCode(python, code); }
             catch (error) { row.status = error instanceof StudyValidationError && error.kind === 'rejected' ? 'invalid_code' : 'execution_unknown'; code = null; }
           }
           if (code !== null) {
             await writeFile(join(root, 'proposal-' + round + '.py'), code, { flag: 'wx', mode: 0o600 });
             await writeStudyTarget(projectParent, project, code); row.executionAttempted = true;
             const xml = join(root, 'attempt-' + round + '.xml');
-            const checked = input.execution ? await input.execution.run(project, tests, xml) : await runPilotTests(python, project, tests, xml);
+            const checked = execution ? await execution.run(project, tests, xml) : await runPilotTests(python, project, tests, xml);
             row.tests = acceptanceSummary(checked);
             row.status = checked.skipped === 0 && passes(checked) ? 'accepted'
               : checked.skipped === 0 && reproduces(checked) ? 'tests_failed' : 'execution_unknown';
@@ -123,14 +125,17 @@ export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyC
         if (['accepted', 'execution_unknown', 'transport_unknown'].includes(row.status) || round === 2) break;
         prompt = repairFeedback(row.status, row.tests);
       }
-      const result = { kind: driver.kind === 'scripted' ? 'scripted-agent-repair-trial' : 'official-sdk-offline-repair-trial', case: input.item.id, mode: input.mode, sessionId: String(sessionId),
+      const result = { kind: driver.kind === 'scripted' ? 'scripted-agent-repair-trial' : driver.kind === 'official-sdk-offline'
+        ? 'official-sdk-offline-repair-trial' : driver.scope === 'live' ? 'real-provider-repair-trial' : 'live-path-fixture-repair-trial', case: input.item.id, mode: input.mode, sessionId: String(sessionId),
         taskInputDigest: digest(studyTaskInput(input.item)), referenceDigest: input.memory ? digest(input.memory) : null,
         referenceProvided: input.memory !== null, inputDigests: adapter.inputDigests, attempts, firstPass: attempts[0]?.status === 'accepted',
         finalPass: attempts.at(-1)?.status === 'accepted', unknown: attempts.some(a => a.status.endsWith('_unknown')),
         actualAttempts: attempts.length, actualScriptedRequests: driver.kind === 'scripted' ? adapter.calls : 0,
-        actualSdkRequests: driver.kind === 'official-sdk-offline' ? adapter.calls : 0, actualReworkAttempts: Math.max(0, attempts.length - 1),
-        actualHumanEdits: 0, durationMs: Date.now() - started, modelHttpRequests: 0, realModelBenefit: false,
-        financialUsage: driver.kind === 'scripted' ? 'not_applicable_scripted' : 'synthetic_offline_only', liveExecutionImplemented: false };
+        actualSdkRequests: driver.kind !== 'scripted' ? adapter.calls : 0, actualReworkAttempts: Math.max(0, attempts.length - 1),
+        actualHumanEdits: 0, durationMs: Date.now() - started, modelHttpRequests: driver.kind === 'official-sdk-live' ? driver.httpRequests() : 0,
+        realModelBenefit: driver.kind === 'official-sdk-live' && driver.scope === 'live' ? null : false,
+        financialUsage: driver.kind === 'scripted' ? 'not_applicable_scripted' : driver.kind === 'official-sdk-live' && driver.scope === 'live'
+          ? 'provider_usage_peak_upper_bound' : 'synthetic_offline_only', liveExecutionImplemented: driver.kind === 'official-sdk-live' };
       await writeFile(join(root, 'trial-result.json'), JSON.stringify(result, null, 2), { flag: 'wx', mode: 0o600 });
       return { root, result };
     } finally { await handle.dispose(); }
