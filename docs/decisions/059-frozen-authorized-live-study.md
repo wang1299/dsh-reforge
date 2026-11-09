@@ -53,3 +53,5 @@ backend只POST `https://api.deepseek.com/anthropic/v1/messages`、redirect error
 首次价格核对必须符合人工审阅的原始官方文档SHA256，而不只是在prepare和live之间相等。2026-11-09再核对官方文档flash峰值输入2/输出8元/百万、目录版本1017，并冻结该次原文摘要；任何页面字节变动都拒绝新计划或执行，须重新人工核对、提交和准备。仅有目录标签相同不能替代价格核验。
 
 Key隔离审查修订（先于修正实现）：不仅Python，计划检查与研究helper的全部Git子进程也采用白名单环境，禁系统/用户Git配置、fsmonitor与hooks。repository的内部Git helper增加异步作用域执行上下文，只在本研究中指定环境和配置，不改变正常产品调用默认行为；避免在读取/删除Key之前经默认继承环境把它交给Git。研究自身的直接Git调用统一经该helper。用合成环境标记和真实Git子进程测试作用域及异步恢复，不能读真实Key。
+
+同项复审补充（先于修正实现）：来源验证的二进制cat-file同样复用Git作用域配置，但必须保留原始Buffer和4MiB单blob上限，不能通过trim文本读取。VerificationPolicy增加仅供可信内部调用的可选probeEnvironment，来源证明传白名单，Python/pytest版本探针在该模式下用-I/-B、禁自动插件及有界超时/输出；正常产品无该字段时保留现有行为。不把环境内容写进Verification。覆盖binary roundtrip、实际Git子进程和父PYTEST_PLUGINS污染反例。
