@@ -11,7 +11,7 @@ import { createStudySourceBank, newStudyRoot, selectStudyReference } from './ben
 import { executeBenefitTrial } from './benefit-trial-controller.js';
 import { writeStudyTarget } from './benefit-study-files.js';
 import { studyArms, studyCases, studyFixtureVersion, studySchedule, studySources, studySystem } from './benefit-study-cases.js';
-import { createOfflineSdkDriver } from './study-offline-sdk.js';
+import { runOfficialTrialAttempt } from './study-trial-attempt.js';
 import { StudyCostLedger, studyCostPolicy } from './study-cost-ledger.js';
 
 const repository = fileURLToPath(new URL('../../', import.meta.url));
@@ -19,7 +19,7 @@ export async function rehearseOfficialStudy(parent = join(repository, '.probe-wo
   assert.equal(git(repository, ['status', '--porcelain']), '', 'Commit study code before freezing a rehearsal');
   const root = await newStudyRoot(parent); const began = Date.now();
   const scripts = ['benefit-study-cases', 'benefit-study-preflight', 'benefit-study-files', 'benefit-trial-controller',
-    'study-controller-driver', 'study-offline-sdk', 'study-call-guard', 'study-cost-ledger', 'study-official-runner', 'pilot-fixtures'];
+    'study-controller-driver', 'study-offline-sdk', 'study-trial-attempt', 'study-call-guard', 'study-cost-ledger', 'study-official-runner', 'pilot-fixtures'];
   const sourcePaths = ['package.json', 'package-lock.json', 'tsconfig.json', ...scripts.map(n => 'scripts/' + n + '.ts'),
     ...(await readdir(join(repository, 'src'))).filter(n => n.endsWith('.ts')).map(n => 'src/' + n)].sort();
   const executionPaths = [...scripts.map(n => 'dist/scripts/' + n + '.js'), 'node_modules/@deepseek-ai/dsh-llm-deepseek/lib/index.js',
@@ -37,7 +37,7 @@ export async function rehearseOfficialStudy(parent = join(repository, '.probe-wo
     const plan = { kind: 'synthetic-official-sdk-wire-plan', sourceCommit: git(repository, ['rev-parse', 'HEAD']),
       fixtureVersion: studyFixtureVersion, fixtureDigest: digest(JSON.stringify({ studyCases, studySources })),
       scheduleDigest: digest(JSON.stringify(studySchedule)), systemDigest: digest(studySystem), implementation, execution, runtime,
-      policy: studyCostPolicy, sourceBankDigest: bankDigest, sourceHead: head, sourceIndexDigest: digest(index) };
+      policy: studyCostPolicy, sourceBankDigest: bankDigest, sourceProofsDigest: digest(JSON.stringify(bank.proofs)), sourceHead: head, sourceIndexDigest: digest(index) };
     const binding = { studyId: randomUUID(), planDigest: digest(JSON.stringify(plan)) };
     await writeFile(join(root, 'offline-plan.json'), JSON.stringify({ ...plan, binding }, null, 2), { flag: 'wx', mode: 0o600 });
     const ledger = StudyCostLedger.create(root, binding);
@@ -50,37 +50,49 @@ export async function rehearseOfficialStudy(parent = join(repository, '.probe-wo
       };
       type Trial = typeof studySchedule[number] & { folder: string; referenceProvided: boolean;
         selection: Omit<Awaited<ReturnType<typeof selectStudyReference>>, 'memory'>;
-        result: Awaited<ReturnType<typeof executeBenefitTrial>>['result']; wire: ReturnType<Awaited<ReturnType<typeof createOfflineSdkDriver>>['snapshot']> };
-      const trials: Trial[] = []; const unresolved: { index: number; reason: string }[] = []; let stoppedReason: string | null = null;
+        result: Awaited<ReturnType<typeof executeBenefitTrial>>['result']; wire: Awaited<ReturnType<typeof runOfficialTrialAttempt>>['receipt']['wire'] };
+      const trials: Trial[] = []; const unresolved: (typeof studySchedule[number] & { index: number; reason: string })[] = [];
+      const attempts: (typeof studySchedule[number] & Awaited<ReturnType<typeof runOfficialTrialAttempt>>['receipt'])[] = [];
+      const entered = new Set<number>(); let stoppedReason: string | null = null;
       for (const [trialIndex, planned] of studySchedule.entries()) {
+        entered.add(trialIndex);
         try {
           const item = studyCases.find(c => c.id === planned.case)!; await writeStudyTarget(root, bank.repo, item.before);
           const selected = await selectStudyReference(bank.store, bank.repo, item, planned.arm, python);
-          const sdk = await createOfflineSdkDriver({ ledger, binding, trialIndex, item, memory: selected.memory, mode: 'repair_once', checkFrozen });
-          try {
-            const trial = await executeBenefitTrial({ parent: root, projectRoot: bank.repo, item, memory: selected.memory, mode: 'repair_once', python }, sdk.driver);
+          const outcome = await runOfficialTrialAttempt({ ledger, binding, trialIndex, mode: 'repair_once', checkFrozen,
+            trial: { parent: root, projectRoot: bank.repo, item, memory: selected.memory, mode: 'repair_once', python } });
+          attempts.push({ ...planned, ...outcome.receipt });
+          if (outcome.trial) {
+            const trial = outcome.trial;
             const { memory: _memory, ...selection } = selected;
-            const wire = sdk.snapshot(); trials.push({ ...planned, selection, folder: relative(root, trial.root).split('\\').join('/'),
+            const wire = outcome.receipt.wire; trials.push({ ...planned, selection, folder: relative(root, trial.root).split('\\').join('/'),
               referenceProvided: selected.memory !== null, result: trial.result, wire });
             if (JSON.stringify(trial.result.attempts.map(a => a.status)) !== '["tests_failed","accepted"]'
               || trial.result.actualSdkRequests !== 2 || wire.loopbackRequests !== 2 || wire.offlineTransportInvocations !== 2
-              || wire.providerHttpRequests !== 0 || wire.deniedRequests !== 0) { stoppedReason = 'official_sdk_control_mismatch'; break; }
-          } finally { await sdk.close(); }
-        } catch { unresolved.push({ index: trialIndex, reason: 'controller_result_unavailable' }); stoppedReason = 'controller_incomplete'; break; }
+              || wire.providerHttpRequests !== 0 || wire.deniedRequests !== 0) stoppedReason = 'official_sdk_control_mismatch';
+          }
+          if (outcome.receipt.failureReason) { unresolved.push({ ...planned, index: trialIndex, reason: outcome.receipt.failureReason }); stoppedReason = 'controller_incomplete'; break; }
+          if (stoppedReason) break;
+        } catch { unresolved.push({ ...planned, index: trialIndex, reason: 'pre_controller_failure' }); stoppedReason = 'controller_incomplete'; break; }
       }
       let frozenUnchanged = true; try { await checkFrozen(); } catch { frozenUnchanged = false; stoppedReason ??= 'study_freeze_changed'; }
       const complete = !stoppedReason && trials.length === 36;
       if (ledger.state.phase === 'started') ledger.finish(complete);
       const financial = ledger.summary; const calls = ledger.state.calls;
       const arms = Object.fromEntries(studyArms.map(arm => {
-        const rows = trials.filter(t => t.arm === arm); return [arm, { planned: 12, recorded: rows.length,
+        const rows = trials.filter(t => t.arm === arm); const indices = [...entered].filter(i => studySchedule[i]!.arm === arm);
+        const receipts = attempts.filter(t => t.arm === arm); const countComplete = receipts.length === indices.length && receipts.every(a => a.countsComplete);
+        return [arm, { planned: 12, attempted: indices.length, recorded: rows.length, unresolved: unresolved.filter(u => u.arm === arm).length,
           referencesProvided: rows.filter(r => r.referenceProvided).length,
-          sdkRequests: rows.reduce((n, r) => n + r.result.actualSdkRequests, 0), loopbackRequests: rows.reduce((n, r) => n + r.wire.loopbackRequests, 0),
+          sdkRequests: countComplete ? receipts.reduce((n, a) => n + a.observedSdkRequests, 0) : null,
+          loopbackRequests: countComplete ? receipts.reduce((n, a) => n + a.wire.loopbackRequests, 0) : null,
+          observedSdkRequests: receipts.reduce((n, a) => n + a.observedSdkRequests, 0), observedLoopbackRequests: receipts.reduce((n, a) => n + a.wire.loopbackRequests, 0),
           initialAccepted: rows.filter(r => r.result.firstPass).length, finalAccepted: rows.filter(r => r.result.finalPass).length }];
       }));
       const report = { kind: 'official-sdk-loopback-schedule-rehearsal', schemaVersion: 1, plan, binding, complete, stoppedReason,
-        plannedTrials: 36, recordedTrials: trials.length, unresolved, notAttempted: 36 - trials.length - unresolved.length,
-        arms, trials, recordedLoopbackRequests: trials.reduce((n, t) => n + t.wire.loopbackRequests, 0),
+        plannedTrials: 36, attemptedTrials: entered.size, recordedTrials: trials.length, unresolved, notAttempted: 36 - entered.size,
+        sourceProofs: bank.proofs, arms, trials, attempts, recordedLoopbackRequests: trials.reduce((n, t) => n + t.wire.loopbackRequests, 0),
+        actualLoopbackRequests: attempts.length === entered.size && attempts.every(a => a.countsComplete) ? attempts.reduce((n, a) => n + a.wire.loopbackRequests, 0) : null,
         durableReservations: calls.length, rawWireDigests: calls.map(c => c.inputDigest), financial, frozenUnchanged,
         realTrialsStarted: 0, providerHttpRequests: 0, realModelBenefit: false, liveExecutionImplemented: false,
         simulatedAmountsOnly: true, elapsedMs: Date.now() - began,

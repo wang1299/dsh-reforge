@@ -12,6 +12,7 @@ import { studyCases } from '../scripts/benefit-study-cases.js';
 import { newStudyRoot } from '../scripts/benefit-study-preflight.js';
 import { executeBenefitTrial } from '../scripts/benefit-trial-controller.js';
 import { createOfflineSdkDriver, sdkFixtureStream } from '../scripts/study-offline-sdk.js';
+import { runOfficialTrialAttempt } from '../scripts/study-trial-attempt.js';
 
 async function fixture() {
   const dir = await newStudyRoot(fileURLToPath(new URL('../../.probe-work/t064-wire-tests', import.meta.url)));
@@ -114,4 +115,34 @@ test('official SDK HTTP failure and truncated usage never trigger another reques
       } finally { await sdk.close(); }
     } finally { f.ledger.close(); }
   }
+});
+
+test('closing an actual SDK pending request preserves the committed unknown reservation', async () => {
+  const f = await fixture();
+  try {
+    const sdk = await createOfflineSdkDriver({ ledger: f.ledger, binding: f.binding, trialIndex: 0, item: studyCases[0]!,
+      memory: null, mode: 'unresponsive', checkFrozen: async () => ({ planDigest: f.binding.planDigest }) });
+    const running = executeBenefitTrial({ parent: f.dir, item: studyCases[0]!, memory: null, mode: 'unresponsive' }, sdk.driver);
+    try {
+      await Promise.race([sdk.whenDispatched, running.then(() => { throw new Error('SDK ended before dispatch'); })]);
+      await sdk.close(); const trial = await running;
+      assert.deepEqual(trial.result.attempts.map(a => a.status), ['transport_unknown']); assert.equal(trial.result.actualSdkRequests, 1);
+      assert.equal(sdk.snapshot().loopbackRequests, 1); assert.equal(f.ledger.summary.unknownReserved, studyCostPolicy.reservation);
+      assert.equal(f.ledger.summary.phase, 'unknown');
+    } finally { await sdk.close(); await running; }
+  } finally { f.ledger.close(); }
+});
+
+test('a controller result lost after an actual SDK response retains request counts and financial receipts', async () => {
+  const f = await fixture();
+  try {
+    const outcome = await runOfficialTrialAttempt({ ledger: f.ledger, binding: f.binding, trialIndex: 0, mode: 'first_pass',
+      checkFrozen: async () => ({ planDigest: f.binding.planDigest }),
+      trial: { parent: f.dir, item: studyCases[0]!, memory: null, mode: 'first_pass' } }, async (input, driver) => {
+      await executeBenefitTrial(input, driver); throw new Error('Synthetic lost result after request');
+    });
+    assert.equal(outcome.trial, null); assert.equal(outcome.receipt.resultRecorded, false); assert.equal(outcome.receipt.countsComplete, true);
+    assert.equal(outcome.receipt.sdkRequests, 1); assert.equal(outcome.receipt.loopbackRequests, 1); assert.equal(outcome.receipt.failureReason, 'controller_result_unavailable');
+    assert.equal(f.ledger.summary.calls, 1); assert.equal(f.ledger.summary.settledUpperBound, 460);
+  } finally { f.ledger.close(); }
 });

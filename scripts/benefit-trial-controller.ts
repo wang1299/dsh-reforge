@@ -29,7 +29,7 @@ export function parseStudyProposal(text: string): string {
     || !('code' in value) || typeof value.code !== 'string' || !value.code.trim() || Buffer.byteLength(value.code) > 4096) throw new Error('invalid_output');
   return value.code;
 }
-interface Attempt {
+export interface Attempt {
   round: number; status: AttemptStatus; actualRequests: number; actualScriptedRequests: number; actualSdkRequests: number; outputDigest: string | null;
   codeDigest: string | null; executionAttempted: boolean; tests: ReturnType<typeof acceptanceSummary> | null; durationMs: number;
 }

@@ -11,7 +11,7 @@ import { guardedOfflineWireCall } from './study-call-guard.js';
 import type { StudyCostBinding, StudyCostLedger } from './study-cost-ledger.js';
 import { inspectStudyInput, type StudyControllerDriver, type TrackedStudyAdapter } from './study-controller-driver.js';
 
-export const sdkFixtureModes = ['first_pass', 'repair_once', 'unchanged', 'self_report', 'forbidden_code', 'http_error', 'truncated'] as const;
+export const sdkFixtureModes = ['first_pass', 'repair_once', 'unchanged', 'self_report', 'forbidden_code', 'http_error', 'truncated', 'unresponsive'] as const;
 export type SdkFixtureMode = typeof sdkFixtureModes[number];
 const event = (value: unknown) => 'data: ' + JSON.stringify(value) + '\n\n';
 export function sdkFixtureStream(item: StudyCase, mode: SdkFixtureMode, round: number): string {
@@ -36,6 +36,7 @@ export async function createOfflineSdkDriver(input: { ledger: StudyCostLedger; b
   const counters = { loopbackRequests: 0, offlineTransportInvocations: 0, deniedRequests: 0, providerHttpRequests: 0,
     wireDigests: [] as string[], reservationIds: [] as string[] };
   const operations = new Set<Promise<void>>(); const controllers = new Set<AbortController>();
+  let markDispatched!: () => void; const whenDispatched = new Promise<void>(done => { markDispatched = done; });
   let adapter: TrackedStudyAdapter;
   const server = createServer((req, res) => {
     const operation = handle().finally(() => operations.delete(operation)); operations.add(operation);
@@ -50,12 +51,17 @@ export async function createOfflineSdkDriver(input: { ledger: StudyCostLedger; b
         const chunks: Buffer[] = []; let size = 0;
         for await (const value of req) { const chunk = Buffer.from(value as Uint8Array); size += chunk.length;
           if (size > 262144) throw new Error('Study request limit'); chunks.push(chunk); }
-        const wire = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)); counters.wireDigests.push(digest(wire));
+        const bytes = Buffer.concat(chunks); const wire = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+        assert(Buffer.from(wire).equals(bytes), 'Decoding must preserve exact SDK wire bytes'); counters.wireDigests.push(digest(wire));
         const result = await guardedOfflineWireCall({ ledger: input.ledger, binding: input.binding,
           identity: { trialIndex: input.trialIndex, round: adapter.round as 1 | 2, inputDigest: digest(wire) }, wire,
           checkFrozen: input.checkFrozen, signal: controller.signal, deadlineMs: 10000,
-          transport: { kind: 'offline-fixture', respond: async frozenWire => {
-            assert.equal(frozenWire, wire, 'SDK wire bytes must not be normalized or rewritten'); counters.offlineTransportInvocations++;
+          transport: { kind: 'offline-fixture', respond: async (frozenWire, signal) => {
+            assert.equal(frozenWire, wire, 'SDK wire bytes must not be normalized or rewritten'); counters.offlineTransportInvocations++; markDispatched();
+            if (input.mode === 'unresponsive') return new Promise<never>((_done, reject) => {
+              const abort = () => reject(new Error('Synthetic pending transport cancelled'));
+              signal.addEventListener('abort', abort, { once: true }); if (signal.aborted) { signal.removeEventListener('abort', abort); abort(); }
+            });
             return { status: input.mode === 'http_error' ? 503 : 200, body: sdkFixtureStream(input.item, input.mode, adapter.round) };
           } } });
         counters.reservationIds.push(result.requestId); if (res.destroyed) return;
@@ -97,6 +103,6 @@ export async function createOfflineSdkDriver(input: { ledger: StudyCostLedger; b
       fetch: async () => { throw new Error('Study Files API is disabled'); } }),
     prepareExtensions: async () => ({ fields: {}, accept: async () => {} }) });
   const driver: StudyControllerDriver = { kind: 'official-sdk-offline', provider: 'study-official-offline', model: 'deepseek-flash', adapter };
-  return { driver, snapshot: () => structuredClone(counters), close };
+  return { driver, whenDispatched, snapshot: () => structuredClone(counters), close };
   } catch (error) { await close(); throw error; }
 }

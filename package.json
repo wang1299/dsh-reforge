@@ -84,6 +84,7 @@
     "retrieval:project-facts": "tsc && node dist/scripts/project-facts-evaluate.js",
     "study:rehearse": "tsc && node dist/scripts/benefit-study-runner.js rehearse",
     "study:wire": "tsc && node dist/scripts/study-official-runner.js offline-wire",
+    "retrieval:project-facts:regression": "tsc && node dist/scripts/project-facts-current-replay.js",
     "panel:demo": "tsc && node dist/scripts/inspector-demo.js",
     "project:facts": "tsc && node dist/scripts/project-facts.js",
     "feedback-evaluation": "tsc && node dist/scripts/feedback-evaluation.js",
