@@ -23,6 +23,7 @@
 | 从工作台检查文件、预览并提交当前任务（源码） | [输入流程、零费用宿主演练、条件与恢复边界](evaluation/owner-intake-v1.md) |
 | 复查下一轮真实效果试验准备 | [6项新题、独立验收控制与实际经验输入预检](evaluation/benefit-preparation-v1.md) |
 | 了解怎样独立验收、限制返工和处理未知结果 | [有界Agent修复控制器（当前为脚本演练）](evaluation/bounded-repair-controller.md) |
+| 核对未来真实研究怎样占额和停止 | [单次研究费用保护（离线验证，未获得新预算）](evaluation/study-cost-guard.md) |
 | 参与试用或报告问题 | [外部试用](community/pilot.md)、[问题表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)、[安全报告](../SECURITY.md) |
 | 从一个小贡献开始 | [贡献指南](../CONTRIBUTING.md)、[新人任务](community/newcomers.md) |
 
