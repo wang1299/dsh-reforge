@@ -45,7 +45,7 @@ const docs = [
   { key:"compatibility", source:["docs/dsh-version-matrix.md","docs/dsh-version-matrix.md"], title:["兼容版本","Compatibility"], desc:["准确宿主版本与实际检查范围。","Exact host versions and actual verification scope."] },
   { key:"faq", source:["docs/faq.md","docs/faq.md"], title:["常见问题","Troubleshooting"], desc:["连接、安装、仓库归属与经验资格。","Connections, installation, repository and qualification."] },
   { key:"maintenance", source:["docs/maintenance.md","docs/maintenance.md"], title:["数据维护","Data maintenance"], desc:["停机备份、恢复、升级与保留。","Stopped backups, recovery, upgrades and retention."] },
-  { key:"evidence", source:["docs/evaluation/t049-20261104/README.md","docs/evaluation/t049-20261104/README.md"], title:["实际验证与限制","Evidence and limits"], desc:["真实自动闭环与未测到收益的对照结果。","The real-model loop and the no-treatment pilot."] },
+  { key:"evidence", source:["docs/evaluation/t049-20261104/README.md","docs/evaluation/t049-20261104/README.md"], title:["实际验证与限制","Evidence and limits"], desc:["2026-11-04 自动闭环及当日两检索拒选的结果。","The 2026-11-04 automatic loop and its no-treatment pilot."] },
   { key:"releases", source:["docs/release-status.md","docs/release-status.md"], title:["发行状态","Release status"], desc:["公开制品、精确兼容、证据与摘要。","Public artifacts, exact hosts, evidence and hashes."] }
 ];
 const paths = { ARROW:"arrow", PLAY:"play", FILE_ICON:"file", DATABASE_ICON:"database", LOCK_ICON:"lock", OPEN_ICON:"external", CODE_ICON:"code", CHECK_ICON:"check", LAYERS_ICON:"layers", COMPASS_ICON:"compass", TERMINAL_ICON:"terminal", LIFE_ICON:"life", RECEIPT_ICON:"receipt", INFO_ICON:"info" };
@@ -99,7 +99,7 @@ const home = await read("home.html");
 for (const locale of [0, 1]) {
   const replacements = Object.fromEntries(Object.keys(copy).map(key => [key, t(key, locale)]));
   for (const [token, name] of Object.entries(paths)) replacements[token] = icon(name);
-  for (const [token, key] of Object.entries({ DOC_START:"start", DOC_INSTALL:"install", DOC_COMPAT:"compatibility", DOC_FAQ:"faq", DOC_EXAMPLE:"example", DOC_MAINTENANCE:"maintenance", DOC_EVIDENCE:"evidence" })) replacements[token] = route(locale, key);
+  for (const [token, key] of Object.entries({ DOC_START:"start", DOC_INSTALL:"install", DOC_COMPAT:"compatibility", DOC_FAQ:"faq", DOC_EXAMPLE:"example", DOC_MAINTENANCE:"maintenance", DOC_EVIDENCE:"evidence", DOC_OVERVIEW:"overview" })) replacements[token] = route(locale, key);
   replacements.ZH_DEFAULT = locale === 0 ? "default" : "";
   replacements.EN_DEFAULT = locale === 1 ? "default" : "";
   const body = home.replace(/\{\{([A-Z0-9_]+)\}\}/g, (_, key) => { if (!(key in replacements)) throw new Error("Missing home token: " + key); return replacements[key]; });

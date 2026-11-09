@@ -252,12 +252,12 @@
     "Normal DSH chat may also incur costs. Unknown receipts retain their holds and are not replayed automatically. Upgrades do not reset grants."
   ],
   "EVIDENCE_NOTE": [
-    "我们验证了受限合成案例中的真实自动闭环。后续任务对照中，两检索组均未提供经验，因此尚未测到实际使用经验的收益。来源通过不代表未来任务会更好。",
-    "A bounded synthetic real-model loop was verified. Both retrieval arms abstained in the later-task pilot, so no effect of using memory was measured. Verified source evidence does not establish future-task benefit."
+    "我们已在受限合成案例中验证过真实自动闭环。2026-11-09 的源码研究三组均通过10/12，尚未观察到验收改善。来源通过不代表未来任务会更好。",
+    "A bounded synthetic real-model loop was verified. In the 2026-11-09 source study, every arm passed 10/12, with no observed acceptance benefit. Verified source evidence does not establish future-task benefit."
   ],
   "EVIDENCE_LINK": [
-    "阅读实际结果与限制",
-    "Read the results and limitations"
+    "查看最新研究与历史证据",
+    "Latest study and historical evidence"
   ],
   "CLOSING_TITLE": [
     "先跑一个案例，<br>再把经验带回自己的项目。",

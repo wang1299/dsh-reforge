@@ -93,7 +93,7 @@ test('shipped standalone and native pages contain a self-contained report reader
     assert.match(html, /文件只在本页内存中解析/); assert.match(html, /本页未独立核对/);
     assert.doesNotThrow(() => new Script(html.match(/<script nonce="[^"]+">([\s\S]*?)<\/script>/)![1]!));
     // The isolated reader has no backend port. Existing unrelated panel polling stays outside it.
-    const reader = html.slice(html.indexOf('function installStudyReport('), html.indexOf("})($('study'),readStudyReport);"));
+    const reader = html.slice(html.indexOf('function installStudyReport('), html.indexOf("})($('study'),readStudyReport,exampleStudyReport);"));
     assert(!/\bfetch\(|localStorage|sessionStorage|innerHTML|postMessage|\.request\(/.test(reader));
   }
 });
