@@ -43,3 +43,5 @@ backend只POST `https://api.deepseek.com/anthropic/v1/messages`、redirect error
 先做零费用的prepare/inspect/合成authorize/完整36 SDK线路，用与live相同的provider backend、受限验收和冻结检查，只注入fake fetch/合成Key。测试缺授权、路径/计划漂移、重复批准、未知重启、取消/超限、凭据不外泄、OS限制/环境隔离、失败计数。核心check后顺序跑完整准备，避免大工程并发争用。两SDK图/两系统实际验证，稳定SHA独立只读审查，原T059冻结资产及当前图回归保持。
 
 只有形成完整可运行、检查通过的冻结真实plan和易读预算方案后，才请求本次新预算；没答复不调用。没有发布npm/Release、合并main、部署或写旧profile的授权。完成基础设施不等于目标已完成，真实对照及UX仍须继续。
+
+组件独立审查后的修订（先于修正实现）：冻结清单必须在任何内容读取前核对root实际路径和显式files每项的全部父目录，不能通过中间junction/symlink把外部文件当普通文件；闭包内叶链接的实际目标也必须作为普通文件被清单覆盖。每一个critical路径都必须命中清单中的非目录条目，加载后的manifest同样验证；遗漏/拼错不能静默退化为未核对。补中间目录别名、别名下root、缺失/目录/未收录critical反例。
