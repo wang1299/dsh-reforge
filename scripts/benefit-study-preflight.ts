@@ -46,7 +46,7 @@ export function validateStudyCode(python: string, code: string): void {
 function inside(parent: string, target: string): boolean {
   const r = relative(parent, target); return !!r && !isAbsolute(r) && r !== '..' && !r.startsWith('..' + sep);
 }
-async function newRoot(parent: string): Promise<string> {
+export async function newStudyRoot(parent: string): Promise<string> {
   const ignored = resolve(repository, '.probe-work'); const target = resolve(parent);
   assert(inside(ignored, target), 'Study preparation must stay inside this repository .probe-work');
   await mkdir(ignored, { recursive: true }); assert.equal(await realpath(ignored), ignored, 'Symlinked output root refused');
@@ -70,7 +70,7 @@ function schemaFor(item?: StudyCase): object {
   return { $schema: 'http://json-schema.org/draft-07/schema#', type: 'object', properties, required: [...required] };
 }
 
-async function sourceBank(root: string, python: string) {
+export async function createStudySourceBank(root: string, python: string) {
   const repo = join(root, 'project'); await mkdir(repo); await mkdir(join(repo, 'tests'));
   await writeFile(join(repo, 'requirements.txt'), '# synthetic standard library fixtures; externally supplied pytest\n');
   await writeFile(join(repo, 'contract.py'), 'STUDY = "benefit-preparation-v1"\n');
@@ -120,7 +120,7 @@ function cloneBank(bank: Store): Store {
   }
   return store;
 }
-async function selectedReference(bank: Store, repo: string, item: StudyCase, arm: StudyArm, python: string) {
+export async function selectStudyReference(bank: Store, repo: string, item: StudyCase, arm: StudyArm, python: string) {
   const store = cloneBank(bank); const service = new EvolveService(store, repo, { trusted: false, python, timeoutMs: 15000,
     acceptanceDir: join(repo, 'tests'), regressionPath: 'tests' }, false, undefined, true);
   let sent: { id: string; text: string } | null = null;
@@ -214,7 +214,7 @@ async function providerExposure(item: StudyCase, memory: string | null) {
 }
 
 export async function prepareBenefitStudy(parent = join(repository, '.probe-work/t061-study-preparation'), python = process.env.EVOLVE_PYTHON ?? 'python') {
-  const root = await newRoot(parent); const started = Date.now();
+  const root = await newStudyRoot(parent); const started = Date.now();
   const implementationPaths = ['scripts/benefit-study-cases.ts', 'scripts/benefit-study-preflight.ts',
     'src/service.ts', 'src/owner-task-input.ts', 'src/retrieval.ts'];
   const implementationSnapshot = async () => Object.fromEntries(await Promise.all(implementationPaths.map(async path => [path, digest(await readFile(join(repository, path)))])));
@@ -225,7 +225,7 @@ export async function prepareBenefitStudy(parent = join(repository, '.probe-work
   const fixtureDigest = digest(JSON.stringify({ studyCases, studySources }));
   const methodDigest = digest(JSON.stringify({ studySchedule, studySystem, retrievalPolicyDigest, execution,
     taskInput: studyTaskInput.toString(), version: 'benefit-preflight-v1.1' }));
-  const bank = await sourceBank(root, python);
+  const bank = await createStudySourceBank(root, python);
   try {
     const controls = [];
     for (const item of studyCases) {
@@ -246,7 +246,7 @@ export async function prepareBenefitStudy(parent = join(repository, '.probe-work
     // Targets and reference controls are never part of the source bank or provider prompt.
     const exposure = [];
     for (const item of studyCases) for (const arm of studyArms) {
-      const selected = await selectedReference(bank.store, bank.repo, item, arm, python);
+      const selected = await selectStudyReference(bank.store, bank.repo, item, arm, python);
       const proof = await providerExposure(item, selected.memory);
       const { memory: _memory, ...selection } = selected;
       exposure.push({ case: item.id, arm, ...selection, commonPromptDigest: digest(studyTaskInput(item)),
