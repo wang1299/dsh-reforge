@@ -96,32 +96,31 @@ test('failed independent repair proof blocks automatic extraction without consum
   } finally { store.close(); }
 });
 
-test('only a confirmed ESRCH receipt recovers an automatic capture; live and inaccessible identities are never replayed', async () => {
-  const { f, store, service, verification, extraction } = await setup();
+test('only a confirmed ESRCH receipt recovers an automatic capture; other identities are preserved without new work', async () => {
   const probes = new Map<number, 'ESRCH' | 'EPERM' | 'alive'>([[1999999997, 'ESRCH'], [1999999998, 'EPERM'], [1999999999, 'alive']]);
-  const rows = [];
   for (const [pid, receipt] of probes) {
+    // Each case owns a fresh repository: concurrent captures in one repository are deliberately blocked.
+    const { f, store, service, verification, extraction } = await setup();
     const session = 'probe-' + receipt; service.automatic.begin(session, 1, [{ id: session, text: 'Fix rollback' }]);
-    const row = store.automatic.rows().find(r => r.sessionId === session)!; store.automatic.write({ ...row, ownerPid: pid }); rows.push({ ...row, receipt });
-  }
-  store.close(); const reopened = new Store(join(f.home, 'learning.sqlite')); const originalKill = process.kill;
-  try {
-    // Model the exact OS receipt, without assuming an exited PID cannot be reused on Windows.
-    process.kill = ((pid, signal) => {
-      const receipt = signal === 0 ? probes.get(pid) : undefined;
-      if (!receipt) return originalKill(pid, signal); if (receipt === 'alive') return true;
-      throw Object.assign(new Error('Synthetic process liveness receipt'), { code: receipt });
-    }) as typeof process.kill;
-    let restarted: EvolveService;
-    try { restarted = new EvolveService(reopened, f.repo, verification, true, extraction, true, true); }
-    finally { process.kill = originalKill; }
-    for (const row of rows) {
-      const current = reopened.automatic.rows().find(r => r.id === row.id)!; const dead = row.receipt === 'ESRCH';
+    const row = store.automatic.rows().find(r => r.sessionId === session)!; store.automatic.write({ ...row, ownerPid: pid });
+    store.close(); const reopened = new Store(join(f.home, 'learning.sqlite')); const originalKill = process.kill;
+    try {
+      // Model the exact OS receipt, without assuming an exited PID cannot be reused on Windows.
+      process.kill = ((queried, signal) => {
+        if (queried !== pid || signal !== 0) return originalKill(queried, signal); if (receipt === 'alive') return true;
+        throw Object.assign(new Error('Synthetic process liveness receipt'), { code: receipt });
+      }) as typeof process.kill;
+      let restarted: EvolveService;
+      try { restarted = new EvolveService(reopened, f.repo, verification, true, extraction, true, true); }
+      finally { process.kill = originalKill; }
+      const current = reopened.automatic.rows().find(r => r.id === row.id)!; const dead = receipt === 'ESRCH';
       assert.equal(current.state, dead ? 'unknown' : 'open'); assert.equal(reopened.task(row.taskId!)!.state, dead ? 'closed' : 'open');
-      assert.equal(restarted.automatic.begin(row.sessionId, 1, [{ id: row.sessionId, text: 'Fix rollback' }]), null);
-    }
-    assert.equal(await restarted.automatic.runNext(), false); assert.equal(reopened.learning.jobs().length, 0); assert.equal(reopened.extraction.grants().length, 0);
-  } finally { process.kill = originalKill; reopened.close(); }
+      if (dead) assert.equal(restarted.automatic.begin(row.sessionId, 1, [{ id: row.sessionId, text: 'Fix rollback' }]), null);
+      else { assert.equal(current.owner, row.owner); assert.equal(current.ownerPid, pid); }
+      assert.equal(reopened.tasks().length, 1); assert.equal(reopened.automatic.rows().length, 1);
+      assert.equal(await restarted.automatic.runNext(), false); assert.equal(reopened.learning.jobs().length, 0); assert.equal(reopened.extraction.grants().length, 0);
+    } finally { process.kill = originalKill; reopened.close(); }
+  }
 });
 
 test('actual exited-child recovery follows the current OS receipt, including a reused or inaccessible PID', async t => {
@@ -143,7 +142,9 @@ test('actual exited-child recovery follows the current OS receipt, including a r
     finally { process.kill = originalKill; }
     assert.notEqual(absent, undefined, 'Observe the actual recovery probe, not an earlier racy lookup');
     assert.equal(reopened.automatic.rows()[0]!.state, absent ? 'unknown' : 'open'); assert.equal(reopened.task(old.taskId!)!.state, absent ? 'closed' : 'open');
-    assert.equal(restarted.automatic.begin('restart', 1, [{ id: 'restart', text: 'Fix rollback' }]), null); assert.equal(await restarted.automatic.runNext(), false);
+    if (absent) assert.equal(restarted.automatic.begin('restart', 1, [{ id: 'restart', text: 'Fix rollback' }]), null);
+    else { assert.equal(reopened.automatic.rows()[0]!.owner, old.owner); assert.equal(reopened.automatic.rows()[0]!.ownerPid, exitedPid); }
+    assert.equal(reopened.tasks().length, 1); assert.equal(reopened.automatic.rows().length, 1); assert.equal(await restarted.automatic.runNext(), false);
     assert.equal(reopened.learning.jobs().length, 0); assert.equal(reopened.extraction.grants().length, 0);
     t.diagnostic(JSON.stringify({ exitedChild: true, currentOsConfirmedAbsent: absent, reusedOrUnconfirmedIdentityPreserved: !absent, automaticReplay: false }));
   } finally { process.kill = originalKill; reopened.close(); }

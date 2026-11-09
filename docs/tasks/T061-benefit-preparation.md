@@ -2,6 +2,8 @@
 
 2026-11-06 / [Issue #135](https://github.com/wang1299/dsh-reforge/issues/135)，基于T060冻结源码`d5a98ae545770cf1e2b54bc2f934ea0716d03eec`的独立分支`codex/t061-benefit-study-preparation`。不修改PR #134，不合并或部署；完整持续目标仍包括真实模型效果和用户体验。
 
+前面的日期与下文原回执保留2026-11-06准备快照；2026-11-09的主分支、合并和测试变化见末节，不把“当时未合并”当当前状态。
+
 ## 事前材料
 
 - 设计先于实现：`751868f` [ADR055](../decisions/055-new-task-benefit-study-preparation.md)。
@@ -23,3 +25,13 @@
 [公开准备回执](../evaluation/benefit-preparation-v1.1.json)为f0a85cf本机完整预检实际产物，3份独立来源、23项控制、18次脚本输入、36项未启动计划；模型HTTP0。题目89b3f295…、方法884c10dc…，含实际编译入口和源文件起止一致检查，不冒充完整live依赖冻结。[Draft PR #136](https://github.com/wang1299/dsh-reforge/pull/136)叠在PR #134冻结分支上；两个PR都未合并，本次无部署授权。
 
 公开数据仅为本轮合成控制/结构化摘要，不上传旧profile或私人日志。脚本固定输出没有修复，不提供真实模型成功、返工、耗时节省或费用数字；后续live runner和新预算尚缺。本轮不读旧账本、不授额、不发送付费HTTP、不更新发行物。
+
+## 2026-11-09：主分支基线与恢复测试
+
+- PR #134已单独获得owner合并/官网授权，合并为`14af78c7dcb2f1435ae687e1dedacfa1ab55f2d0`；Pages run42545300148 build/deploy均成功，实际浏览器确认首页与新增维护文字，主目录已同步。main run42545300168四组合均成功。没有发布npm或Release。
+- T061原`c9150b8`在同SHA有限复跑后四组合全部通过，各341项、compat10/10、同包摘要`2992a507ed5e1d5bb871895bff9f619c2ff921af`和安装/学习通过；首轮Windows旧feedback测试60秒超时仍保留。复跑该测试实际19.08秒通过，不能声称已修复偶发超时。
+- PR #136已以main为base。ancestry提交`ed250ebd71aecda00ddbcdda25bd4f84744537cd`与c915文件树完全相同，经独立只读复核；但其新run42546627118的Windows出现另一旧恢复用例失败（open而非unknown），另一Windows被fail-fast取消。没有沿用旧SHA绿灯。
+- 原恢复测试把“子进程已退出”直接当成恢复时PID仍确定不存在。运行时只在当时OS回执ESRCH时恢复，存活/不可访问身份应保留。现在保留实际退出子进程测试，在真正恢复调用处记录OS回执；另用独立仓库分别严格核对ESRCH→unknown/closed且重复输入不重开、EPERM/alive→保留原owner/open且不产生新任务/job/grant。生产恢复代码未改。
+- 新测试最初误用同仓库三路捕获触发并发保护，并误把open身份查询也预期为null；两次针对失败记录保留在本机，已改为独立场景与仅对确认死亡断言重复输入拒绝。最终9/9、0跳过通过，日志`.probe-work/t061-recovery-receipts-final.log`；构建/类型通过，lint与新SHA四组合CI仍须核对。数据/方法历史摘要不重写，不把测试修正当模型收益。
+
+PR #136仍未合并；PR #134的部署授权不代替本增量授权。后续有界修复控制器另行开发，真实收益、live费用与新预算仍未完成。
