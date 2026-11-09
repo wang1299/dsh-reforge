@@ -2,6 +2,8 @@
 
 2026-11-09 / [Issue #149](https://github.com/wang1299/dsh-reforge/issues/149)，分支`codex/t068-source-integration`。这是main与公开状态的一次集成准备，不新增模型能力、付费许可或默认后台工作。
 
+本文保留集成准备阶段快照；最终合并、部署与CI结果以本任务关联PR的实际终态为准。
+
 ## 提案与准确范围
 
 已只读核对远端main为`14af78c7dcb2f1435ae687e1dedacfa1ab55f2d0`；当前7组源码仍在[PR136](https://github.com/wang1299/dsh-reforge/pull/136)、[138](https://github.com/wang1299/dsh-reforge/pull/138)、[140](https://github.com/wang1299/dsh-reforge/pull/140)、[142](https://github.com/wang1299/dsh-reforge/pull/142)、[144](https://github.com/wang1299/dsh-reforge/pull/144)、[146](https://github.com/wang1299/dsh-reforge/pull/146)、[148](https://github.com/wang1299/dsh-reforge/pull/148)中。以实际main到b3b262e的92文件差异为依据，而不是把旧squash合并前的祖先提交重复计为新改进。
@@ -17,7 +19,7 @@
 - main分支API返回protected=false，包含父级的rulesets集合为空；未修改权限、账户、分支保护或部署设置。仍按项目验收、CI、文档与独立审查规则准备集成。
 - 已核对`.github/workflows/pages.yml`：合并涉及docs/package等路径到main会自动构建并部署GitHub Pages。因此只有具体集成候选的验收/CI/审查完成后，才请求本次main合并与官网更新的单独批准。不在此范围发布npm包、GitHub Release或修改市场收录。
 
-## 集成门槛
+## 准备阶段门槛
 
 本提案尚未批准合并/部署。准备后的稳定SHA须完成累计只读审查、最终头四组合完整CI（含同候选安装与学习控制）、网站root/项目路径构建检查及测试merge与head的tree一致性核对。T067和更早的绿灯是分片证据，不冒充最终集成头结果；AI审查不当作GitHub正式批准。实际终态写在集成PR中。
 
