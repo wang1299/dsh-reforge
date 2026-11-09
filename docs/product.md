@@ -1,5 +1,7 @@
 # DSH-Reforge 产品需求 v0.2
 
+T064（2026-11-09）：让官方DeepSeek SDK经过同一个有界修复控制器和费用保护，以本机模拟服务验证实际原始请求、流式解析、取消及零重试；本机HTTP与provider HTTP分别计数。仍无真实预算/Key/付费调用，设计先于实现见[ADR058](decisions/058-official-sdk-study-wire.md)。
+
 T063（2026-11-09）：为后续真实研究增加默认未授权、绑定单个计划的独立持久费用占额和离线调用边界，先占额再传输，未知停止且重启不自动重放。仅合成transport验证，不读Key、不发真实HTTP、不复用T049预算；设计先于实现见[ADR057](decisions/057-study-cost-reservations.md)。
 
 T062（2026-11-09）：在冻结新题与输入预检之后增加最多两次的实际AgentLoop修复/独立pytest控制器，分别记录首次/最终通过、真实尝试与未知结果。脚本参考答案仅演练流程，仍无付费执行/预算授权；设计先于实现见[ADR056](decisions/056-bounded-agent-repair-study.md)。
