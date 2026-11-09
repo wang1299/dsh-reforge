@@ -1,5 +1,11 @@
 # 更新记录
 
+## 未发行：官方SDK本机研究线路
+
+- 官方DeepSeekAdapter的prepared/stream通道共用有界修复控制器，经本机模拟服务核对原始请求、持久占额、取消/未知不重试及失败attempt计数；无Key或provider HTTP。
+- 两官方SDK开发图锁定；T059旧锁/method/向量/成绩保留，当前扩展图回归单独命令与标签，不重写历史留出环境。
+- [运行与边界](docs/evaluation/official-sdk-wire.md)：36项作者答案演练不代表真实模型效果，live入口/完整冻结/新预算仍待完成。
+
 ## 未发行：单次研究费用占额的离线验证
 
 - 默认未授权的新独立账本绑定单个计划，先持久占额再调用离线transport；最终usage结算，未知保留全额，重启不自动重放。

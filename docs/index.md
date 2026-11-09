@@ -24,6 +24,7 @@
 | 复查下一轮真实效果试验准备 | [6项新题、独立验收控制与实际经验输入预检](evaluation/benefit-preparation-v1.md) |
 | 了解怎样独立验收、限制返工和处理未知结果 | [有界Agent修复控制器（当前为脚本演练）](evaluation/bounded-repair-controller.md) |
 | 核对未来真实研究怎样占额和停止 | [单次研究费用保护（离线验证，未获得新预算）](evaluation/study-cost-guard.md) |
+| 核对官方SDK实际请求、取消和费用保护接线 | [同一控制器的本机线路与历史依赖回归](evaluation/official-sdk-wire.md) |
 | 参与试用或报告问题 | [外部试用](community/pilot.md)、[问题表单](https://github.com/wang1299/dsh-reforge/issues/new/choose)、[安全报告](../SECURITY.md) |
 | 从一个小贡献开始 | [贡献指南](../CONTRIBUTING.md)、[新人任务](community/newcomers.md) |
 
