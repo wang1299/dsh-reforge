@@ -81,7 +81,7 @@ export function installStudyReport(root: HTMLElement, parse: typeof parseStudyRe
     if (!r.timing) timing.append(el('p', '报告未记录完整耗时，无法拆分；不会从调用次数推测。', 'muted'));
     else {
       const t = r.timing;
-      timing.append(el('p', '任务试验阶段共 ' + (t.elapsedMs / 1000).toFixed(1) + ' 秒；不包括之前的安装与研究准备。', 'muted'));
+      timing.append(el('p', '任务试验阶段共 ' + (t.elapsedMs / 1000).toFixed(1) + ' 秒；此前安装、准备和启动前核对未计入。', 'muted'));
       for (const [label, ms] of [['运行检查', t.guardMs], ['请求与完整响应', t.providerMs], ['其余流程', t.otherMs]] as const) {
         const part = el('div', undefined, 'study-timing-row'), percent = t.elapsedMs ? ms / t.elapsedMs * 100 : 0;
         const line = el('p', undefined, 'study-time-label'); line.append(el('span', label), el('span', (ms / 1000).toFixed(1) + ' 秒 · ' + percent.toFixed(1) + '%'));

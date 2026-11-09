@@ -1,5 +1,7 @@
 # 本轮实现与验证状态
 
+2026-11-09 T067：[运行清单与耗时说明](../evaluation/runtime-freeze-performance.md)已完成e96f425的零费用单机对照：公开Node闭包14,520条目/246MB，保留关键字节核对的P50 5.55→2.85秒（-48.7%），完整manifest与串行oracle一致。结果页新增折叠计时，缺失保持未知。最终全套/浏览器/CI与实际安装见[任务检查](../tasks/T067-runtime-guard-performance.md)，不将工程数字当模型收益，不复用已完成T065预算。
+
 2026-11-09真实执行后更新：[T065真实报告](../evaluation/benefit-live-20261109.md)在e069a437完成36项/42次真实请求，三组均10/12，没有观察到通过率或返工改善。峰值费用上界0.052672元、未知预留0，非服务商账单。T066在新分支实现有限准入原因和本机只读效果对照；实际检查另记[任务验收](../tasks/T066-actionable-study-feedback.md)。原计划completed，不复用额度/Key。以下T065条目是付费前快照，公开npm和main不因此自动更新。
 
 2026-11-09 T065：[冻结计划与一次授权入口](../evaluation/authorized-benefit-study.md)已在稳定代码`98fd9a0`完成本机36项/71次fake-provider全流程、23项受限验收控制和独立只读核对；真实模型调用/费用均0。完整检查396项本机394通过、2权限skip，兼容10/10；四组合CI与最终文档提交以[PR #144](https://github.com/wang1299/dsh-reforge/pull/144)和[任务记录](../tasks/T065-frozen-authorized-live-study.md)为准。源码研究工具未发行、未取得本次新预算，协议演练不代表模型效果提升。T060已合并PR #134并按所有者单独授权更新GitHub Pages；后续源码合并/部署/发行分别核验。

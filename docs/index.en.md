@@ -2,6 +2,8 @@
 
 Latest real study: [all arms10/12;42 actual requests; no observed acceptance benefit](evaluation/benefit-live-20261109.md#english). The unpublished workbench can inspect a local report without uploads or model calls: [report reader](evaluation/study-report-view.md#english).
 
+Engineering result: [48.7% lower local guard-check P50 with per-observation data](evaluation/runtime-freeze-performance.md#english). This measures the public Node closure, not model latency or task-quality benefit. The source workbench now explains timing boundaries.
+
 Authorized-study source entry: [frozen plans, one-shot grants, isolated credentials and bounded acceptance](evaluation/authorized-benefit-study.md#english). Full fake-provider qualification is separate from real-model results; paid execution requires a fresh reviewed plan and budget.
 
 Bounded repair study: [actual AgentLoop, independent acceptance and at most one repair turn](evaluation/bounded-repair-controller.md#english). Scripted controller rehearsal only; no real-model benefit or live spending authorization.

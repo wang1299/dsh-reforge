@@ -14,9 +14,13 @@
 4. **三组比较**：每组固定12项，首轮/最终通过、返工/请求、提供参考和费用分列。通过率差是这批小样本的描述，不是泛化结论。
 5. **同题配对**：按任务和重复并排查看，筛选含失败、未知或未尝试的行。展开“查看检查过程”，区分输出格式、代码准入、测试失败和基础设施未知。旧记录没有准入诊断时明确显示无法追溯，不推测原因。
 
+T067增加折叠的“时间花在哪里”：试验阶段总时间、运行检查、请求至完整响应、其余流程分别显示秒数和比例；安装、准备和启动前核对未计入。它不是纯模型推理计时；缺少完整字段时显示未知，不按调用次数推算。相关工程测量见[运行检查性能](runtime-freeze-performance.md)。
+
 新版本只在已知拒绝后的原有第二轮中补规则枚举和静态允许子集；准入白名单、首轮输入、固定验收和两轮上限保持。它改变了未来反馈条件，所以必须以新冻结计划研究，不能给旧结果补造诊断或复用旧10元许可。
 
 ## English
+
+T067 adds a collapsed timing breakdown for the trial stage: guard checks, request-to-complete-response and other protocol time, with seconds and proportions. Installation, preparation and pre-launch checks are excluded. Missing timing stays unknown; request-boundary time is not pure model inference. See the separate [guard performance benchmark](runtime-freeze-performance.md#english).
 
 In the unpublished T066 workbench, open **效果对照** and select a locally generated `study-result.json` (schema1, live/fixture, up to1MiB). This works in standalone and native panels. The browser keeps an allowlisted projection in page memory without uploads, database writes, grants, execution or paid requests. Clear or close the page to remove it.
 

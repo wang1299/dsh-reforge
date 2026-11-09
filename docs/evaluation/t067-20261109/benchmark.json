@@ -1,0 +1,213 @@
+{
+  "schema": 1,
+  "kind": "public-freeze-benchmark-summary",
+  "sourceCommit": "e96f425002d03de1cadbfc00b14e80b106c82cc4",
+  "baselineCommit": "55d7089aa84640c293678266369b104216b5c57f",
+  "serialSourceSha256": "2b3024b4183153fa282dbf759a3422a5ecd43e68a6fc4a6c619c6cf94dcbaa3d",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "arch": "x64",
+  "uvThreadpoolSize": 4,
+  "concurrencyLimit": 16,
+  "pairs": 5,
+  "modelHttpRequests": 0,
+  "realModelBenefit": false,
+  "measurements": [
+    {
+      "name": "synthetic-1000",
+      "entries": 1021,
+      "files": 1000,
+      "directories": 21,
+      "bytes": 23890,
+      "criticalFiles": 1,
+      "manifestsEqualWithinRun": true,
+      "metadataOnly": {
+        "serial": {
+          "samplesMs": [
+            315.68610000000035,
+            309.43449999999984,
+            288.0913999999998,
+            299.78549999999996,
+            299.0198999999998
+          ],
+          "p50Ms": 299.78549999999996,
+          "observedMaxMs": 315.68610000000035
+        },
+        "concurrent": {
+          "samplesMs": [
+            130.34580000000005,
+            133.0922999999998,
+            116.70699999999988,
+            121.85580000000027,
+            121.26659999999993
+          ],
+          "p50Ms": 121.85580000000027,
+          "observedMaxMs": 133.0922999999998
+        },
+        "medianReductionPercent": 59.35233692089834
+      },
+      "metadataAndCriticalBytes": {
+        "serial": {
+          "samplesMs": [
+            279.41090000000077,
+            290.5668000000005,
+            294.3261000000002,
+            287.0630000000001,
+            282.07770000000073
+          ],
+          "p50Ms": 287.0630000000001,
+          "observedMaxMs": 294.3261000000002
+        },
+        "concurrent": {
+          "samplesMs": [
+            115.26419999999962,
+            115.96990000000005,
+            121.21360000000004,
+            121.9389000000001,
+            119.96029999999973
+          ],
+          "p50Ms": 119.96029999999973,
+          "observedMaxMs": 121.9389000000001
+        },
+        "medianReductionPercent": 58.21115922288846
+      },
+      "fullBytesSinglePair": {
+        "serialMs": 356.35249999999996,
+        "concurrentMs": 193.1936999999998
+      }
+    },
+    {
+      "name": "synthetic-10000",
+      "entries": 10201,
+      "files": 10000,
+      "directories": 201,
+      "bytes": 248890,
+      "criticalFiles": 1,
+      "manifestsEqualWithinRun": true,
+      "metadataOnly": {
+        "serial": {
+          "samplesMs": [
+            3002.7527999999984,
+            2995.0843999999997,
+            3035.8163999999997,
+            3027.2644999999975,
+            3062.1633
+          ],
+          "p50Ms": 3027.2644999999975,
+          "observedMaxMs": 3062.1633
+        },
+        "concurrent": {
+          "samplesMs": [
+            1239.1010999999999,
+            1215.6890999999996,
+            1289.8070999999982,
+            1277.7462000000014,
+            1301.5367999999944
+          ],
+          "p50Ms": 1277.7462000000014,
+          "observedMaxMs": 1301.5367999999944
+        },
+        "medianReductionPercent": 57.79205285828171
+      },
+      "metadataAndCriticalBytes": {
+        "serial": {
+          "samplesMs": [
+            3080.296300000002,
+            3060.1349999999948,
+            3147.066199999994,
+            3126.1290999999983,
+            3082.569199999998
+          ],
+          "p50Ms": 3082.569199999998,
+          "observedMaxMs": 3147.066199999994
+        },
+        "concurrent": {
+          "samplesMs": [
+            1295.1407000000036,
+            1276.296199999997,
+            1361.5917000000045,
+            1316.5808999999936,
+            1442.4965999999986
+          ],
+          "p50Ms": 1316.5808999999936,
+          "observedMaxMs": 1442.4965999999986
+        },
+        "medianReductionPercent": 57.28949410121938
+      },
+      "fullBytesSinglePair": {
+        "serialMs": 3768.5627999999997,
+        "concurrentMs": 1952.5718000000052
+      }
+    },
+    {
+      "name": "public-node-runtime",
+      "entries": 14520,
+      "files": 13532,
+      "directories": 988,
+      "bytes": 246486400,
+      "criticalFiles": 160,
+      "manifestsEqualWithinRun": true,
+      "metadataOnly": {
+        "serial": {
+          "samplesMs": [
+            4574.136599999998,
+            4639.978400000007,
+            4573.490099999995,
+            5743.508999999991,
+            5579.537699999986
+          ],
+          "p50Ms": 4639.978400000007,
+          "observedMaxMs": 5743.508999999991
+        },
+        "concurrent": {
+          "samplesMs": [
+            1889.6682,
+            1887.3050999999978,
+            1866.7002999999968,
+            1891.8908999999985,
+            2860.4237999999896
+          ],
+          "p50Ms": 1889.6682,
+          "observedMaxMs": 2860.4237999999896
+        },
+        "medianReductionPercent": 59.27420265577105
+      },
+      "metadataAndCriticalBytes": {
+        "serial": {
+          "samplesMs": [
+            5587.306899999996,
+            5622.326299999986,
+            5546.969700000016,
+            5040.411800000002,
+            4177.552499999991
+          ],
+          "p50Ms": 5546.969700000016,
+          "observedMaxMs": 5622.326299999986
+        },
+        "concurrent": {
+          "samplesMs": [
+            2898.7937000000093,
+            2845.5819000000192,
+            2867.584199999983,
+            2815.217399999994,
+            1801.7674999999872
+          ],
+          "p50Ms": 2845.5819000000192,
+          "observedMaxMs": 2898.7937000000093
+        },
+        "medianReductionPercent": 48.70024438748942
+      },
+      "fullBytesSinglePair": {
+        "serialMs": 4977.867999999988,
+        "concurrentMs": 2635.9643000000215
+      }
+    }
+  ],
+  "limitations": [
+    "five warm alternating pairs on one Windows machine; not a portable latency guarantee",
+    "public Node closure excludes Python, vendor, candidate, source bank and OS",
+    "metadata-only excludes critical hashes for profiling; production still verifies critical bytes",
+    "full-byte check is one observation pair, not a distribution or end-to-end study result",
+    "file paths, filesystem identities, private profiles and raw model data are not published"
+  ]
+}
