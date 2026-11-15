@@ -8,4 +8,4 @@
 
 预先约定：报告各方法总字节、超限数、被选事实、相关facet覆盖（同一案例中标签去重）、重复facet、无关事实、每条完整引用绑定检查及所有案例结果。标签为作者可见定义；facet覆盖不是正确修复/任务成功。固定参数，不增加模型调用，不接触历史经验库。所有差于基线或无提升的结果必须保留。
 
-入口 `npm run context:evaluate`；完整输出只写入忽略的 `.probe-work/t071-context-packing.json`，仓库另附精简、可复查结果与冻结提交。脚本没有网络、模型、数据库和授权入口。真实AgentLoop送达/拒选由独立runtime测试断言实际GenerateOptions，不能用此合成数据证明真实模型收益。
+入口 `npm run context:evaluate`；首次完整输出写入忽略的 `.probe-work/t071/context-packing-v1.json`，仓库另附精简、可复查结果与冻结提交。脚本默认只输出JSON，不自动写文件；没有网络、模型、数据库和授权入口。真实AgentLoop送达/拒选由独立runtime测试断言实际GenerateOptions，不能用此合成数据证明真实模型收益。

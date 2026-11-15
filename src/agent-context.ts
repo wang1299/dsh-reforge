@@ -30,7 +30,7 @@ export function compileAgentContext(input: { experience: Experience; citations: 
   const exp = experienceSchema.safeParse(input.experience), cites = factCitationsSchema.safeParse(input.citations);
   if (!exp.success || !cites.success || !idSchema.safeParse(input.applicationId).success || !textSchema.safeParse(input.query).success) return { text: '', decision };
   const e = exp.data;
-  if (e.status !== 'source_verified' || !e.verificationId || cites.data.some(c => digest(e.observedFacts[c.factIndex] ?? '') !== c.factDigest)
+  if (e.status !== 'source_verified' || !e.verificationId || cites.data.some(c => e.observedFacts[c.factIndex] === undefined || digest(e.observedFacts[c.factIndex]!) !== c.factDigest)
     || e.observedFacts.some((_, i) => !cites.data.some(c => c.factIndex === i))) return { text: '', decision };
   const facts = e.observedFacts.map((text, index) => ({ index, text, digest: digest(text), citations: cites.data.filter(c => c.factIndex === index) }));
   const required = { schema: 1, applicationId: input.applicationId, experienceId: e.id, revision: e.revision,

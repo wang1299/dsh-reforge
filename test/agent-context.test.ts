@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { compileAgentContext, legacyExperienceNotice, memoryContextSchema } from '../src/agent-context.js';
 import { configSchema } from '../src/config.js';
+import { digest } from '../src/domain.js';
 import { syntheticContextInput } from './context-fixture.js';
 
 const body = (text: string) => JSON.parse(text.slice(text.indexOf('\n') + 1));
@@ -52,6 +53,7 @@ test('missing, mismatched, out-of-range citations and unqualified experiences ab
     (input: ReturnType<typeof syntheticContextInput>) => { input.citations = []; },
     (input: ReturnType<typeof syntheticContextInput>) => { input.experience.observedFacts[0] = 'Changed fact'; },
     (input: ReturnType<typeof syntheticContextInput>) => { input.citations[0]!.factIndex = 11; },
+    (input: ReturnType<typeof syntheticContextInput>) => { input.citations.push({ ...input.citations[0]!, factIndex: 11, factDigest: digest('') }); },
     (input: ReturnType<typeof syntheticContextInput>) => { input.experience.status = 'candidate'; },
     (input: ReturnType<typeof syntheticContextInput>) => { input.experience.verificationId = null; },
   ]) {
