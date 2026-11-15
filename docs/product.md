@@ -1,5 +1,7 @@
 # DSH-Reforge 产品需求 v0.2
 
+T071（2026-11-15）：可选的Agent记忆上下文编译器先保留来源/条件与原top-1选择，再以固定MMR/字节成本选择完整事实引用单元；必需notice超预算时拒绝且不新增应用。只约束本插件notice的UTF-8字节，不冒充整个模型Token预算。设计见[ADR063](decisions/063-agent-context-compiler.md)，实际结果另行验证。
+
 T065（2026-11-09）：为真实36项效果对照补固定一次性授权、实际执行环境冻结、Key隔离backend及资源受限Python验收；准备阶段仅合成fetch/授权、零付费调用，真实执行需具体计划完成后的新预算。设计先于实现见[ADR059](decisions/059-frozen-authorized-live-study.md)。
 
 T064（2026-11-09）：让官方DeepSeek SDK经过同一个有界修复控制器和费用保护，以本机模拟服务验证实际原始请求、流式解析、取消及零重试；本机HTTP与provider HTTP分别计数。仍无真实预算/Key/付费调用，设计先于实现见[ADR058](decisions/058-official-sdk-study-wire.md)。

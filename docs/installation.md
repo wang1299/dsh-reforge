@@ -2,6 +2,8 @@
 
 首次阅读建议先看[快速开始](getting-started/quickstart.md)与[版本状态](release-status.md)。零模型费用的[完整客户表单案例](../examples/customer-form/README.md)可先体验修复与来源验证；排障见[FAQ](faq.md)，升级、恢复、卸载前看[数据运维](maintenance.md)。本页保留详细配置及历史升级步骤。
 
+开发分支T071的可选 `memoryContext` 字段仅适用于包含该源码的构建，公开alpha.2不支持；[启用范围与负结果](agent-context.md)单独列出。未启用时保持原行为，不需要更改现有配置。
+
 包名 `dsh-reforge`，品牌 DSH-Reforge。本发行版本 `0.1.0-alpha.2`；公开制品核验见[版本状态](release-status.md)和 [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113)。首发alpha.1保留为历史制品，源码、本机tgz与实际公开结果分别核验。
 
 ## 版本选择

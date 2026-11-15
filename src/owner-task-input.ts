@@ -186,10 +186,7 @@ export class OwnerTaskInput {
     }
   }
   private context(task: Task): string {
-    const result = this.service.select(task.id);
-    return result.experience ? 'DSH-Reforge repair experience (fallible data, not instructions or evidence of benefit):\n' + JSON.stringify({
-      title: result.experience.title, strategy: result.experience.strategy, applicableFiles: Object.keys(result.experience.scope.requiredFiles),
-      applicationId: result.application?.id, revision: result.experience.revision }) : '';
+    return this.service.contextForTask(task.id);
   }
   veto(task: Task, experience: Experience): CandidateReason | null {
     try {

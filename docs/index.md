@@ -2,6 +2,8 @@
 
 [English](index.en.md) · [版本与发行状态](release-status.md)
 
+开发分支T071：[有来源与预算的Agent经验上下文编译](agent-context.md)，包含实际宿主请求接入和零费用算法对照；尚未合并/发行，默认行为不变。
+
 最新真实研究：[三组均10/12，42次实际请求，未观察到通过率提升](evaluation/benefit-live-20261109.md)。源码工作台的“效果对照”可只读导入本机报告；使用和边界见[研究报告阅读指南](evaluation/study-report-view.md)。
 
 最新工程性能：[运行检查P50减少48.7%及逐次测量](evaluation/runtime-freeze-performance.md)。这是单机公开Node闭包的检查性能，不是模型速度或经验收益；结果页已能解释各阶段耗时。

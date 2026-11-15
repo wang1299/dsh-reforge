@@ -1,0 +1,1204 @@
+{
+  "schema": 1,
+  "kind": "synthetic-context-packing-v1",
+  "datasetSha256": "0e4e361a96af5edfd45e5d03e13a4f8088b3de69c0322cbbaa63bdbda0074006",
+  "boundary": "Author-visible synthetic context-selection labels. Six correlated families with two budgets each; not blind holdout, Agent task outcomes or production evidence.",
+  "developmentCases": 6,
+  "evaluationCases": 12,
+  "fullEnvelopeBytes": 35838,
+  "fullEnvelopeOverBudgetCases": 12,
+  "paidHttpCalls": 0,
+  "realModelBenefitMeasured": false,
+  "summary": [
+    {
+      "method": "source-order",
+      "cases": 12,
+      "providedBytes": 20880,
+      "budgetViolations": 0,
+      "selectedFacts": 24,
+      "distinctFacets": 18,
+      "availableFacets": 36,
+      "irrelevantFacts": 0,
+      "repeatedFacetFacts": 6,
+      "citationBindingFailures": 0
+    },
+    {
+      "method": "relevance-density",
+      "cases": 12,
+      "providedBytes": 20794,
+      "budgetViolations": 0,
+      "selectedFacts": 24,
+      "distinctFacets": 16,
+      "availableFacets": 36,
+      "irrelevantFacts": 2,
+      "repeatedFacetFacts": 6,
+      "citationBindingFailures": 0
+    },
+    {
+      "method": "mmr-density",
+      "cases": 12,
+      "providedBytes": 20795,
+      "budgetViolations": 0,
+      "selectedFacts": 24,
+      "distinctFacets": 16,
+      "availableFacets": 36,
+      "irrelevantFacts": 2,
+      "repeatedFacetFacts": 6,
+      "citationBindingFailures": 0
+    }
+  ],
+  "cases": [
+    {
+      "id": "eval-rollback-450",
+      "budgetBytes": 1318,
+      "fullEnvelopeBytes": 3046,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 1290,
+          "budgetExceeded": false,
+          "includedFacts": [
+            2
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 1267,
+          "budgetExceeded": false,
+          "includedFacts": [
+            4
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 0,
+          "availableFacets": 3,
+          "irrelevantFacts": 1,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 1267,
+          "budgetExceeded": false,
+          "includedFacts": [
+            4
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 0,
+          "availableFacets": 3,
+          "irrelevantFacts": 1,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-rollback-1400",
+      "budgetBytes": 2268,
+      "fullEnvelopeBytes": 3046,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 2239,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 2216,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            4
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 1,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 2216,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            4
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 1,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-idempotency-450",
+      "budgetBytes": 1318,
+      "fullEnvelopeBytes": 2978,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 1303,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 1303,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 1303,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-idempotency-1400",
+      "budgetBytes": 2268,
+      "fullEnvelopeBytes": 2978,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 2159,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 2159,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 2159,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            2,
+            1
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-retry-450",
+      "budgetBytes": 1318,
+      "fullEnvelopeBytes": 2982,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 1317,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 1299,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 1299,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-retry-1400",
+      "budgetBytes": 2268,
+      "fullEnvelopeBytes": 2982,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 2167,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 2167,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1,
+            0,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 2168,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1,
+            0,
+            3
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-schema-450",
+      "budgetBytes": 1318,
+      "fullEnvelopeBytes": 2947,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 1299,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 1291,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 1291,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-schema-1400",
+      "budgetBytes": 2268,
+      "fullEnvelopeBytes": 2947,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 2142,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 2142,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1,
+            0,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 2142,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1,
+            2,
+            0
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-paths-450",
+      "budgetBytes": 1318,
+      "fullEnvelopeBytes": 3001,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 1316,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 1316,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 1316,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-paths-1400",
+      "budgetBytes": 2268,
+      "fullEnvelopeBytes": 3001,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 2190,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 2182,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            3
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 2182,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            3
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-chinese-450",
+      "budgetBytes": 1318,
+      "fullEnvelopeBytes": 2965,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 1307,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 1,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 1301,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 1301,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1
+          ],
+          "selectedCount": 1,
+          "distinctFacets": 1,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 0,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 0,
+              "reason": "budget"
+            },
+            {
+              "index": 2,
+              "reason": "budget"
+            },
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eval-chinese-1400",
+      "budgetBytes": 2268,
+      "fullEnvelopeBytes": 2965,
+      "fullEnvelopeOverBudget": true,
+      "legacyBytes": 261,
+      "results": [
+        {
+          "method": "source-order",
+          "providedBytes": 2151,
+          "budgetExceeded": false,
+          "includedFacts": [
+            0,
+            1,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "relevance-density",
+          "providedBytes": 2151,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1,
+            0,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        },
+        {
+          "method": "mmr-density",
+          "providedBytes": 2151,
+          "budgetExceeded": false,
+          "includedFacts": [
+            1,
+            0,
+            2
+          ],
+          "selectedCount": 3,
+          "distinctFacets": 2,
+          "availableFacets": 3,
+          "irrelevantFacts": 0,
+          "repeatedFacetFacts": 1,
+          "citationBindingValid": true,
+          "omissions": [
+            {
+              "index": 3,
+              "reason": "budget"
+            },
+            {
+              "index": 4,
+              "reason": "budget"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

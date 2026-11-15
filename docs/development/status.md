@@ -1,5 +1,7 @@
 # 本轮实现与验证状态
 
+2026-11-15开发分支T071：[Agent上下文编译与完整负结果](../evaluation/context-packing-v1.md)在算法/数据/方法冻结后完成首次对照，MMR未胜过简单源顺序（16/36 vs18/36相关facet）；字节与来源原子约束独立验证。自动/owner实际请求共用入口、默认关闭；[任务与待完成检查](../tasks/T071-agent-context-compiler.md)。未合并/发行、零付费，不复用旧研究预算。
+
 2026-11-09 T067：[运行清单与耗时说明](../evaluation/runtime-freeze-performance.md)已完成e96f425的零费用单机对照：公开Node闭包14,520条目/246MB，保留关键字节核对的P50 5.55→2.85秒（-48.7%），完整manifest与串行oracle一致。结果页新增折叠计时，缺失保持未知。最终全套/浏览器/CI与实际安装见[任务检查](../tasks/T067-runtime-guard-performance.md)，不将工程数字当模型收益，不复用已完成T065预算。
 
 2026-11-09真实执行后更新：[T065真实报告](../evaluation/benefit-live-20261109.md)在e069a437完成36项/42次真实请求，三组均10/12，没有观察到通过率或返工改善。峰值费用上界0.052672元、未知预留0，非服务商账单。T066在新分支实现有限准入原因和本机只读效果对照；实际检查另记[任务验收](../tasks/T066-actionable-study-feedback.md)。原计划completed，不复用额度/Key。以下T065条目是付费前快照，公开npm和main不因此自动更新。
