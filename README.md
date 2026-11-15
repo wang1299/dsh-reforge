@@ -35,6 +35,8 @@ DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-veri
 
 ## 能做什么
 
+开发分支T071新增[Agent经验上下文编译](docs/agent-context.md)：在真实DSH请求中按来源、相关性、去冗余和字节预算规划经验参考；不改变默认行为，尚未合并或发行。包含[公开求职项目研究](docs/research/agent-projects-20261115.md)与可重放的同预算算法对照，不以合成指标宣称Agent成功率提升。
+
 - **自动记录**：首次由仓库所有者开启后，正常对话中的直接用户请求形成执行片段；保存有限摘要与受限 Python 代码快照。
 - **验证来源**：在临时工作区重放原始失败、修复后的独立验收和回归测试。回合结束只触发检查，不能证明任务正确。
 - **提炼候选**：使用 DSH 已注册的模型，从验证材料提炼有来源、适用条件和版本约束的候选，再执行独立来源复核。

@@ -1,5 +1,7 @@
 # DSH-Reforge 架构总纲 v0.2
 
+2026-11-15开发分支T071：[ADR063](decisions/063-agent-context-compiler.md)定义可选Agent经验上下文编译，接在原来源/条件/owner检查之后、Application写入之前。完整策略/条件/身份不可截断；事实与引用原子选择，必需包超UTF-8预算则拒绝。自动和owner路径共用入口，旧配置及显式工具保持旧行为；只约束经验notice，不约束整个模型请求。SQLite v9不变；[使用范围](agent-context.md)。尚未合并或发行。
+
 2026-11-06：离线适用条件/三态拒选见[ADR051](decisions/051-evidence-bound-applicability.md)与[完整结果](evaluation/applicability-v1.md)。任务事实经过来源身份/修订/摘要/格式校验，缺失或冲突保守返回信息不足。额外结构化契约不代表自然语言理解或真实运行事实，不替代既有来源检查；不接默认DSH/Store或修改旧数据。
 
 2026-11-06：独立离线多语言向量/混合原型见[ADR050](decisions/050-offline-multilingual-hybrid.md)与[完整结果](evaluation/retrieval-v3.md)。EmbeddingPort只读取绑定模型/文本/版本/命名空间的合成向量，不接默认DSH/Store；可选ML依赖与权重仅忽略目录。检索召回改善伴随高误选，不能推导来源资格或后续任务收益。

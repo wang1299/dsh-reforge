@@ -1,0 +1,487 @@
+{
+  "schema": 1,
+  "created": "2026-11-15",
+  "boundary": "Author-visible synthetic context-selection labels. Six correlated families with two budgets each; not blind holdout, Agent task outcomes or production evidence.",
+  "cases": [
+    {
+      "id": "dev-rollback",
+      "split": "development",
+      "query": "transaction rollback balance exception",
+      "optionalBytes": 900,
+      "facts": [
+        {
+          "text": "transaction rollback restored the prior balance in the fixture.",
+          "facet": "dev-0"
+        },
+        {
+          "text": "transaction rollback balance exception repeated outcome.",
+          "facet": "dev-1"
+        },
+        {
+          "text": "The rollback exception retained the audit marker.",
+          "facet": "dev-2"
+        },
+        {
+          "text": "CSS button alignment changed.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-rollback-450",
+      "split": "evaluation",
+      "query": "transaction rollback balance exception",
+      "optionalBytes": 450,
+      "facts": [
+        {
+          "text": "transaction rollback balance exception: the prior balance was restored before raising; the test confirmed the original amount.",
+          "facet": "state"
+        },
+        {
+          "text": "transaction rollback balance exception: the original amount remained after raising; this test confirmed the prior balance was restored.",
+          "facet": "state"
+        },
+        {
+          "text": "rollback preserved the audit sequence marker and did not create an extra event.",
+          "facet": "audit"
+        },
+        {
+          "text": "exception handling preserved the caller-visible error category.",
+          "facet": "error"
+        },
+        {
+          "text": "The transaction label on the page used a different font.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-rollback-1400",
+      "split": "evaluation",
+      "query": "transaction rollback balance exception",
+      "optionalBytes": 1400,
+      "facts": [
+        {
+          "text": "transaction rollback balance exception: the prior balance was restored before raising; the test confirmed the original amount.",
+          "facet": "state"
+        },
+        {
+          "text": "transaction rollback balance exception: the original amount remained after raising; this test confirmed the prior balance was restored.",
+          "facet": "state"
+        },
+        {
+          "text": "rollback preserved the audit sequence marker and did not create an extra event.",
+          "facet": "audit"
+        },
+        {
+          "text": "exception handling preserved the caller-visible error category.",
+          "facet": "error"
+        },
+        {
+          "text": "The transaction label on the page used a different font.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "dev-idempotency",
+      "split": "development",
+      "query": "idempotency request duplicate payment",
+      "optionalBytes": 900,
+      "facts": [
+        {
+          "text": "idempotency request duplicate payment reused the stored result.",
+          "facet": "dev-0"
+        },
+        {
+          "text": "The duplicate payment request kept one ledger entry.",
+          "facet": "dev-1"
+        },
+        {
+          "text": "request validation rejected a changed payload.",
+          "facet": "dev-2"
+        },
+        {
+          "text": "A sidebar moved.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-idempotency-450",
+      "split": "evaluation",
+      "query": "idempotency request duplicate payment",
+      "optionalBytes": 450,
+      "facts": [
+        {
+          "text": "idempotency request duplicate payment returned the same stored receipt for the repeated key.",
+          "facet": "receipt"
+        },
+        {
+          "text": "idempotency request duplicate payment reused the receipt returned for the same repeated key.",
+          "facet": "receipt"
+        },
+        {
+          "text": "duplicate payment handling left exactly one ledger record after the request.",
+          "facet": "ledger"
+        },
+        {
+          "text": "request payload changes under the same idempotency key produced a conflict error.",
+          "facet": "conflict"
+        },
+        {
+          "text": "The payment navigation label was rendered in blue.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-idempotency-1400",
+      "split": "evaluation",
+      "query": "idempotency request duplicate payment",
+      "optionalBytes": 1400,
+      "facts": [
+        {
+          "text": "idempotency request duplicate payment returned the same stored receipt for the repeated key.",
+          "facet": "receipt"
+        },
+        {
+          "text": "idempotency request duplicate payment reused the receipt returned for the same repeated key.",
+          "facet": "receipt"
+        },
+        {
+          "text": "duplicate payment handling left exactly one ledger record after the request.",
+          "facet": "ledger"
+        },
+        {
+          "text": "request payload changes under the same idempotency key produced a conflict error.",
+          "facet": "conflict"
+        },
+        {
+          "text": "The payment navigation label was rendered in blue.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "dev-retry",
+      "split": "development",
+      "query": "retry timeout request backoff",
+      "optionalBytes": 900,
+      "facts": [
+        {
+          "text": "retry timeout request backoff stopped at a fixed attempt limit.",
+          "facet": "dev-0"
+        },
+        {
+          "text": "request backoff kept the recorded delay.",
+          "facet": "dev-1"
+        },
+        {
+          "text": "timeout cancellation ended pending retries.",
+          "facet": "dev-2"
+        },
+        {
+          "text": "A photograph changed.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-retry-450",
+      "split": "evaluation",
+      "query": "retry timeout request backoff",
+      "optionalBytes": 450,
+      "facts": [
+        {
+          "text": "retry timeout request backoff stopped after three attempts and returned the timeout to the request caller.",
+          "facet": "limit"
+        },
+        {
+          "text": "retry timeout request backoff returned the timeout after the fixed three attempts ended.",
+          "facet": "limit"
+        },
+        {
+          "text": "backoff delay respected the fixture clock sequence between retry attempts.",
+          "facet": "delay"
+        },
+        {
+          "text": "request cancellation removed the pending timer and prevented another retry.",
+          "facet": "cancel"
+        },
+        {
+          "text": "The timeout help-page heading used the display font.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-retry-1400",
+      "split": "evaluation",
+      "query": "retry timeout request backoff",
+      "optionalBytes": 1400,
+      "facts": [
+        {
+          "text": "retry timeout request backoff stopped after three attempts and returned the timeout to the request caller.",
+          "facet": "limit"
+        },
+        {
+          "text": "retry timeout request backoff returned the timeout after the fixed three attempts ended.",
+          "facet": "limit"
+        },
+        {
+          "text": "backoff delay respected the fixture clock sequence between retry attempts.",
+          "facet": "delay"
+        },
+        {
+          "text": "request cancellation removed the pending timer and prevented another retry.",
+          "facet": "cancel"
+        },
+        {
+          "text": "The timeout help-page heading used the display font.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "dev-schema",
+      "split": "development",
+      "query": "schema nullable field validation",
+      "optionalBytes": 900,
+      "facts": [
+        {
+          "text": "schema nullable field validation rejected null under the non-null schema.",
+          "facet": "dev-0"
+        },
+        {
+          "text": "field validation retained the source property path.",
+          "facet": "dev-1"
+        },
+        {
+          "text": "schema parsing kept empty text distinct from null.",
+          "facet": "dev-2"
+        },
+        {
+          "text": "A toolbar moved.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-schema-450",
+      "split": "evaluation",
+      "query": "schema nullable field validation",
+      "optionalBytes": 450,
+      "facts": [
+        {
+          "text": "schema nullable field validation rejected null when the field schema required an object.",
+          "facet": "null"
+        },
+        {
+          "text": "schema nullable field validation required an object and rejected the null input.",
+          "facet": "null"
+        },
+        {
+          "text": "validation errors preserved the nested field property path from the schema.",
+          "facet": "path"
+        },
+        {
+          "text": "field validation distinguished empty text from a missing property.",
+          "facet": "missing"
+        },
+        {
+          "text": "The schema title in the documentation was centered.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-schema-1400",
+      "split": "evaluation",
+      "query": "schema nullable field validation",
+      "optionalBytes": 1400,
+      "facts": [
+        {
+          "text": "schema nullable field validation rejected null when the field schema required an object.",
+          "facet": "null"
+        },
+        {
+          "text": "schema nullable field validation required an object and rejected the null input.",
+          "facet": "null"
+        },
+        {
+          "text": "validation errors preserved the nested field property path from the schema.",
+          "facet": "path"
+        },
+        {
+          "text": "field validation distinguished empty text from a missing property.",
+          "facet": "missing"
+        },
+        {
+          "text": "The schema title in the documentation was centered.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "dev-paths",
+      "split": "development",
+      "query": "windows path repository alias",
+      "optionalBytes": 900,
+      "facts": [
+        {
+          "text": "windows path repository alias resolved to the same workspace.",
+          "facet": "dev-0"
+        },
+        {
+          "text": "repository alias traversal outside the root was rejected.",
+          "facet": "dev-1"
+        },
+        {
+          "text": "path checks retained canonical identity.",
+          "facet": "dev-2"
+        },
+        {
+          "text": "An icon changed.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-paths-450",
+      "split": "evaluation",
+      "query": "windows path repository alias",
+      "optionalBytes": 450,
+      "facts": [
+        {
+          "text": "windows path repository alias resolved the same canonical repository identity under a short Windows path.",
+          "facet": "identity"
+        },
+        {
+          "text": "windows path repository alias under the short path retained the same canonical Windows repository identity.",
+          "facet": "identity"
+        },
+        {
+          "text": "repository traversal outside the permitted root was rejected by the path check.",
+          "facet": "traversal"
+        },
+        {
+          "text": "path alias checks preserved file content hashes after canonicalization.",
+          "facet": "hash"
+        },
+        {
+          "text": "The repository status badge used a different border.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-paths-1400",
+      "split": "evaluation",
+      "query": "windows path repository alias",
+      "optionalBytes": 1400,
+      "facts": [
+        {
+          "text": "windows path repository alias resolved the same canonical repository identity under a short Windows path.",
+          "facet": "identity"
+        },
+        {
+          "text": "windows path repository alias under the short path retained the same canonical Windows repository identity.",
+          "facet": "identity"
+        },
+        {
+          "text": "repository traversal outside the permitted root was rejected by the path check.",
+          "facet": "traversal"
+        },
+        {
+          "text": "path alias checks preserved file content hashes after canonicalization.",
+          "facet": "hash"
+        },
+        {
+          "text": "The repository status badge used a different border.",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "dev-chinese",
+      "split": "development",
+      "query": "库存 回滚 失败 原数量",
+      "optionalBytes": 900,
+      "facts": [
+        {
+          "text": "库存回滚失败时恢复原数量。",
+          "facet": "dev-0"
+        },
+        {
+          "text": "库存失败保持审计序号。",
+          "facet": "dev-1"
+        },
+        {
+          "text": "回滚时仍抛出原始错误。",
+          "facet": "dev-2"
+        },
+        {
+          "text": "页面颜色变蓝。",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-chinese-450",
+      "split": "evaluation",
+      "query": "库存 回滚 失败 原数量",
+      "optionalBytes": 450,
+      "facts": [
+        {
+          "text": "库存回滚失败时恢复原数量，独立断言检查回滚后的数量与原数量相同。",
+          "facet": "quantity"
+        },
+        {
+          "text": "库存回滚失败后数量恢复，断言核对回滚后的原数量没有发生变化。",
+          "facet": "quantity"
+        },
+        {
+          "text": "库存失败仍保留审计序号，不额外插入审计记录。",
+          "facet": "audit"
+        },
+        {
+          "text": "回滚仍向调用方抛出原始失败类型，没有吞掉错误。",
+          "facet": "error"
+        },
+        {
+          "text": "库存页面的标题颜色与侧栏背景保持一致。",
+          "facet": null
+        }
+      ]
+    },
+    {
+      "id": "eval-chinese-1400",
+      "split": "evaluation",
+      "query": "库存 回滚 失败 原数量",
+      "optionalBytes": 1400,
+      "facts": [
+        {
+          "text": "库存回滚失败时恢复原数量，独立断言检查回滚后的数量与原数量相同。",
+          "facet": "quantity"
+        },
+        {
+          "text": "库存回滚失败后数量恢复，断言核对回滚后的原数量没有发生变化。",
+          "facet": "quantity"
+        },
+        {
+          "text": "库存失败仍保留审计序号，不额外插入审计记录。",
+          "facet": "audit"
+        },
+        {
+          "text": "回滚仍向调用方抛出原始失败类型，没有吞掉错误。",
+          "facet": "error"
+        },
+        {
+          "text": "库存页面的标题颜色与侧栏背景保持一致。",
+          "facet": null
+        }
+      ]
+    }
+  ]
+}

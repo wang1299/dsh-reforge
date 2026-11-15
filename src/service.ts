@@ -10,6 +10,7 @@ import { AutomaticLearning } from './automatic-learning.js';
 import { retrievalPolicy, type TextMatch } from './retrieval.js';
 import { RetrievalRuntime, explanationTerms, type CandidateExplanation, type CandidateReason, type RetrievalStatus } from './retrieval-runtime.js';
 import { contextKey, feedbackMemory, rankFeedback, type ContextEvidence } from './feedback-retrieval.js';
+import { compileAgentContext, legacyExperienceNotice, memoryContextSchema, type MemoryContextPolicy } from './agent-context.js';
 import { correctionEvidence, factProvenance, validateCitations, verificationEvidence } from './evidence.js';
 import { EvidenceJobs } from './evidence-jobs.js';
 import { ExtractionJobs, extractionMaterial } from './extraction.js';
@@ -36,7 +37,8 @@ export class EvolveService {
   readonly automatic: AutomaticLearning;
   readonly ownerInput: OwnerTaskInput;
   private readonly repoId: string;
-  constructor(readonly store: Store, readonly root: string, readonly policy: VerificationPolicy, backgroundVerification = false, extractionPolicy?: ExtractionPolicy, private readonly modelSharingAllowed = false, automaticLearning = false, private readonly retrievalRuntime = new RetrievalRuntime()) {
+  constructor(readonly store: Store, readonly root: string, readonly policy: VerificationPolicy, backgroundVerification = false, extractionPolicy?: ExtractionPolicy, private readonly modelSharingAllowed = false, automaticLearning = false, private readonly retrievalRuntime = new RetrievalRuntime(), private readonly memoryContext?: MemoryContextPolicy) {
+    if (memoryContext) memoryContextSchema.parse(memoryContext);
     if (automaticLearning && (!policy.trusted || !backgroundVerification || !extractionPolicy || !modelSharingAllowed)) throw new Error('Automatic learning requires explicit execution, background verification, sharing and extraction authorization');
     this.jobs = new EvidenceJobs(store, root, policy, backgroundVerification, verifyRepair, automaticLearning);
     this.repoId = snapshot(root).scope.repoId;
@@ -231,6 +233,14 @@ export class EvolveService {
     }) };
   }
   select(taskId: string, mode: 'evidence-v1' | 'feedback-v1' | 'bm25-v1' = 'evidence-v1'): { application: Application | null; experience: Experience | null; reasons: string[] } {
+    return this.selectMemory(taskId, mode);
+  }
+  /** Trusted host caller enforces sharing, as for select(); budgets only its memory notice. */
+  contextForTask(taskId: string): string {
+    const selection = this.selectMemory(taskId, 'evidence-v1', this.memoryContext);
+    return selection.notice ?? legacyExperienceNotice(selection.experience, selection.application);
+  }
+  private selectMemory(taskId: string, mode: 'evidence-v1' | 'feedback-v1' | 'bm25-v1', contextPolicy?: MemoryContextPolicy): { application: Application | null; experience: Experience | null; reasons: string[]; notice?: string } {
     const started = performance.now();
     z.enum(['evidence-v1', 'feedback-v1', 'bm25-v1']).parse(mode);
     const { task, current: taskSnapshot } = this.checkedTask(taskId); if (task.state !== 'open') throw new Error('Task is closed');
@@ -297,13 +307,19 @@ export class EvolveService {
     ranked.sort((a, b) => b.score - a.score || a.experience.id.localeCompare(b.experience.id));
     const originalTop = ranked[0];
     const ownerReason = originalTop ? this.ownerInput.veto(task, originalTop.experience) : null;
-    const selected = ownerReason ? undefined : originalTop;
+    let selected = ownerReason ? undefined : originalTop;
     if (ownerReason && originalTop) reasons.push(originalTop.experience.id + ':' + ownerReason);
+    const applicationId = selected ? randomUUID() : null;
+    const compiled = selected && contextPolicy ? compileAgentContext({ experience: selected.experience,
+      citations: this.provenance(selected.experience).citations, applicationId: applicationId!, query: task.summary, policy: contextPolicy }) : null;
+    const contextReason = compiled && compiled.decision.status !== 'provided'
+      ? compiled.decision.status === 'mandatory_over_budget' ? 'context_budget_exceeded' : 'context_invalid_source' : null;
+    if (contextReason && originalTop) { reasons.push(originalTop.experience.id + ':' + contextReason); selected = undefined; }
     const record = (application: Application | null): void => {
       const candidates: CandidateExplanation[] = [];
       if (selected) candidates.push(explain(selected.experience, selected.evidence ? 'owner_accepted_context' : 'original_text',
         { score: selected.textScore, anchors: selected.anchors }, selected.score, selected.evidence?.summary));
-      else if (originalTop && ownerReason) candidates.push(explain(originalTop.experience, ownerReason,
+      else if (originalTop && (ownerReason || contextReason)) candidates.push(explain(originalTop.experience, (ownerReason || contextReason)!,
         { score: originalTop.textScore, anchors: originalTop.anchors }, originalTop.score, originalTop.evidence?.summary));
       for (const match of original) {
         if (candidates.length >= 5) break;
@@ -320,16 +336,17 @@ export class EvolveService {
         candidatesConsidered: considered, eligibleCount: eligible.size, omittedCandidates: Math.max(0, considered - candidates.length), candidates,
         cache: search.cache, generation: search.generation,
         scopeChecks: { snapshotPasses, conditionPathsChecked: scopeReader?.pathsChecked() ?? null, lifetime: scopeReader ? 'request' : 'per-experience' },
+        ...(compiled ? { context: compiled.decision } : {}),
         timings: { qualificationMs: qualified - started, lookupMs: search.lookupMs, buildMs: search.buildMs,
           queryMs: search.queryMs, selectionMs: completed - searched, totalMs: completed - started } });
     };
-    if (!selected) { record(null); return { application: null, experience: null, reasons: reasons.length ? reasons : ['no_experiences'] }; }
-    const application: Application = { id: randomUUID(), taskId: task.id, experienceId: selected.experience.id,
+    if (!selected) { record(null); return { application: null, experience: null, reasons: reasons.length ? reasons : ['no_experiences'], ...(compiled ? { notice: '' } : {}) }; }
+    const application: Application = { id: applicationId!, taskId: task.id, experienceId: selected.experience.id,
       revision: selected.experience.revision, reason: `Applicable code/dependency scope; ${mode}${mode === 'evidence-v1' ? ':complete_fact_sources; feedback-v1' : ''}; text=${retrievalPolicy.version}:${selected.textScore.toFixed(3)}; utility=${selected.utility.toFixed(3)}; anchors=${selected.anchors}; combined=${selected.score.toFixed(3)}`
         + (selected.evidence ? `; fallback_owner_accepted_inference; feedback=${selected.evidence.feedbackId}; application=${selected.evidence.applicationId}; task=${selected.evidence.taskId}` : '; original_text'), createdAt: new Date().toISOString() };
     this.store.putApplication(application);
     record(application);
-    return { application, experience: selected.experience, reasons: [application.reason] };
+    return { application, experience: selected.experience, reasons: [application.reason], ...(compiled ? { notice: compiled.text } : {}) };
   }
   /** Process-local, read-only projection; no task, model, verification or database operation. */
   retrievalStatus(): RetrievalStatus { return this.retrievalRuntime.status(); }
