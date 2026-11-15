@@ -32,7 +32,7 @@ class ContextProbe extends LlmAdapter {
 test('actual AgentLoop memory notices enforce opt-in budgets before application and retain host vetoes', { timeout: 180000 }, async t => {
   const f = await verifiedRetrievalFixture(); const contract = readFileSync(join(f.repo, 'contract.py'));
   try {
-    for (const scenario of ['automatic_provided', 'automatic_budget', 'automatic_sharing_off', 'automatic_legacy', 'automatic_source_changed', 'owner_provided', 'owner_budget', 'owner_veto']) {
+    for (const scenario of ['automatic_provided', 'automatic_budget', 'automatic_sharing_off', 'automatic_legacy', 'automatic_source_changed', 'automatic_citation_changed', 'owner_provided', 'owner_budget', 'owner_veto']) {
       await t.test(scenario, async () => {
         const automatic = scenario.startsWith('automatic');
         const bank = f.createBank(1, 'reuse', automatic ? join(f.home, scenario + '.sqlite') : ':memory:');
@@ -54,6 +54,10 @@ test('actual AgentLoop memory notices enforce opt-in budgets before application 
           const text = 'transaction rollback exception balance';
           try {
             if (scenario === 'automatic_source_changed') appendFileSync(join(f.repo, 'contract.py'), '\n# changed after source qualification\n');
+            if (scenario === 'automatic_citation_changed') {
+              const exp = bank.experiences[0]!;
+              bank.store.putExperience({ ...exp, revision: exp.revision + 1 }, bank.store.citations(exp.id, exp.revision).map(c => ({ ...c, factDigest: '0'.repeat(64) })));
+            }
             if (automatic) handle.agent.followup(createUserMessage({ source: { kind: 'user' }, content: [{ type: 'text', text }] }));
             else {
               writeFileSync(join(f.repo, 'context.schema.json'), JSON.stringify({ $schema: 'http://json-schema.org/draft-07/schema#', type: 'object', properties: { state: { type: 'object' } }, required: ['state'] }));
@@ -93,5 +97,15 @@ test('actual AgentLoop memory notices enforce opt-in budgets before application 
         }
       });
     }
+    await t.test('explicit core selection retains its old full return outside the notice budget', () => {
+      const bank = f.createBank();
+      try {
+        const service = new EvolveService(bank.store, f.repo, f.policy, false, undefined, true, false, undefined, { policy: 'evidence-mmr-v1', maxNoticeBytes: 512 });
+        const task = service.begin('explicit-context-control', 'transaction rollback exception balance');
+        const selection = service.select(task.id); assert.ok(selection.experience); assert.ok(selection.application);
+        assert.deepEqual(selection.experience.observedFacts, bank.experiences[0]!.observedFacts);
+        assert.equal(Object.hasOwn(selection, 'notice'), false); assert.equal(service.retrievalStatus().attempts[0]!.context, undefined);
+      } finally { bank.store.close(); }
+    });
   } finally { f.store.close(); }
 });

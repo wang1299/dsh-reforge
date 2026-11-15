@@ -2,6 +2,8 @@
 
 DSH负责AgentLoop、工具运行与模型路由；Reforge负责经验的来源资格、适用性和提供内容。本模块将已通过原选择器的唯一经验编译成有来源、有字节上限的模型参考。实现见[ADR063](decisions/063-agent-context-compiler.md)，零费用对照方法见[冻结方法](evaluation/context-packing-v1-method.md)。
 
+**实验限制：**[首次冻结对照](evaluation/context-packing-v1.md)中MMR未胜过源顺序，相关facet为16/36 vs18/36，无关事实2条vs0条。不建议根据本次合成数据替换既有默认策略；本功能保留为开发分支显式实验选项。字节上限与来源原子性是工程约束，不能当作任务质量收益。
+
 仅在包含本功能的源码构建中，由所有者在原配置增加以下字段，然后重启该构建的DSH服务：
 
 ```json
