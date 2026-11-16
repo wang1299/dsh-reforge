@@ -37,7 +37,8 @@ type ModelResult = { result: RepairReceipt; context: { text: string; bytes: numb
 class RepairScript extends LlmAdapter {
   calls = 0; nativeCalls = 0; providedMemoryRequests = 0; projectionChecks = 0; largestProjectionBytes = 0;
   private action = 0; private revision = 0; private fileDigest = '';
-  constructor(private readonly reference: string, private readonly before: string, private readonly scenario: Scenario) { super(); }
+  constructor(private readonly reference: string, private readonly before: string, private readonly scenario: Scenario,
+    private readonly expectedExperienceId: string | null) { super(); }
   override providerRetryPolicy() { return resolveRetryPolicy({ mode: 'normal', maxRetries: 0 }, 'zero-HTTP repair rehearsal'); }
   private last(options: GenerateOptions): ModelResult | undefined {
     const result = options.messages.filter(m => m.role === 'tool').at(-1);
@@ -53,7 +54,13 @@ class RepairScript extends LlmAdapter {
       assert(previous.context.bytes <= 8192); assert.equal(Buffer.byteLength(previous.context.text), previous.context.bytes);
       assert(previous.context.text.includes('contractDigest')); this.projectionChecks++;
       this.largestProjectionBytes = Math.max(this.largestProjectionBytes, previous.context.bytes);
-      if (previous.context.memory === 'provided') this.providedMemoryRequests++;
+      if (previous.context.memory === 'provided') {
+        const projection = JSON.parse(previous.context.text) as { memory: unknown };
+        assert(typeof projection.memory === 'string' && this.expectedExperienceId);
+        assert(projection.memory.includes('"experienceId":"' + this.expectedExperienceId + '"'));
+        assert(projection.memory.includes('"observedFacts":') && projection.memory.includes('"citations":'));
+        this.providedMemoryRequests++;
+      }
     }
     if (this.scenario === 'self_report' || previous?.result.status === 'accepted' || previous?.result.status === 'stopped') {
       yield { type: 'block-start', index: 0, blockType: 'text' };
@@ -97,13 +104,15 @@ export async function repairDemo(scenario: Scenario = 'happy') {
   const memory = () => {
     const exp = selection.experience; if (!exp || !selection.application) return '';
     const current = bank.store.experience(exp.id); if (!current || digest(JSON.stringify(current)) !== digest(JSON.stringify(exp))) return '';
+    const proof = current.verificationId ? bank.store.verification(current.verificationId) : null;
+    if (!proof?.verified || proof.sourceTaskId !== current.sourceTaskId || proof.repoId !== current.scope.repoId) return '';
     if (!service.provenance(current).complete || applicability(current.scope, snapshot(bank.repo, Object.keys(current.scope.requiredFiles)).scope)) return '';
     return compileAgentContext({ experience: current, citations: service.provenance(current).citations,
       applicationId: selection.application.id, query: item.prompt, policy: { policy: 'evidence-mmr-v1', maxNoticeBytes: 6000 } }, 'source-order').text;
   };
   if (scenario === 'unknown') workspace.check = async () => { throw new Error('Injected unknown tool transport'); };
   const runner = new RepairAgent(item.prompt, workspace, memory);
-  const adapter = new RepairScript(item.reference, item.before, scenario); const ctx = new Context();
+  const adapter = new RepairScript(item.reference, item.before, scenario, selection.experience?.id ?? null); const ctx = new Context();
   try {
     for (const plugin of [SessionStore, SessionProjectionRegistry, AgentRegistry, LlmRuntime]) await ctx.plugin(plugin).await();
     await ctx.plugin(SystemPrompt, {}).await(); await ctx.plugin(ToolRuntime, { mode: 'native' }).await();
