@@ -5,7 +5,7 @@ import { digest } from '../src/domain.js';
 import { compileAgentContext } from '../src/agent-context.js';
 import { planSemanticMemory, semanticAnchors, semanticSnapshotPort, type SemanticPort, type SemanticPolicy } from '../src/semantic-memory.js';
 import { syntheticContextInput } from './context-fixture.js';
-import { semanticCorpusSchema, semanticRequests } from '../scripts/semantic-memory-data.js';
+import { assertSemanticRequests, semanticCorpusSchema, semanticRequests } from '../scripts/semantic-memory-data.js';
 import { calibrateSemantic } from '../scripts/semantic-memory-evaluation.js';
 import { evaluateContext } from '../scripts/context-evaluate.js';
 
@@ -76,5 +76,16 @@ test('new corpus balances languages and task types; calibration never reads eval
   const port:SemanticPort={...toyPort(),embed(request){assert.ok(request.namespace.startsWith('development/'));return [1,0];}};
   const calibration=calibrateSemantic(corpus,port);assert.equal(calibration.minimumCorrect,9);assert.equal(calibration.status,'admissible');
   assert.deepEqual(calibration.arms.map(a=>a.grid.length),[15,45]);assert.ok(calibration.arms.every(a=>a.policy));
-  const missing=calibrateSemantic(corpus,{...port,embed(){throw new Error('unavailable');}});assert.equal(missing.status,'no_admissible_config');assert.ok(missing.arms.every(a=>a.policy===null&&a.grid.length>0));
+  assert.throws(()=>calibrateSemantic(corpus,{...port,embed(){throw new Error('unavailable');}}),/Invalid research inputs/);
+  const missing=calibrateSemantic(corpus,{...port,embed(r){return r.namespace.endsWith('/document')?[0,1]:[1,0];}});assert.equal(missing.status,'no_admissible_config');assert.ok(missing.arms.every(a=>a.policy===null&&a.grid.length>0));
+});
+test('a missing negative replaced by an unrelated entry cannot improve quality or pass complete-input validation',()=>{
+  const corpus=semanticCorpusSchema.parse(JSON.parse(readFileSync(new URL('../../test/fixtures/semantic-memory-v1.json',import.meta.url),'utf8')));
+  const requests=semanticRequests(corpus,'development');const bad=requests.findIndex(r=>r.id.endsWith('-q2'));
+  const entries=requests.map(({text,...identity})=>({...identity,textDigest:digest(text),vector:[1,0]}));
+  entries[bad]={...entries[bad]!,id:'unrelated-extra-entry'};
+  const expected={modelDigest:policy.modelDigest,corpusDigest:digest('toy corpus'),dimension:2};
+  const port=semanticSnapshotPort({schemaVersion:1,...expected,split:'development',entries,provenance:{engine:'toy',runtimeVersions:{},inferenceSeconds:0,texts:84,forwardPasses:1,paidHttpCalls:0,precision:'round7'}},expected);
+  assert.equal(entries.length,84);assert.throws(()=>assertSemanticRequests(corpus,'development',port),/cache miss/);
+  assert.throws(()=>calibrateSemantic(corpus,port),/Invalid research inputs/);
 });

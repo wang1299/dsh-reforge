@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { digest } from '../src/domain.js';
 import { semanticSnapshotPort, type SemanticPolicy } from '../src/semantic-memory.js';
-import { semanticCorpusSchema } from './semantic-memory-data.js';
+import { assertSemanticRequests, semanticCorpusSchema } from './semantic-memory-data.js';
 import { calibrateSemantic, evaluateSemantic } from './semantic-memory-evaluation.js';
 
 const mode = process.argv[2];
@@ -19,12 +19,15 @@ const vectorPath = mode === 'calibrate' ? '.probe-work/t072/development-vectors.
 const vectorBytes = read(vectorPath); const snapshot=JSON.parse(vectorBytes.toString());
 assert.equal(snapshot.split,split); assert.equal(snapshot.entries.length,84);
 const port = semanticSnapshotPort(snapshot,{modelDigest,corpusDigest,dimension:JSON.parse(model.toString()).dimension});
-const sourcePaths=['src/agent-context.ts','src/semantic-memory.ts','src/embedding.ts','src/retrieval.ts','scripts/semantic-memory-data.ts',
-  'scripts/semantic-memory-evaluation.ts','scripts/semantic-memory-evaluate.ts','scripts/semantic-memory-embedding.py'];
+const validatedVectorRequests=assertSemanticRequests(corpus,split,port);
+const sourcePaths=['src/agent-context.ts','src/semantic-memory.ts','src/embedding.ts','src/retrieval.ts','src/domain.ts','test/context-fixture.ts','scripts/retrieval-embedding.py','scripts/semantic-memory-data.ts',
+  'scripts/semantic-memory-evaluation.ts','scripts/semantic-memory-evaluate.ts','scripts/semantic-memory-embedding.py','tsconfig.json','compat/retrieval-embedding/requirements-win-py310.lock'];
 const sourceDigests=Object.fromEntries(sourcePaths.map(path=>[path,digest(read(path))]));
+const lock=JSON.parse(read('package-lock.json').toString());
+const coreDependencyDigest=digest(JSON.stringify(Object.fromEntries(['zod','typescript'].map(name=>[name,{version:lock.packages['node_modules/'+name].version,integrity:lock.packages['node_modules/'+name].integrity}]))));
 const git=(args:string[])=>execFileSync('git',['-C',root,...args],{encoding:'utf8',windowsHide:true}).trim();
 const sourceCommit=git(['rev-parse','HEAD']); const sourceDirty=git(['status','--porcelain']).length>0;
-const metadata={corpusDigest,modelDigest,vectorDigest:digest(vectorBytes),sourceCommit,sourceDirty,sourceDigests};
+const metadata={corpusDigest,modelDigest,vectorDigest:digest(vectorBytes),coreDependencyDigest,validatedVectorRequests,sourceCommit,sourceDirty,sourceDigests};
 const output=join(root,'.probe-work/t072'); mkdirSync(output,{recursive:true});
 if(mode==='calibrate'){
   assert(!sourceDirty,'Commit method and data before first calibration');
@@ -38,8 +41,13 @@ if(mode==='calibrate'){
   const calibration=JSON.parse(calibrationBytes.toString()) as ReturnType<typeof calibrateSemantic> & typeof metadata;
   assert.equal(calibration.status,'admissible');assert.equal(calibration.sourceDirty,false);
   assert.equal(calibration.corpusDigest,corpusDigest);assert.equal(calibration.modelDigest,modelDigest);
+  assert.equal(calibration.coreDependencyDigest,coreDependencyDigest,'Core parser/compiler dependency changed');
   assert.deepEqual(calibration.sourceDigests,sourceDigests,'Method changed after calibration');
   assert.equal(calibration.vectorDigest,digest(read('test/fixtures/semantic-memory-v1-development-vectors.json')));
+  const developmentPort=semanticSnapshotPort(JSON.parse(read('test/fixtures/semantic-memory-v1-development-vectors.json').toString()),{modelDigest,corpusDigest,dimension:port.dimension});
+  assertSemanticRequests(corpus,'development',developmentPort);
+  const derived=calibrateSemantic(corpus,developmentPort);
+  assert.deepEqual({status:calibration.status,minimumCorrect:calibration.minimumCorrect,arms:calibration.arms},derived,'Published policy must follow the frozen development selection rule');
   const methods=['source-order','mmr-density','cosine-gate','intent-gate'] as const;
   const results=methods.map(method=>evaluateSemantic(corpus,split,port,method,calibration.arms.find(a=>a.method===method)?.policy as SemanticPolicy|undefined));
   const report={schema:1,kind:'author-visible-local-semantic-memory',split,...metadata,calibrationDigest:digest(calibrationBytes),embedding:snapshot.provenance,paidHttpCalls:0,realModelBenefit:false,results};

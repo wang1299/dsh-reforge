@@ -26,11 +26,17 @@ def export(partition):
             raise ValueError('Commit frozen method/config before holdout inference')
         calibration = json.loads((ROOT / 'compat/semantic-memory/calibration.json').read_text(encoding='utf-8'))
         paths = ['src/agent-context.ts', 'src/semantic-memory.ts', 'src/embedding.ts', 'src/retrieval.ts',
+                 'src/domain.ts', 'test/context-fixture.ts', 'scripts/retrieval-embedding.py',
                  'scripts/semantic-memory-data.ts', 'scripts/semantic-memory-evaluation.ts',
-                 'scripts/semantic-memory-evaluate.ts', 'scripts/semantic-memory-embedding.py']
+                 'scripts/semantic-memory-evaluate.ts', 'scripts/semantic-memory-embedding.py',
+                 'tsconfig.json', 'compat/retrieval-embedding/requirements-win-py310.lock']
+        lock = json.loads((ROOT / 'package-lock.json').read_text(encoding='utf-8'))
+        core = {name: {key: lock['packages']['node_modules/' + name][key] for key in ['version', 'integrity']} for name in ['zod', 'typescript']}
+        core_digest = ASSETS.sha(json.dumps(core, separators=(',', ':')).encode())
         if (calibration['status'] != 'admissible' or calibration['sourceDirty']
                 or calibration['corpusDigest'] != DATA_DIGEST
                 or calibration['modelDigest'] != ASSETS.sha(ASSETS.MANIFEST_BYTES)
+                or calibration['coreDependencyDigest'] != core_digest
                 or calibration['sourceDigests'] != {path: ASSETS.sha((ROOT / path).read_bytes()) for path in paths}
                 or calibration['vectorDigest'] != ASSETS.sha((ROOT / 'test/fixtures/semantic-memory-v1-development-vectors.json').read_bytes())):
             raise ValueError('Development calibration binding changed before holdout inference')

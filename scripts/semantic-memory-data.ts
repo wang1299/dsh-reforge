@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { digest, textSchema } from '../src/domain.js';
 import { semanticAnchors } from '../src/semantic-memory.js';
 import { syntheticContextInput } from '../test/context-fixture.js';
+import { assertVector } from '../src/embedding.js';
+import type { SemanticPort } from '../src/semantic-memory.js';
 
 const id = z.string().regex(/^[a-z0-9_-]{1,80}$/);
 const family = z.object({ id, split: z.enum(['development', 'holdout']), title: z.string().min(1).max(160), strategy: textSchema,
@@ -37,4 +39,10 @@ export function semanticRequests(corpus: SemanticCorpus, split: 'development' | 
       ...f.queries.map(q => ({ namespace: ns + '/query', id: q.id, revision: 1, text: q.text })),
       ...Object.entries(semanticAnchors).map(([id, text]) => ({ namespace: ns + '/intent', id, revision: 1, text }))];
   });
+}
+/** Every expected input, including all negatives, must be present before any quality scoring. */
+export function assertSemanticRequests(corpus: SemanticCorpus, split: 'development' | 'holdout', port: SemanticPort): number {
+  const requests=semanticRequests(corpus,split);
+  for(const request of requests)assertVector(port.embed(request),port.dimension);
+  return requests.length;
 }

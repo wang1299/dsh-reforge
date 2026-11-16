@@ -9,6 +9,7 @@ export function evaluateSemantic(corpus: SemanticCorpus, split: 'development' | 
     input.policy.maxNoticeBytes = mandatory.decision.mandatoryBytes + 1000;
     const result = method === 'source-order' || method === 'mmr-density' ? compileAgentContext(input, method)
       : planSemanticMemory(input, { port, policy: policy!, namespace: semanticNamespace(f), queryId: q.id });
+    if(result.decision.status==='invalid_vectors'||result.decision.status==='invalid_source')throw new Error('Invalid research inputs; never score missing vectors/source as semantic abstention');
     const packing = 'packing' in result.decision ? result.decision.packing ?? mandatory.decision : result.decision;
     const provided = result.text !== ''; const indices = provided ? packing.includedFacts : [];
     const relevant = indices.filter(i => q.relevantFacts.includes(i)); const facets = new Set(relevant.map(i => f.facts[i]!.facet));
