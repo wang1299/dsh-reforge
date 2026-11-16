@@ -1,0 +1,15 @@
+# Local semantic memory experiment
+
+T072 is stacked on unmerged PR155. This is an offline single-experience admission/fact-planning candidate, not a default DSH policy, a qualified Store source bank or an Agent success claim. [Design](../../docs/decisions/064-semantic-memory-admission.md) and [fixed method](../../docs/evaluation/semantic-memory-v1-method.md).
+
+Corpus:12 author-visible families,6 development/6 evaluation;72 queries, balanced by English/Chinese and repair/documentation/contradictory request. Common programming primitives can overlap across families. Fact order is deterministically rotated before any inference. Thirty-six executable Python controls verify authored contracts, not semantic labels or model performance.
+
+With Node24, repository dependencies and Python3.10/pytest9.1.1, `npm run memory:contracts` runs all original/reference/counterexample controls in fresh ignored directories. It never executes generated model code or opens a profile. Preserve failing controls; do not weaken them after results.
+
+Local inference reuses the exact T056 model artifacts and optional dependencies; see [their pinned setup](../retrieval-embedding/README.md). `python scripts/semantic-memory-embedding.py development` reads only this fixed public corpus and verifies model/runtime identities. It refuses silent truncation over128 tokens. No arbitrary text/file/profile input or model API. Initialization is excluded from reported batch inference seconds; snapshots are CPU round7 scoring-replay inputs, not a claim of identical neural inference on all hardware.
+
+The initial run must commit method/data/source, export development only, then use `npm run memory:evaluate -- calibrate`. Retain the entire15/45-candidate grids. Both arms must retain at least9/12 useful positive offers; otherwise stop before evaluation. Publish development vectors, selected config and complete development results, commit, then export holdout on a clean tree. Exporter and evaluator both check frozen calibration/data/model/source/development-vector bindings. The initial48-query draft was independently reviewed and corrected to72 before any inference; old commits remain.
+
+Once results are published, `npm run memory:evaluate -- development` and `npm run memory:evaluate -- holdout` replay them without weights, downloads or neural inference. Scores use only query/document/fact/constant-anchor text, never labels, reference code or test answers. Conditions must still be qualified by the caller; cosine/intent margin cannot establish logical applicability or semantic truth. Thresholds are selective-classification settings, not calibrated probabilities. Report false offers, lost positives and language/type strata alongside coverage; retain all negative results.
+
+The initial Linux CI found a checkout line-ending mismatch in the optional Windows wheel lock. Git attributes now pin CRLF for that single non-executable file so fresh checkouts reproduce its original frozen bytes. Scoring code, guard code, calibration, vectors and first results are unchanged. A real Git checkout-filter test guards this transport-only fix.

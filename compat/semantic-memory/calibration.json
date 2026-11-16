@@ -1,0 +1,954 @@
+{
+  "status": "admissible",
+  "minimumCorrect": 9,
+  "arms": [
+    {
+      "method": "cosine-gate",
+      "policy": {
+        "version": "local-semantic-v1",
+        "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+        "minimumDocument": 0.55,
+        "minimumFact": 0.55,
+        "intent": "none",
+        "minimumIntentMargin": 0
+      },
+      "grid": [
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.25,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 24,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.4,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 24,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.55,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 10,
+          "wrong": 18,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.25,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 24,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.4,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 24,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.55,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 10,
+          "wrong": 18,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.25,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 21,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.4,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 21,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.55,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 10,
+          "wrong": 17,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.25,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 11,
+          "wrong": 12,
+          "facets": 16,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.4,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 11,
+          "wrong": 12,
+          "facets": 15,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.55,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 9,
+          "wrong": 10,
+          "facets": 10,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.25,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 7,
+          "wrong": 9,
+          "facets": 10,
+          "irrelevant": 4,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.4,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 7,
+          "wrong": 9,
+          "facets": 10,
+          "irrelevant": 4,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.55,
+            "intent": "none",
+            "minimumIntentMargin": 0
+          },
+          "correct": 6,
+          "wrong": 8,
+          "facets": 7,
+          "irrelevant": 1,
+          "admissible": false
+        }
+      ]
+    },
+    {
+      "method": "intent-gate",
+      "policy": {
+        "version": "local-semantic-v1",
+        "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+        "minimumDocument": 0.55,
+        "minimumFact": 0.55,
+        "intent": "contrastive",
+        "minimumIntentMargin": 0.1
+      },
+      "grid": [
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 16,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 12,
+          "wrong": 15,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 16,
+          "irrelevant": 4,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 16,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 12,
+          "wrong": 15,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 15,
+          "irrelevant": 4,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 10,
+          "wrong": 12,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.25,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 9,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 16,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 12,
+          "wrong": 15,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 16,
+          "irrelevant": 4,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 16,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 12,
+          "wrong": 15,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 15,
+          "irrelevant": 4,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 10,
+          "wrong": 12,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.35,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 9,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 14,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 12,
+          "wrong": 13,
+          "facets": 18,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 16,
+          "irrelevant": 4,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 12,
+          "wrong": 14,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 12,
+          "wrong": 13,
+          "facets": 17,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 15,
+          "irrelevant": 4,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 10,
+          "wrong": 12,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 10,
+          "wrong": 11,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.45,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 10,
+          "wrong": 9,
+          "facets": 11,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 11,
+          "wrong": 10,
+          "facets": 16,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 11,
+          "wrong": 10,
+          "facets": 16,
+          "irrelevant": 6,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 9,
+          "wrong": 9,
+          "facets": 14,
+          "irrelevant": 4,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 11,
+          "wrong": 10,
+          "facets": 15,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 11,
+          "wrong": 10,
+          "facets": 15,
+          "irrelevant": 5,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 9,
+          "wrong": 9,
+          "facets": 13,
+          "irrelevant": 4,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 9,
+          "wrong": 9,
+          "facets": 10,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 9,
+          "wrong": 9,
+          "facets": 10,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.55,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 9,
+          "wrong": 8,
+          "facets": 10,
+          "irrelevant": 2,
+          "admissible": true
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 7,
+          "wrong": 8,
+          "facets": 10,
+          "irrelevant": 4,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 7,
+          "wrong": 8,
+          "facets": 10,
+          "irrelevant": 4,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.25,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 6,
+          "wrong": 7,
+          "facets": 9,
+          "irrelevant": 3,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 7,
+          "wrong": 8,
+          "facets": 10,
+          "irrelevant": 4,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 7,
+          "wrong": 8,
+          "facets": 10,
+          "irrelevant": 4,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.4,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 6,
+          "wrong": 7,
+          "facets": 9,
+          "irrelevant": 3,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0
+          },
+          "correct": 6,
+          "wrong": 8,
+          "facets": 7,
+          "irrelevant": 1,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.05
+          },
+          "correct": 6,
+          "wrong": 8,
+          "facets": 7,
+          "irrelevant": 1,
+          "admissible": false
+        },
+        {
+          "policy": {
+            "version": "local-semantic-v1",
+            "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+            "minimumDocument": 0.65,
+            "minimumFact": 0.55,
+            "intent": "contrastive",
+            "minimumIntentMargin": 0.1
+          },
+          "correct": 6,
+          "wrong": 7,
+          "facets": 7,
+          "irrelevant": 1,
+          "admissible": false
+        }
+      ]
+    }
+  ],
+  "corpusDigest": "0868e6bf93014503a7f2cbfbec7ae765d1bc1eabd0923281aed434e3cd3f23df",
+  "modelDigest": "df4e61b1967fc089cbcec5ad3c9207d5f1f5a8ffeb670a47b14c4cceaf0f6193",
+  "vectorDigest": "28ff87fef66d0b6ba4b7a1e741aa032a1524b724f107172bd4b5d1b7c37fcd06",
+  "coreDependencyDigest": "6135a5d5bb95bbbaaef8a392d62efffcadd962bd02c264242686b8f3fb3b9e83",
+  "validatedVectorRequests": 84,
+  "sourceCommit": "13549bac75a4bc41fc9408701f0cc3ac42f5e485",
+  "sourceDirty": false,
+  "sourceDigests": {
+    "src/agent-context.ts": "00feaf95d82d0b9c22e22b8b9f8d6c691264ce8f200aeae3f1129b0297bac422",
+    "src/semantic-memory.ts": "76a15c07f59e6dc22f273218e0079b8088115380afbd1ad769823da83300288c",
+    "src/embedding.ts": "030109c1c385b907a59e28274b827cf0b2fd44d64c17330b4d4539f8d04d40da",
+    "src/retrieval.ts": "79248d6b7d3b4d2b7dec325f8d50117f49c73ff742e3ac1296c3671f9ed142a6",
+    "src/domain.ts": "db178058b8b1a37051edf34cd2d9e208a43661f6000c6b62630a176430627b94",
+    "test/context-fixture.ts": "37f61b12ae9e7eba7520148993c22093441d791228a87df9eea37bf5f0a38969",
+    "scripts/retrieval-embedding.py": "e007cc36028278891bad6603e83135d497616e125609c9759e02fee87ccfdf13",
+    "scripts/semantic-memory-data.ts": "e2a9a24a2bcf6b6685c06c8ebb34492048b0ce20c908a7d87c9bbdaa6a736684",
+    "scripts/semantic-memory-evaluation.ts": "d6410d2f236daeee65f7bf94fe9a49a1ef72c6d21cd68233ec59364320a2e6cd",
+    "scripts/semantic-memory-evaluate.ts": "d9c97274650d7c9c8b4d7b7642759d4202a73999a537e500030cec97d1be51b7",
+    "scripts/semantic-memory-embedding.py": "a4b8e1ea1ccfdec13e6d2947fd1ab17a7566609894cea007560de4644cf9d5da",
+    "tsconfig.json": "2c4efdd4adb971e927a20431eec1d6b71aeb82e4d9a1e3744db3433209afa585",
+    "compat/retrieval-embedding/requirements-win-py310.lock": "59f239c5f1946157b440ea6e6b274b7e67910373cc8015ac16c1017f59514054"
+  }
+}

@@ -1,0 +1,1187 @@
+{
+  "schema": 1,
+  "created": "2026-11-16",
+  "boundary": "Author-visible public synthetic task/query/label corpus. Family IDs are disjoint; programming primitives can overlap. Python controls validate authored contracts, not natural-language entailment, Store source qualification or Agent task benefit.",
+  "intentAnchors": {
+    "repair": "Repair incorrect program behavior so execution satisfies its contract and tests.",
+    "nonRepair": "Write documentation, explain existing code, or change visual appearance without changing program behavior."
+  },
+  "families": [
+    {
+      "id": "atomic_batch",
+      "split": "development",
+      "title": "Atomic batch map updates",
+      "strategy": "Restore the entire mapping when any batch update fails, while preserving object identity.",
+      "facts": [
+        {
+          "text": "A failed batch restores every prior mapping value.",
+          "facet": "restore"
+        },
+        {
+          "text": "The original mapping object and unrelated keys survive failure.",
+          "facet": "identity"
+        },
+        {
+          "text": "Rollback returned the batch mapping to its initial values.",
+          "facet": "restore"
+        },
+        {
+          "text": "The fixture documentation contains the heading atomic batch rollback.",
+          "facet": null
+        },
+        {
+          "text": "The example identifier uses the word batch in a label.",
+          "facet": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "atomic_batch-q0",
+          "text": "Repair atomic batch updates: failure must restore the same mapping and unrelated keys.",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            2
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "atomic_batch-q1",
+          "text": "修复批量写入失败后留下半成品的问题，恢复原字典内容并保留对象身份。",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            2
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "atomic_batch-q2",
+          "text": "Explain the atomic batch rollback algorithm in the README; leave behavior unchanged.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "atomic_batch-q3",
+          "text": "Change batch updates to retain successfully applied entries after a failure, rather than rolling them back.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "atomic_batch-q4",
+          "text": "只修改原子批量回滚的说明文档，不改变执行行为。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "atomic_batch-q5",
+          "text": "改为批处理失败后保留已经完成的更新，不要回滚。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(state, updates, fail_at=-1):\n    for i, (key, value) in enumerate(updates):\n        state[key] = value\n        if i == fail_at: raise ValueError(\"failed\")\n    return state\n",
+        "reference": "def solve(state, updates, fail_at=-1):\n    before = dict(state)\n    try:\n        for i, (key, value) in enumerate(updates):\n            state[key] = value\n            if i == fail_at: raise ValueError(\"failed\")\n    except ValueError:\n        state.clear()\n        state.update(before)\n        raise\n    return state\n",
+        "counterexample": "def solve(state, updates, fail_at=-1):\n    before = dict(state)\n    for i, (key, value) in enumerate(updates):\n        state[key] = value\n        if i == fail_at:\n            state = before\n            raise ValueError(\"failed\")\n    return state\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_failure():\n    state={\"old\":7,\"keep\":9}; alias=state\n    with pytest.raises(ValueError): solve(state,[(\"old\",8),(\"new\",1)],1)\n    assert state == {\"old\":7,\"keep\":9} and state is alias\ndef test_success():\n    state={}; assert solve(state,[(\"x\",2)]) is state and state == {\"x\":2}\n"
+      }
+    },
+    {
+      "id": "memoized_receipt",
+      "split": "development",
+      "title": "Idempotent receipt reuse",
+      "strategy": "For an existing key, return the stored receipt object without calling the factory again.",
+      "facts": [
+        {
+          "text": "The receipt factory runs once for one key.",
+          "facet": "calls"
+        },
+        {
+          "text": "A duplicate key reuses the same original receipt.",
+          "facet": "identity"
+        },
+        {
+          "text": "The fixture README mentions the phrase duplicate receipt.",
+          "facet": null
+        },
+        {
+          "text": "The example receipt label is a string.",
+          "facet": null
+        },
+        {
+          "text": "Repeated keys return the identical stored receipt object.",
+          "facet": "identity"
+        }
+      ],
+      "queries": [
+        {
+          "id": "memoized_receipt-q0",
+          "text": "Fix duplicate receipt requests to reuse the stored object and avoid another factory call.",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "memoized_receipt-q1",
+          "text": "同一请求键重复出现时直接返回已保存回执，不要再次调用生成函数。",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "memoized_receipt-q2",
+          "text": "Rewrite the documentation explaining duplicate receipt keys without changing execution.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "memoized_receipt-q3",
+          "text": "Keep a new independent receipt for every request even when the key repeats.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "memoized_receipt-q4",
+          "text": "为重复回执请求补充说明文档，保持原来的行为。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "memoized_receipt-q5",
+          "text": "同一个键每次请求都生成全新的独立回执，不复用旧回执。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(records, key, factory):\n    value=factory(); records[key]=value\n    return value\n",
+        "reference": "def solve(records, key, factory):\n    if key in records: return records[key]\n    value=factory(); records[key]=value\n    return value\n",
+        "counterexample": "def solve(records, key, factory):\n    if key in records: return dict(records[key])\n    value=factory(); records[key]=value\n    return value\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_duplicate():\n    records={}; calls=[]\n    def create():\n        calls.append(1); return {\"n\":len(calls)}\n    first=solve(records,\"a\",create)\n    assert solve(records,\"a\",create) is first and len(calls)==1\ndef test_keys():\n    records={}; a=solve(records,\"a\",lambda:{\"x\":1}); b=solve(records,\"b\",lambda:{\"x\":2})\n    assert a is not b and len(records)==2\n"
+      }
+    },
+    {
+      "id": "stable_order",
+      "split": "development",
+      "title": "Stable ascending row order",
+      "strategy": "Sort by numeric priority ascending and preserve original relative order when priorities are equal.",
+      "facts": [
+        {
+          "text": "The stable sort preserved tied rows in input order.",
+          "facet": "ties"
+        },
+        {
+          "text": "The example heading says stable row sorting.",
+          "facet": null
+        },
+        {
+          "text": "The sample row labels are ordinary strings.",
+          "facet": null
+        },
+        {
+          "text": "Equal-priority rows retain their original relative order.",
+          "facet": "ties"
+        },
+        {
+          "text": "Numeric priorities are sorted in ascending order.",
+          "facet": "ascending"
+        }
+      ],
+      "queries": [
+        {
+          "id": "stable_order-q0",
+          "text": "Repair ascending numeric row sorting and preserve the input order of tied priorities.",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            3,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "stable_order-q1",
+          "text": "按数字优先级升序排列，优先级相同的行维持输入顺序。",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            3,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "stable_order-q2",
+          "text": "Write an explanation of stable row sorting for a documentation page.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "stable_order-q3",
+          "text": "Sort priorities descending and deliberately reverse the order of equal-priority rows.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "stable_order-q4",
+          "text": "编写稳定排序的教程，不修改排序代码。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "stable_order-q5",
+          "text": "按优先级降序排列，并故意反转相同优先级的行顺序。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(rows):\n    return sorted(rows,key=lambda x:(x[1],x[0]))\n",
+        "reference": "def solve(rows):\n    return sorted(rows,key=lambda x:x[1])\n",
+        "counterexample": "def solve(rows):\n    return sorted(rows,key=lambda x:x[1],reverse=True)\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_ties():\n    assert solve([(\"z\",2),(\"b\",1),(\"a\",1)]) == [(\"b\",1),(\"a\",1),(\"z\",2)]\ndef test_numeric():\n    assert solve([(\"a\",10),(\"b\",-1),(\"c\",2)]) == [(\"b\",-1),(\"c\",2),(\"a\",10)]\n"
+      }
+    },
+    {
+      "id": "strict_object",
+      "split": "development",
+      "title": "Strict object configuration",
+      "strategy": "Require a dictionary configuration; reject null and other scalar or collection types instead of substituting defaults.",
+      "facts": [
+        {
+          "text": "The README names the object configuration validator.",
+          "facet": null
+        },
+        {
+          "text": "The sample configuration has a display label.",
+          "facet": null
+        },
+        {
+          "text": "Null configuration raises ValueError.",
+          "facet": "null"
+        },
+        {
+          "text": "Valid dictionary configuration is returned unchanged.",
+          "facet": "identity"
+        },
+        {
+          "text": "The validator rejected a null configuration.",
+          "facet": "null"
+        }
+      ],
+      "queries": [
+        {
+          "id": "strict_object-q0",
+          "text": "Fix strict object configuration validation: reject null and return valid dictionaries unchanged.",
+          "applicable": true,
+          "relevantFacts": [
+            2,
+            3,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "strict_object-q1",
+          "text": "配置必须是字典，传入空值或其他类型时报错，合法字典原样返回。",
+          "applicable": true,
+          "relevantFacts": [
+            2,
+            3,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "strict_object-q2",
+          "text": "Document the strict object configuration validator; do not alter validation.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "strict_object-q3",
+          "text": "Treat null configuration as an empty dictionary and accept it as a valid default.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "strict_object-q4",
+          "text": "为对象配置校验器写说明，不改变校验行为。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "strict_object-q5",
+          "text": "把空值配置当作空字典接受，不要拒绝。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(value):\n    return value or {}\n",
+        "reference": "def solve(value):\n    if not isinstance(value,dict): raise ValueError(\"object required\")\n    return value\n",
+        "counterexample": "def solve(value):\n    if not isinstance(value,dict): raise ValueError(\"object required\")\n    return dict(value)\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_invalid():\n    for value in (None,0,\"x\",[]):\n        with pytest.raises(ValueError): solve(value)\ndef test_identity():\n    value={}; assert solve(value) is value\n"
+      }
+    },
+    {
+      "id": "relative_path",
+      "split": "development",
+      "title": "Safe POSIX slash-relative path components",
+      "strategy": "For POSIX slash-separated paths, reject absolute paths and exact parent-directory components; permit dots inside ordinary file names.",
+      "facts": [
+        {
+          "text": "The example path is shown in a code block.",
+          "facet": null
+        },
+        {
+          "text": "A parent-directory component anywhere in the path is rejected.",
+          "facet": "traversal"
+        },
+        {
+          "text": "File names containing two dots remain valid ordinary components.",
+          "facet": "filename"
+        },
+        {
+          "text": "The path check rejected a nested parent-directory escape.",
+          "facet": "traversal"
+        },
+        {
+          "text": "The fixture documentation discusses relative paths.",
+          "facet": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "relative_path-q0",
+          "text": "Repair the POSIX slash-relative path check to reject nested parent traversal but allow file..txt.",
+          "applicable": true,
+          "relevantFacts": [
+            1,
+            2,
+            3
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "relative_path-q1",
+          "text": "对POSIX斜杠分隔的相对路径，拒绝任意位置的上级目录分量，但允许文件名包含连续的点。",
+          "applicable": true,
+          "relevantFacts": [
+            1,
+            2,
+            3
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "relative_path-q2",
+          "text": "Improve the layout of documentation about safe relative paths.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "relative_path-q3",
+          "text": "Resolve parent-directory components freely and allow paths outside the repository.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "relative_path-q4",
+          "text": "改进POSIX斜杠相对路径文档的排版，不改变路径校验。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "relative_path-q5",
+          "text": "允许上级目录分量，路径可以指向仓库外部。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(path):\n    if path.startswith(\"/\") or path.startswith(\"..\"): raise ValueError(\"unsafe\")\n    return path\n",
+        "reference": "def solve(path):\n    if not path or path.startswith(\"/\") or any(p in (\"\",\".\",\"..\") for p in path.split(\"/\")): raise ValueError(\"unsafe\")\n    return path\n",
+        "counterexample": "def solve(path):\n    if not path or path.startswith(\"/\") or \"..\" in path: raise ValueError(\"unsafe\")\n    return path\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_escape():\n    for path in (\"a/../x\",\"/x\",\"a//b\",\".\"):\n        with pytest.raises(ValueError): solve(path)\ndef test_filename():\n    assert solve(\"a/file..txt\") == \"a/file..txt\"\n"
+      }
+    },
+    {
+      "id": "cancelled_retry",
+      "split": "development",
+      "title": "Cancellation between retry attempts",
+      "strategy": "Check cancellation before every attempt, preserve the attempt bound, and do not start another action after cancellation.",
+      "facts": [
+        {
+          "text": "Cancellation is checked before each retry attempt.",
+          "facet": "cancel"
+        },
+        {
+          "text": "An always-failing action is called at most the configured number of attempts.",
+          "facet": "bound"
+        },
+        {
+          "text": "A canceled retry did not start another action.",
+          "facet": "cancel"
+        },
+        {
+          "text": "The fixture guide includes a section named retry cancellation.",
+          "facet": null
+        },
+        {
+          "text": "A sample action is identified by a string name.",
+          "facet": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "cancelled_retry-q0",
+          "text": "Fix retry cancellation after a failed attempt and enforce the configured maximum number of attempts.",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            2
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "cancelled_retry-q1",
+          "text": "每次重试前检查取消标记，首次失败后取消就不要再调用，同时保留次数上限。",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            2
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "cancelled_retry-q2",
+          "text": "Explain retry cancellation and attempt limits in the user guide.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "cancelled_retry-q3",
+          "text": "Ignore cancellation until all retry attempts finish, then report cancellation.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "cancelled_retry-q4",
+          "text": "说明取消与重试次数限制，不改变程序行为。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "cancelled_retry-q5",
+          "text": "忽略取消标记，等所有重试尝试结束后再报告取消。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(action, attempts, cancelled):\n    for _ in range(attempts):\n        try: return action()\n        except ValueError: pass\n    raise ValueError(\"exhausted\")\n",
+        "reference": "def solve(action, attempts, cancelled):\n    for _ in range(attempts):\n        if cancelled(): raise RuntimeError(\"cancelled\")\n        try: return action()\n        except ValueError: pass\n    raise ValueError(\"exhausted\")\n",
+        "counterexample": "def solve(action, attempts, cancelled):\n    if cancelled(): raise RuntimeError(\"cancelled\")\n    for _ in range(attempts):\n        try: return action()\n        except ValueError: pass\n    raise ValueError(\"exhausted\")\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_cancel_between():\n    calls=[]; stopped=[False]\n    def action():\n        calls.append(1); stopped[0]=True; raise ValueError(\"failed\")\n    with pytest.raises(RuntimeError): solve(action,3,lambda:stopped[0])\n    assert len(calls)==1\ndef test_bound():\n    calls=[]\n    def fail():\n        calls.append(1); raise ValueError(\"failed\")\n    with pytest.raises(ValueError): solve(fail,2,lambda:False)\n    assert len(calls)==2\n"
+      }
+    },
+    {
+      "id": "cache_presence",
+      "split": "holdout",
+      "title": "Cache presence versus false values",
+      "strategy": "Distinguish a missing cache entry from a stored false-like value by checking key membership.",
+      "facts": [
+        {
+          "text": "A missing key invokes the loader and stores its result.",
+          "facet": "missing"
+        },
+        {
+          "text": "The cache reused an existing zero value.",
+          "facet": "falsy"
+        },
+        {
+          "text": "The cache example documentation contains a cache heading.",
+          "facet": null
+        },
+        {
+          "text": "The sample cache label is printable text.",
+          "facet": null
+        },
+        {
+          "text": "Cached zero, false and empty text are returned without reloading.",
+          "facet": "falsy"
+        }
+      ],
+      "queries": [
+        {
+          "id": "cache_presence-q0",
+          "text": "Repair cached zero and false values being treated as misses; load only when the key is absent.",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "cache_presence-q1",
+          "text": "缓存里已有零、假值或空文本时直接返回，只有键不存在才加载。",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "cache_presence-q2",
+          "text": "Add an explanation of cache misses and false-like values to the README.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "cache_presence-q3",
+          "text": "Reload on every false-like cache value even when the key already exists.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "cache_presence-q4",
+          "text": "解释缓存未命中与假值，不更改缓存程序。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "cache_presence-q5",
+          "text": "缓存值为零、假或空文本时，即使键存在也重新加载。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(cache,key,load):\n    if not cache.get(key): cache[key]=load()\n    return cache[key]\n",
+        "reference": "def solve(cache,key,load):\n    if key not in cache: cache[key]=load()\n    return cache[key]\n",
+        "counterexample": "def solve(cache,key,load):\n    if key not in cache: return load()\n    return cache[key]\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_false_values():\n    for value in (0,False,\"\"):\n        calls=[]; cache={\"x\":value}\n        assert solve(cache,\"x\",lambda:calls.append(1)) is value and calls==[]\ndef test_missing():\n    cache={}; value=object(); assert solve(cache,\"x\",lambda:value) is value and cache[\"x\"] is value\n"
+      }
+    },
+    {
+      "id": "nullable_deadline",
+      "split": "holdout",
+      "title": "Missing null and zero deadline",
+      "strategy": "Use the default only when deadline is missing; preserve explicit null and zero, and reject negative deadlines.",
+      "facts": [
+        {
+          "text": "Absent deadline received the default rather than replacing explicit values.",
+          "facet": "missing"
+        },
+        {
+          "text": "The documentation has a deadline configuration heading.",
+          "facet": null
+        },
+        {
+          "text": "The deadline example displays a field name.",
+          "facet": null
+        },
+        {
+          "text": "A missing deadline uses the configured default.",
+          "facet": "missing"
+        },
+        {
+          "text": "An explicit null or zero deadline is preserved.",
+          "facet": "explicit"
+        }
+      ],
+      "queries": [
+        {
+          "id": "nullable_deadline-q0",
+          "text": "Fix deadline defaults so missing, null and zero remain distinct and negative values are rejected.",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            3,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "nullable_deadline-q1",
+          "text": "截止时间未填写时用默认值，显式空值和零保持原意，负数必须报错。",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            3,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "nullable_deadline-q2",
+          "text": "Explain nullable deadline defaults without modifying program behavior.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "nullable_deadline-q3",
+          "text": "Replace both missing and explicit null deadlines with the default value.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "nullable_deadline-q4",
+          "text": "补充可空截止时间的说明文档，不修改执行行为。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "nullable_deadline-q5",
+          "text": "缺省和显式空值都使用默认截止时间，不保留显式空值。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(config):\n    return config.get(\"deadline\") or 60\n",
+        "reference": "def solve(config):\n    value=config.get(\"deadline\",60)\n    if value is not None and value<0: raise ValueError(\"negative\")\n    return value\n",
+        "counterexample": "def solve(config):\n    value=config.get(\"deadline\")\n    if value is not None and value<0: raise ValueError(\"negative\")\n    return value\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_distinct():\n    assert solve({})==60 and solve({\"deadline\":None}) is None and solve({\"deadline\":0})==0\ndef test_negative():\n    with pytest.raises(ValueError): solve({\"deadline\":-1})\n"
+      }
+    },
+    {
+      "id": "round_robin",
+      "split": "holdout",
+      "title": "Round robin enabled workers",
+      "strategy": "Start at the supplied cursor, skip disabled workers, and advance the cursor after the selected worker.",
+      "facts": [
+        {
+          "text": "The example guide has a round robin worker heading.",
+          "facet": null
+        },
+        {
+          "text": "Worker names appear as labels in the example.",
+          "facet": null
+        },
+        {
+          "text": "Selection starts from the supplied cursor rather than always from zero.",
+          "facet": "cursor"
+        },
+        {
+          "text": "Disabled workers are skipped and the next cursor follows the selected worker.",
+          "facet": "advance"
+        },
+        {
+          "text": "The worker picker respected the current round robin position.",
+          "facet": "cursor"
+        }
+      ],
+      "queries": [
+        {
+          "id": "round_robin-q0",
+          "text": "Repair round robin worker selection to respect the cursor, skip disabled workers and advance fairly.",
+          "applicable": true,
+          "relevantFacts": [
+            2,
+            3,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "round_robin-q1",
+          "text": "从当前游标轮流选择可用工作者，跳过禁用项，选完后推进到下一位置。",
+          "applicable": true,
+          "relevantFacts": [
+            2,
+            3,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "round_robin-q2",
+          "text": "Draw a diagram explaining round robin workers without changing the selection algorithm.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "round_robin-q3",
+          "text": "Always choose the first enabled worker and ignore the supplied cursor.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "round_robin-q4",
+          "text": "画图说明轮询工作者调度，不改变调度算法。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "round_robin-q5",
+          "text": "忽略传入游标，每次都选择第一个可用工作者。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(items,cursor):\n    for i,(name,enabled) in enumerate(items):\n        if enabled: return name,(i+1)%len(items)\n    return None,cursor\n",
+        "reference": "def solve(items,cursor):\n    for step in range(len(items)):\n        i=(cursor+step)%len(items)\n        if items[i][1]: return items[i][0],(i+1)%len(items)\n    return None,cursor\n",
+        "counterexample": "def solve(items,cursor):\n    for step in range(len(items)):\n        i=(cursor+step)%len(items)\n        if items[i][1]: return items[i][0],i\n    return None,cursor\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_cycle():\n    items=[(\"a\",True),(\"b\",False),(\"c\",True)]\n    assert solve(items,1)==(\"c\",0) and solve(items,0)==(\"a\",1)\ndef test_disabled():\n    assert solve([(\"a\",False)],0)==(None,0) and solve([],0)==(None,0)\n"
+      }
+    },
+    {
+      "id": "outbox_ack",
+      "split": "holdout",
+      "title": "Outbox acknowledgement after delivery",
+      "strategy": "Record delivery acknowledgement only after send succeeds; retry failures and suppress repeats after success.",
+      "facts": [
+        {
+          "text": "A sample message uses a string identifier.",
+          "facet": null
+        },
+        {
+          "text": "Failed delivery leaves no acknowledgement so it can be retried.",
+          "facet": "failure"
+        },
+        {
+          "text": "Successful acknowledged delivery is not sent twice.",
+          "facet": "success"
+        },
+        {
+          "text": "An unsuccessful send remained eligible for another attempt.",
+          "facet": "failure"
+        },
+        {
+          "text": "The README explains outbox delivery acknowledgements.",
+          "facet": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "outbox_ack-q0",
+          "text": "Fix outbox acknowledgement ordering: failed sends remain retryable and successful ones are not repeated.",
+          "applicable": true,
+          "relevantFacts": [
+            1,
+            2,
+            3
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "outbox_ack-q1",
+          "text": "发送成功后才登记回执，失败允许重试，已经成功的消息不能再次发送。",
+          "applicable": true,
+          "relevantFacts": [
+            1,
+            2,
+            3
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "outbox_ack-q2",
+          "text": "Write an explanation of outbox acknowledgements and retries without changing delivery behavior.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "outbox_ack-q3",
+          "text": "Record an acknowledgement before attempting delivery and suppress retries even when sending fails.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "outbox_ack-q4",
+          "text": "为发件箱回执与重试写说明，不修改发送行为。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "outbox_ack-q5",
+          "text": "在发送之前记录成功回执，即使发送失败也不允许重试。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(done,key,send):\n    if key in done: return False\n    done.add(key); send(); return True\n",
+        "reference": "def solve(done,key,send):\n    if key in done: return False\n    send(); done.add(key); return True\n",
+        "counterexample": "def solve(done,key,send):\n    send(); done.add(key); return True\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_failure_retry():\n    done=set()\n    def fail(): raise ValueError(\"send failed\")\n    with pytest.raises(ValueError): solve(done,\"x\",fail)\n    assert done==set() and solve(done,\"x\",lambda:None) is True\ndef test_once():\n    done=set(); calls=[]\n    assert solve(done,\"x\",lambda:calls.append(1)) is True\n    assert solve(done,\"x\",lambda:calls.append(1)) is False and len(calls)==1\n"
+      }
+    },
+    {
+      "id": "json_lines",
+      "split": "holdout",
+      "title": "JSON lines across stream chunks",
+      "strategy": "Accumulate incomplete lines across chunks, ignore blank lines, and parse a final complete JSON value without a trailing newline.",
+      "facts": [
+        {
+          "text": "Partial JSON lines are buffered until the line is complete.",
+          "facet": "chunks"
+        },
+        {
+          "text": "A final JSON value without a newline is parsed and blank lines are ignored.",
+          "facet": "tail"
+        },
+        {
+          "text": "Fragmented input chunks still produced complete JSON line values.",
+          "facet": "chunks"
+        },
+        {
+          "text": "The guide documents JSON line stream buffering.",
+          "facet": null
+        },
+        {
+          "text": "The example stream has a display name.",
+          "facet": null
+        }
+      ],
+      "queries": [
+        {
+          "id": "json_lines-q0",
+          "text": "Repair JSON line streaming across chunk boundaries and keep the final value when the newline is absent.",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            2
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "json_lines-q1",
+          "text": "把跨分块的JSON行拼完整再解析，忽略空行，最后一条没有换行符也要保留。",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            2
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "json_lines-q2",
+          "text": "Describe JSON line chunk buffering in the developer guide, with no parser changes.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "json_lines-q3",
+          "text": "Parse every transport chunk independently as a complete JSON document.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "json_lines-q4",
+          "text": "解释JSON行的分块缓冲，不改解析行为。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "json_lines-q5",
+          "text": "每个传输分块单独当作一个完整JSON文档解析。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "import json\ndef solve(chunks):\n    return [json.loads(chunk) for chunk in chunks if chunk.strip()]\n",
+        "reference": "import json\ndef solve(chunks):\n    return [json.loads(line) for line in \"\".join(chunks).splitlines() if line.strip()]\n",
+        "counterexample": "import json\ndef solve(chunks):\n    return [json.loads(line) for line in \"\".join(chunks).split(\"\\n\")[:-1] if line.strip()]\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_chunks():\n    assert solve(['{\"n\":','1}\\n\\n{\"n\":2}\\n']) == [{\"n\":1},{\"n\":2}]\ndef test_tail():\n    assert solve(['{\"n\":3}']) == [{\"n\":3}]\n"
+      }
+    },
+    {
+      "id": "numeric_version",
+      "split": "holdout",
+      "title": "Numeric version component comparison",
+      "strategy": "Compare version components numerically and pad missing trailing components with zero.",
+      "facts": [
+        {
+          "text": "Missing trailing zero components compare equal.",
+          "facet": "padding"
+        },
+        {
+          "text": "Numeric comparison ranked version 1.10 above version 1.2.",
+          "facet": "numeric"
+        },
+        {
+          "text": "The fixture documentation explains version comparison.",
+          "facet": null
+        },
+        {
+          "text": "Version strings appear as labels in the example.",
+          "facet": null
+        },
+        {
+          "text": "Version component ten sorts after component two numerically.",
+          "facet": "numeric"
+        }
+      ],
+      "queries": [
+        {
+          "id": "numeric_version-q0",
+          "text": "Repair numeric version comparison so 1.10 exceeds 1.2 and trailing zero components compare equal.",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "en",
+          "kind": "repair"
+        },
+        {
+          "id": "numeric_version-q1",
+          "text": "版本号分段按整数比较，一点十应大于一点二，末尾补零的版本视为相等。",
+          "applicable": true,
+          "relevantFacts": [
+            0,
+            1,
+            4
+          ],
+          "reason": "Behavior repair matching the documented contract.",
+          "language": "zh",
+          "kind": "repair"
+        },
+        {
+          "id": "numeric_version-q2",
+          "text": "Improve the documentation layout explaining numeric version comparison.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair.",
+          "language": "en",
+          "kind": "documentation"
+        },
+        {
+          "id": "numeric_version-q3",
+          "text": "Compare version strings lexicographically and treat missing trailing components as strictly smaller.",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy.",
+          "language": "en",
+          "kind": "contradiction"
+        },
+        {
+          "id": "numeric_version-q4",
+          "text": "改进数字版本比较的文档排版，不改比较规则。",
+          "language": "zh",
+          "kind": "documentation",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Documentation or presentation request, not behavior repair."
+        },
+        {
+          "id": "numeric_version-q5",
+          "text": "版本字符串按字典序比较，缺少末尾分段的一方严格更小。",
+          "language": "zh",
+          "kind": "contradiction",
+          "applicable": false,
+          "relevantFacts": [],
+          "reason": "Requested behavior contradicts the source strategy."
+        }
+      ],
+      "contract": {
+        "original": "def solve(a,b):\n    return (a>b)-(a<b)\n",
+        "reference": "def solve(a,b):\n    x=[int(v) for v in a.split(\".\")]; y=[int(v) for v in b.split(\".\")]\n    n=max(len(x),len(y)); x += [0]*(n-len(x)); y += [0]*(n-len(y))\n    return (x>y)-(x<y)\n",
+        "counterexample": "def solve(a,b):\n    x=tuple(int(v) for v in a.split(\".\")); y=tuple(int(v) for v in b.split(\".\"))\n    return (x>y)-(x<y)\n",
+        "acceptance": "import pytest\nfrom task import solve\ndef test_numeric():\n    assert solve(\"1.10\",\"1.2\")==1 and solve(\"2.0\",\"10.0\")==-1\ndef test_padding():\n    assert solve(\"1.2\",\"1.2.0\")==0 and solve(\"1.0.0\",\"1\")==0\n"
+      }
+    }
+  ]
+}
