@@ -22,9 +22,13 @@ export function bindRepairTools(ctx: Context, agent: RepairAgent) {
     output: { schema: { type: 'json' }, render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }] },
     async execute(args, execution) {
       if (execution.signal.aborted) { agent.cancel(); return { ok: false, reason: 'cancelled' }; }
-      const result = await agent.dispatch(String(execution.callId), tool.name, args);
-      // History is SDK-owned. This bounded projection does not claim to limit the entire history.
-      return JSON.parse(JSON.stringify({ result, context: agent.context() }));
+      const cancelled = () => agent.cancel();
+      execution.signal.addEventListener('abort', cancelled, { once: true });
+      try {
+        const result = await agent.dispatch(String(execution.callId), tool.name, args);
+        // History is SDK-owned. This bounded projection does not claim to limit the entire history.
+        return JSON.parse(JSON.stringify({ result, context: agent.context() }));
+      } finally { execution.signal.removeEventListener('abort', cancelled); }
     },
   }));
 }
