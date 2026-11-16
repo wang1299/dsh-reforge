@@ -1,5 +1,7 @@
 # DSH-Reforge 架构总纲 v0.2
 
+2026-11-16开发分支T072：[ADR064](decisions/064-semantic-memory-admission.md)定义本地语义准入与意图差拒选的只读单经验规划器，使用绑定模型/文本/版本的EmbeddingPort，原事实白名单交上下文编译器。默认配置/宿主、v9、预算与授权不变。完整合成结果及7次误供、2个丢失正例见[报告](evaluation/semantic-memory-v1.md)，尚不支持默认上线或Agent收益结论。
+
 2026-11-15开发分支T071：[ADR063](decisions/063-agent-context-compiler.md)定义可选Agent经验上下文编译，接在原来源/条件/owner检查之后、Application写入之前。完整策略/条件/身份不可截断；事实与引用原子选择，必需包超UTF-8预算则拒绝。自动和owner路径共用入口，旧配置及显式工具保持旧行为；只约束经验notice，不约束整个模型请求。SQLite v9不变；[使用范围](agent-context.md)。尚未合并或发行。
 
 2026-11-06：离线适用条件/三态拒选见[ADR051](decisions/051-evidence-bound-applicability.md)与[完整结果](evaluation/applicability-v1.md)。任务事实经过来源身份/修订/摘要/格式校验，缺失或冲突保守返回信息不足。额外结构化契约不代表自然语言理解或真实运行事实，不替代既有来源检查；不接默认DSH/Store或修改旧数据。
