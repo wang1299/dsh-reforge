@@ -145,7 +145,7 @@ test('acceptance identity and expected cases are copied from the host at constru
 });
 
 test('an already passing baseline is not evidence that a repair reproduced the failure', async () => {
-  const f = fixture(); const originalCheck = f.workspace.check;
+  const f = fixture(); const originalCheck = f.workspace.check.bind(f.workspace);
   f.workspace.check = async () => ({ ...await originalCheck('reproduce'), exitCode: 0,
     cases: [{ id: 'test_edge', status: 'passed' }, { id: 'test_normal', status: 'passed' }] });
   await f.send('repair_plan', { revision: 0, steps }); await f.send('repair_read', { revision: 1, stepId: 'read', path: 'target.py' });
