@@ -1,0 +1,11 @@
+# 语义记忆规划：首次评分前的方法
+
+2026-11-16 / T072，[ADR064](../decisions/064-semantic-memory-admission.md)。数据为test/fixtures/semantic-memory-v1.json，12族开发/评测各6族、每族2正2负，共48查询；作者可见，非盲测。每族独立可运行Python契约有原始、参考、错误控制三种实现；控制通过不代表模型解题或自然语言策略经验证。
+
+原源顺序与原MMR使用T071编译器；候选臂按文档余弦过滤、事实余弦白名单后用源顺序打包，另一臂额外检查固定行为修复/文档外观意图锚点差。全部相同输入及mandatory+1000字节预算。源顺序/MMR保留原词面过滤；候选允许经语义准入但无词面重叠的事实，这是方法差异，不能冒充其他条件完全不变。
+
+文档为title换行strategy，事实仅原observedFact，query仅原任务文字。意图锚点固定为英文完整句：`Repair incorrect program behavior so execution satisfies its contract and tests.` 与 `Write documentation, explain existing code, or change visual appearance without changing program behavior.`。所有方法都不读取参考代码、标签或外部pytest答案作为模型特征。没有经验库检索排序；这里仅判断已选的一条经验是否提供及其中哪些事实提供。
+
+开发网格、准入正例下限及择优顺序完全按ADR064。每个候选分别校准，无可行配置必须保存网格并在评测前停止。开发校准后提交参数、全部开发结果、向量与方法摘要，干净树才允许评测；不按评测改参数。固定模型/128token拒绝截断/round7/命名空间与文字摘要绑定沿用T056，权重与运行依赖不提交。
+
+报告每臂提供数、正例正确提供/全部正例、负例误供/全部查询及负例分母、正例漏选、提供精确率、正例相关facet覆盖（同query按facet去重）、正例被选无关事实、预算违规和已选事实引用绑定错误。逐条提供索引/拒选理由、分数、字节与全部网格保留。公开合成事实引用只验证结构绑定；来源资格和真实Agent成功/成本均另验。计时区分本地神经向量导出与快照评分重放，不能当端到端模型时延。
