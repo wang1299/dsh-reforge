@@ -9,6 +9,8 @@ import { configSchema, loadConfig, type Config } from './config.js';
 import { digest, hashSchema, relativePath } from './domain.js';
 import { snapshot } from './repository.js';
 import { supportedDshVersions } from './dsh-adapter-policy.js';
+import { memoryReviewOptions, reviewMemory } from './memory-review.js';
+import { memoryReviewReader } from './memory-review-store.js';
 
 class OwnerOperationError extends Error {
   constructor(readonly code: string) { super(code); }
@@ -62,7 +64,7 @@ export async function setupOwner(input: { repo: string; output: string; python?:
 }
 
 const counts = ['experiences', 'applications', 'feedback', 'extraction_grants', 'extraction_jobs'] as const;
-function inspectDatabase(data: string, repoId: string, stopped = false): { schema: number; counts: Record<string, number> } {
+function withInspectedDatabase<T>(data: string, repoId: string, stopped: boolean, read: (db: DatabaseSync, schema: number) => T): T {
   noLinks(data); const file = join(data, 'evolve.sqlite');
   if (!lstatSync(file).isFile()) fail('database_not_a_regular_file');
   for (const suffix of ['-wal', '-shm', '-journal']) {
@@ -79,6 +81,7 @@ function inspectDatabase(data: string, repoId: string, stopped = false): { schem
   const db = new DatabaseSync(file, { readOnly: true });
   try {
     db.exec('PRAGMA query_only=ON; PRAGMA busy_timeout=1000;');
+    db.exec('BEGIN');
     const schema = Number(db.prepare('PRAGMA user_version').get()!.user_version);
     if (schema !== 9) fail('unsupported_database_schema');
     if (db.prepare('PRAGMA quick_check').get()!.quick_check !== 'ok' || db.prepare('PRAGMA foreign_key_check').all().length) fail('database_integrity_failed');
@@ -92,8 +95,19 @@ function inspectDatabase(data: string, repoId: string, stopped = false): { schem
     if (stopped && (db.prepare("SELECT count(*) AS n FROM learning_jobs WHERE state='running'").get()!.n
       || db.prepare("SELECT count(*) AS n FROM extraction_jobs WHERE state='running'").get()!.n
       || db.prepare("SELECT count(*) AS n FROM automatic_segments WHERE state IN ('capturing','open','qualifying')").get()!.n)) fail('active_work_must_be_resolved_before_backup');
-    return { schema, counts: Object.fromEntries(counts.map(table => [table, Number(db.prepare('SELECT count(*) AS n FROM ' + table).get()!.n)])) };
+    return read(db, schema);
   } finally { db.close(); }
+}
+
+function inspectDatabase(data: string, repoId: string, stopped = false): { schema: number; counts: Record<string, number> } {
+  return withInspectedDatabase(data, repoId, stopped, (db, schema) => ({ schema,
+    counts: Object.fromEntries(counts.map(table => [table, Number(db.prepare('SELECT count(*) AS n FROM ' + table).get()!.n)])) }));
+}
+
+export function reviewOwnerMemory(path: string, isStopped: boolean, input: z.input<typeof memoryReviewOptions> = {}) {
+  if (!isStopped) fail('explicitly_pass_stopped_after_stopping_DSH_and_background_jobs');
+  const options = memoryReviewOptions.parse(input); const info = configured(path);
+  return withInspectedDatabase(info.data, info.repoId, true, db => reviewMemory(memoryReviewReader(db), info.root, options));
 }
 
 export function doctorOwner(path: string): {
@@ -202,7 +216,8 @@ export async function restoreOwner(input: string, outputInput: string, repositor
 
 export async function ownerCommand(command: string, args: string[]): Promise<void> {
   const choices: Record<string, string[]> = { setup: ['--repo', '--output', '--python', '--data-dir'], doctor: ['--config'],
-    backup: ['--config', '--output', '--stopped'], restore: ['--input', '--output', '--repo', '--stopped'] };
+    backup: ['--config', '--output', '--stopped'], restore: ['--input', '--output', '--repo', '--stopped'],
+    'memory-review': ['--config', '--stopped', '--after', '--limit'] };
   const options = new Map<string, string>();
   for (let i = 0; i < args.length; i++) {
     const key = args[i]!;
@@ -217,6 +232,12 @@ export async function ownerCommand(command: string, args: string[]): Promise<voi
   } else if (command === 'doctor') {
     const report = doctorOwner(required('--config')); console.log(JSON.stringify(report, null, 2));
     if (report.checks.some(check => check.status === 'error')) process.exitCode = 1;
+  } else if (command === 'memory-review') {
+    const limit = options.get('--limit');
+    if (limit !== undefined && !/^(?:[1-9]|[1-4][0-9]|50)$/.test(limit)) fail('invalid_memory_review_limit');
+    console.log(JSON.stringify(reviewOwnerMemory(required('--config'), options.has('--stopped'), {
+      ...(limit !== undefined ? { limit: Number(limit) } : {}), ...(options.has('--after') ? { after: options.get('--after')! } : {}),
+    }), null, 2));
   } else {
     const output = required('--output');
     const result = command === 'backup' ? await backupOwner(required('--config'), output, options.has('--stopped'))

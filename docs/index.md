@@ -1,5 +1,7 @@
 # DSH-Reforge 文档
 
+T074开发分支：[经验维护检查与复验建议](memory-maintenance.md)。只读所有者命令、来源/条件核对和零模型调用演练；不自动修订、复验或增加授权，尚未发行。
+
 T073开发分支：[验收驱动的修复 Agent 示例](../examples/repair-agent/README.md)。原生 Tool Calling、结构化计划与重规划、经验上下文及独立验收；零 provider HTTP 脚本演练，不是模型效果评测，未发行。
 
 [English](index.en.md) · [版本与发行状态](release-status.md)

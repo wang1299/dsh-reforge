@@ -17,7 +17,7 @@ export function git(root: string, args: string[]): string {
 export function gitBytes(root: string, args: string[], maxBuffer = 8 * 1024 * 1024): Buffer {
   const context = gitContext.getStore(); const config = context?.config.flatMap(value => ['-c', value]) ?? [];
   return execFileSync('git', [...config, '-C', root, ...args], { maxBuffer,
-    windowsHide: true, ...(context ? { env: context.env } : {}) });
+    windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'], ...(context ? { env: context.env } : {}) });
 }
 export function safeFile(root: string, input: string): string {
   const path = relativePath.parse(input);

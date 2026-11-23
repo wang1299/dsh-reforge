@@ -5,7 +5,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { execFileSync } from 'node:child_process';
-import { backupOwner, doctorOwner, restoreOwner, setupOwner } from '../src/owner-operations.js';
+import { backupOwner, doctorOwner, restoreOwner, setupOwner, reviewOwnerMemory } from '../src/owner-operations.js';
 import { createService, loadConfig } from '../src/config.js';
 import { digest } from '../src/domain.js';
 import { fixture } from './fixture.js';
@@ -55,6 +55,9 @@ test('stopped backup and restore preserve every table, private snapshots and con
   assert.equal(service.store.extraction.jobs()[0]!.state, 'unknown');
   const beforeTables = tables(join(data, 'evolve.sqlite')); service.store.close();
   const originalHash = digest(await readFile(join(data, 'evolve.sqlite')));
+  const maintenance = reviewOwnerMemory(config, true);
+  assert.equal(maintenance.modelRequests, 0); assert.equal(maintenance.tasksExecuted, 0);
+  assert.deepEqual(tables(join(data, 'evolve.sqlite')), beforeTables, 'Review must preserve consumed unknown grants and all other tables');
   const sourceFiles = await readdir(data); const diagnostic = doctorOwner(config);
   assert.equal(diagnostic.database!.schema, 9);
   assert.deepEqual(await readdir(data), sourceFiles);
