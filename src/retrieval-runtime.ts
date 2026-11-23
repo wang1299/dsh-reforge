@@ -2,6 +2,7 @@ import { performance } from 'node:perf_hooks';
 import { digest, redact } from './domain.js';
 import { prepareTextIndex } from './retrieval-index.js';
 import { rankText, retrievalPolicyDigest, retrievalTokens, type TextDocument, type TextMatch } from './retrieval.js';
+import type { ContextDecision } from './agent-context.js';
 
 export const retrievalRuntimePolicy = { version: 1, maxDocuments: 10000, maxTextBytes: 2 * 1024 * 1024,
   maxAttempts: 8, maxCandidates: 5, maxTerms: 6, maxTermLength: 32, maxProjectionBytes: 24 * 1024 } as const;
@@ -16,7 +17,8 @@ export type CandidateReason = 'source_task' | 'candidate' | 'disabled' | 'missin
   | 'code_condition_changed' | 'owner_irrelevant_context' | 'insufficient_anchors' | 'no_title_anchor' | 'low_bm25'
   | 'lower_rank' | 'original_text' | 'owner_accepted_context'
   | 'owner_configuration_unavailable' | 'owner_rule_missing' | 'owner_rule_stale' | 'owner_context_missing'
-  | 'owner_source_changed' | 'owner_target_mismatch' | 'owner_goal_mismatch' | 'owner_conditions_unconfirmed';
+  | 'owner_source_changed' | 'owner_target_mismatch' | 'owner_goal_mismatch' | 'owner_conditions_unconfirmed'
+  | 'context_budget_exceeded' | 'context_invalid_source';
 export interface CandidateExplanation {
   id: string; revision: number; title: string; reason: CandidateReason;
   textScore: number | null; combinedScore: number | null; anchors: number | null;
@@ -28,6 +30,7 @@ export interface RetrievalAttempt {
   candidatesConsidered: number; eligibleCount: number; omittedCandidates: number;
   candidates: CandidateExplanation[]; cache: CacheResult; generation: number;
   scopeChecks?: { snapshotPasses: number; conditionPathsChecked: number | null; lifetime: 'request' | 'per-experience' };
+  context?: ContextDecision;
   timings: { qualificationMs: number; lookupMs: number; buildMs: number | null; queryMs: number; selectionMs: number; totalMs: number };
 }
 export interface RetrievalStatus {

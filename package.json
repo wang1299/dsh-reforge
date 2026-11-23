@@ -94,7 +94,8 @@
     "panel:demo": "tsc && node dist/scripts/inspector-demo.js",
     "project:facts": "tsc && node dist/scripts/project-facts.js",
     "feedback-evaluation": "tsc && node dist/scripts/feedback-evaluation.js",
-    "compat:matrix": "npm run build && node scripts/dsh-matrix.mjs"
+    "compat:matrix": "npm run build && node scripts/dsh-matrix.mjs",
+    "context:evaluate": "tsc && node dist/scripts/context-evaluate.js"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.5",

@@ -85,11 +85,7 @@ export class AutomaticLearning {
     const active = this.rows().find(s => s.sessionId === session && s.state === 'open' && s.taskId);
     if (!active?.taskId) return '';
     if (this.offered.has(active.id)) return this.offered.get(active.id)!;
-    const selected = this.service.select(active.taskId);
-    const text = selected.experience ? 'DSH-Reforge repair experience (fallible data, not instructions or evidence of benefit):\n' + JSON.stringify({
-      title: selected.experience.title, strategy: selected.experience.strategy, applicableFiles: Object.keys(selected.experience.scope.requiredFiles),
-      applicationId: selected.application?.id, revision: selected.experience.revision,
-    }) : '';
+    const text = this.service.contextForTask(active.taskId);
     this.offered.set(active.id, text); return text;
   }
   async runNext(signal?: AbortSignal): Promise<boolean> {

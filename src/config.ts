@@ -7,6 +7,7 @@ import { Store } from './store.js';
 import { EvolveService } from './service.js';
 import { extractionPolicySchema } from './extraction-domain.js';
 import { legacyConfigEnvironment } from './legacy.js';
+import { memoryContextSchema } from './agent-context.js';
 
 export const configSchema = z.object({
   repoRoot: z.string().min(1), dataDir: z.string().min(1).optional(),
@@ -14,6 +15,7 @@ export const configSchema = z.object({
   backgroundVerification: z.boolean().default(false),
   automaticLearning: z.boolean().default(false),
   extraction: extractionPolicySchema.optional(),
+  memoryContext: memoryContextSchema.optional(),
   acceptanceDir: z.string().min(1).optional(), python: z.string().min(1).default('python'),
   regressionPath: z.string().min(1).default('tests'), timeoutMs: z.number().int().min(100).max(120000).default(15000),
 }).strict().refine(c => !c.automaticLearning || c.executionTrusted && c.backgroundVerification && c.shareWithModel && c.extraction !== undefined && c.acceptanceDir !== undefined,
@@ -35,6 +37,6 @@ export function createService(input: Config): { service: EvolveService; config: 
     trusted: config.executionTrusted, python: config.python,
     acceptanceDir: config.acceptanceDir ? resolve(config.acceptanceDir) : join(dataDir, 'acceptance-not-configured'),
     regressionPath: config.regressionPath, timeoutMs: config.timeoutMs,
-  }, config.backgroundVerification, config.extraction, config.shareWithModel, config.automaticLearning);
+  }, config.backgroundVerification, config.extraction, config.shareWithModel, config.automaticLearning, undefined, config.memoryContext);
   return { service, config };
 }
