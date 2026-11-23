@@ -2,6 +2,8 @@
 
 [English](index.en.md) · [版本与发行状态](release-status.md)
 
+开发分支T072：[本地语义准入/意图拒选与完整取舍](evaluation/semantic-memory-v1.md)。固定单候选合成评测，意图门槛相对余弦减少11次负例误供、丢2个正例；尚未接默认DSH或证明Agent收益。
+
 开发分支T071：[有来源与预算的Agent经验上下文编译](agent-context.md)，包含实际宿主请求接入和零费用算法对照；尚未合并/发行，默认行为不变。
 
 最新真实研究：[三组均10/12，42次实际请求，未观察到通过率提升](evaluation/benefit-live-20261109.md)。源码工作台的“效果对照”可只读导入本机报告；使用和边界见[研究报告阅读指南](evaluation/study-report-view.md)。

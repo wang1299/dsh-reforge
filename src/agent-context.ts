@@ -4,7 +4,7 @@ import { retrievalTokens } from './retrieval.js';
 
 export const memoryContextSchema = z.object({ policy: z.literal('evidence-mmr-v1'), maxNoticeBytes: z.number().int().min(512).max(65536) }).strict();
 export type MemoryContextPolicy = z.infer<typeof memoryContextSchema>;
-export type ContextOmission = 'duplicate' | 'no_query_overlap' | 'redundant' | 'budget';
+export type ContextOmission = 'duplicate' | 'no_query_overlap' | 'redundant' | 'budget' | 'relevance_gate';
 export type ContextPacking = 'mmr-density' | 'source-order' | 'relevance-density';
 export interface ContextDecision {
   policy: 'evidence-mmr-v1'; status: 'provided' | 'mandatory_over_budget' | 'invalid_source';
@@ -22,7 +22,8 @@ export function legacyExperienceNotice(experience: Experience | null, applicatio
 }
 
 /** Pure extractive planner. The caller must freshly qualify repository/source/owner conditions first. */
-export function compileAgentContext(input: { experience: Experience; citations: FactCitation[]; applicationId: string; query: string; policy: MemoryContextPolicy }, algorithm: ContextPacking = 'mmr-density') {
+export interface AgentContextInput { experience: Experience; citations: FactCitation[]; applicationId: string; query: string; policy: MemoryContextPolicy; allowedFacts?: number[] }
+export function compileAgentContext(input: AgentContextInput, algorithm: ContextPacking = 'mmr-density') {
   const policy = memoryContextSchema.parse(input.policy);
   z.enum(['mmr-density', 'source-order', 'relevance-density']).parse(algorithm);
   const decision: ContextDecision = { policy: policy.policy, algorithm, status: 'invalid_source', budgetBytes: policy.maxNoticeBytes,
@@ -30,6 +31,9 @@ export function compileAgentContext(input: { experience: Experience; citations: 
   const exp = experienceSchema.safeParse(input.experience), cites = factCitationsSchema.safeParse(input.citations);
   if (!exp.success || !cites.success || !idSchema.safeParse(input.applicationId).success || !textSchema.safeParse(input.query).success) return { text: '', decision };
   const e = exp.data;
+  const allowed = input.allowedFacts === undefined ? undefined : z.array(z.number().int().min(0).max(e.observedFacts.length - 1)).max(12).safeParse(input.allowedFacts);
+  if (allowed && (!allowed.success || new Set(allowed.data).size !== allowed.data.length)) return { text: '', decision };
+  const admitted = allowed?.success ? new Set(allowed.data) : undefined;
   if (e.status !== 'source_verified' || !e.verificationId || cites.data.some(c => e.observedFacts[c.factIndex] === undefined || digest(e.observedFacts[c.factIndex]!) !== c.factDigest)
     || e.observedFacts.some((_, i) => !cites.data.some(c => c.factIndex === i))) return { text: '', decision };
   const facts = e.observedFacts.map((text, index) => ({ index, text, digest: digest(text), citations: cites.data.filter(c => c.factIndex === index) }));
@@ -43,9 +47,10 @@ export function compileAgentContext(input: { experience: Experience; citations: 
   const query = new Set(retrievalTokens(input.query)), tokens = facts.map(f => new Set(retrievalTokens(f.text)));
   const canonical = new Set<string>(), reasons = new Map<number, ContextOmission>();
   for (const fact of facts) {
+    if (admitted && !admitted.has(fact.index)) { reasons.set(fact.index, 'relevance_gate'); continue; }
     const key = fact.text.normalize('NFKC').toLowerCase().replace(/\s+/g, ' ').trim();
     if (canonical.has(key)) reasons.set(fact.index, 'duplicate'); else canonical.add(key);
-    if (!reasons.has(fact.index) && ![...query].some(t => tokens[fact.index]!.has(t))) reasons.set(fact.index, 'no_query_overlap');
+    if (!admitted && !reasons.has(fact.index) && ![...query].some(t => tokens[fact.index]!.has(t))) reasons.set(fact.index, 'no_query_overlap');
   }
   const selected: number[] = [];
   while (selected.length < facts.length) {

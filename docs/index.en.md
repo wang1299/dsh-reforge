@@ -1,5 +1,7 @@
 # DSH-Reforge documentation
 
+T072 development branch: [local semantic admission and full abstention trade-offs](evaluation/semantic-memory-v1.md#english). Single-candidate synthetic evaluation; intent gating removes11 false offers but loses2 positives versus cosine. Offline only; no Agent task-benefit claim.
+
 Development branch T071: [source-preserving Agent context planning](agent-context.md), [frozen comparison and limitations](evaluation/context-packing-v1.md#english). Source-only, opt-in, not merged or published. MMR did not beat source-order on synthetic facet coverage; byte-budget compliance is separate from Agent task benefit.
 
 Latest real study: [all arms10/12;42 actual requests; no observed acceptance benefit](evaluation/benefit-live-20261109.md#english). The unpublished workbench can inspect a local report without uploads or model calls: [report reader](evaluation/study-report-view.md#english).
