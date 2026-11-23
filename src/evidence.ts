@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { digest, evidenceSchema, factCitationsSchema, type Evidence, type Experience, type FactCitation, type Task, type Verification } from './domain.js';
 import type { Store } from './store.js';
 
+export type EvidenceReader = Pick<Store, 'task' | 'evidence' | 'verification' | 'citations'>;
+
 /** Stable fields only. A reference validates provenance, not the semantic truth of a claim. */
 export function evidenceDigest(evidence: Evidence, proof?: Verification | null): string {
   const common = { schemaVersion: evidence.schemaVersion, id: evidence.id, taskId: evidence.taskId,
@@ -20,7 +22,7 @@ export function verificationEvidence(proof: Verification): Evidence {
     kind: 'verification', verificationId: proof.id, digest: '0'.repeat(64), createdAt: proof.createdAt });
   return { ...item, digest: evidenceDigest(item, proof) };
 }
-export function validateCitations(store: Store, experience: Experience, input: unknown): FactCitation[] {
+export function validateCitations(store: EvidenceReader, experience: Experience, input: unknown): FactCitation[] {
   const citations = factCitationsSchema.parse(input);
   const task = store.task(experience.sourceTaskId);
   if (!task || task.scope.repoId !== experience.scope.repoId) throw new Error('Citation source task/repository mismatch');
@@ -35,7 +37,7 @@ export function validateCitations(store: Store, experience: Experience, input: u
   }
   return citations;
 }
-export function factProvenance(store: Store, experience: Experience): { complete: boolean; reasons: string[]; citations: FactCitation[] } {
+export function factProvenance(store: EvidenceReader, experience: Experience): { complete: boolean; reasons: string[]; citations: FactCitation[] } {
   try {
     const citations = validateCitations(store, experience, store.citations(experience.id, experience.revision));
     const covered = new Set(citations.map((c) => c.factIndex));
