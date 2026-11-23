@@ -83,6 +83,9 @@ test('missing, false and mismatched source reports or incomplete citations canno
     assert.equal(run({ ...reader, citations: () => [] }).reason, 'incomplete_fact_sources');
     assert.equal(run({ ...reader, task: () => null }).reason, 'incomplete_fact_sources');
     assert.equal(run({ ...reader, evidence: () => null }).reason, 'incomplete_fact_sources');
+    assert.equal(run({ ...reader, evidence: () => { throw new Error('Synthetic malformed evidence'); } }).reason, 'incomplete_fact_sources');
+    assert.equal(run({ ...reader, citations: () => { throw new Error('Synthetic invalid citations'); } }).reason, 'incomplete_fact_sources');
+    assert.throws(() => run({ ...reader, verification: () => { throw new Error('Synthetic malformed verification'); } }), /malformed verification/);
   } finally { db.close(); f.store.close(); }
 });
 

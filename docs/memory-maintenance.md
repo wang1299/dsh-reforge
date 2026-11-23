@@ -43,7 +43,7 @@ node dist/src/cli.js memory-review --config C:\path\to\local-config.json --stopp
 node dist/src/cli.js memory-review --config C:\path\to\local-config.json --stopped --limit 20 --after <previous-nextCursor>
 ```
 
-每次调用重新检查，分页不是跨调用冻结快照。JSON单条读取限制1MiB，来源格式错误或超限停止检查；不省略坏数据冒充成功。数据库查询在一个只读事务内，条件文件检查只在本页复用，不是原子文件系统快照，外部变化后应重跑。
+每次调用重新检查，分页不是跨调用冻结快照。JSON单条读取限制1MiB；经验或验证报告主行格式错误/超限会停止检查，事实引用或其证据无效则沿用既有校验返回该条`not_qualified/incomplete_fact_sources`。两者均不会被计为匹配。数据库查询在一个只读事务内，条件文件检查只在本页复用，不是原子文件系统快照，外部变化后应重跑。
 
 “条件匹配”不证明当前测试重跑通过、经验语义正确、适用于任意新任务或能提高成功率。本轮未实现后台维护Agent、自动归并/遗忘、自动修订/复验、默认宿主接线或真实模型收益验证。SQLite v9、历史费用/unknown占额和已用提炼次数保持。
 
@@ -51,6 +51,6 @@ node dist/src/cli.js memory-review --config C:\path\to\local-config.json --stopp
 
 ## English
 
-Source-only, owner-invoked `memory-review --config <file> --stopped [--limit 1..50] [--after <uuid>]` inspects an existing stopped SQLite v9 store using a read-only transaction. It never creates/migrates a store, starts workers, executes tests/models, changes experience revisions or resets grants/unknown charges. Missing stores, unsupported schema, live sidecars/WAL and active work are rejected. Reports expose IDs, expected revisions, fixed reasons/actions and the checked commit, with per-page counts and a UUID cursor. Record JSON is bounded to1MiB; invalid/oversized data is not silently skipped.
+Source-only, owner-invoked `memory-review --config <file> --stopped [--limit 1..50] [--after <uuid>]` inspects an existing stopped SQLite v9 store using a read-only transaction. It never creates/migrates a store, starts workers, executes tests/models, changes experience revisions or resets grants/unknown charges. Missing stores, unsupported schema, live sidecars/WAL and active work are rejected. Reports expose IDs, expected revisions, fixed reasons/actions and the checked commit, with per-page counts and a UUID cursor. Record JSON is bounded to1MiB. Malformed/oversized experience or verification rows abort review; evidence/citation errors retain the existing per-item incomplete_fact_sources result. Neither counts as a match.
 
 Source/scope matches are diagnostics, not semantic truth, current-test acceptance, new-task applicability or benefit. Drift recommends explicit revision to a new candidate followed by independent verification; unavailable conditions remain unknown. `npm run memory:demo` builds a real synthetic verified source, then checks matching/drift/unavailable conditions without modifying its database. No autonomous-model or future-task benefit is claimed.
