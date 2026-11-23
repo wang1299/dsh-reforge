@@ -426,6 +426,8 @@ T030 切片已合并，见 [验收](development/T030-acceptance.md)／[PR #70](h
 
 ## 12. 文档维护约定
 
+T075 经验维护支持从已验证的手工 Git 修复建立新候选，在当前提交按原独立验收复验，并保留历史报告和逐事实出处。共享报告按页展示。中断、覆盖缺失或并发停用不会提升来源状态。实现与验证范围见 [ADR067](decisions/067-owner-memory-revalidation.md) 和[操作指南](memory-maintenance.md#条件改变后如何复验)。
+
 T074（2026-11-23）/ [ADR066](decisions/066-memory-maintenance-review.md)：所有者可显式检查现有经验的历史来源与当前代码/依赖条件，查看固定维护原因和下一步，UUID分页且不输出全文/路径。读取不产生验收、修订、应用、提炼、授权或费用；条件匹配不等于新任务适用。无库/未知格式不初始化，保留SQLite v9和旧账本。此源码增量不是完整后台维护Agent或真实模型收益证据；操作见[维护检查](memory-maintenance.md)，实际交付以T074和PR为准。
 
 T067 / [ADR061](decisions/061-runtime-inventory-concurrency-and-timing.md) 增补：运行清单以有界并发核对相同独立路径，继续拒绝变化、别名和未知，不缓存旧核对结果；性能须对照冻结串行oracle并报告实际分母。效果对照可选展示检查、请求至完整响应和其余流程耗时，缺失不推断。工程耗时改善与经验收益分开验证。

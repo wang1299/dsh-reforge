@@ -4,6 +4,7 @@ import type { EvolveService } from './service.js';
 import { redact, RevisionConflict } from './domain.js';
 import { renderPanel } from './panel-view.js';
 import { panelRequest } from './panel-api.js';
+import { memoryRevalidationRequest } from './memory-revalidation.js';
 import { ownerInputRequest } from './owner-input-api.js';
 import { OwnerInputError } from './owner-input-domain.js';
 import { ownerInputErrorMessage } from './owner-input-copy.js';
@@ -19,7 +20,11 @@ async function body(request: IncomingMessage): Promise<unknown> {
 export async function startPanel(service: EvolveService): Promise<{ url: string; origin: string; token: string; close: () => Promise<void> }> {
   try { service.ownerInput.recover(); } catch { /* Keep the diagnostics page available without resetting owner metadata. */ }
   const token = randomBytes(32).toString('hex'); let origin = '';
-  const server = createServer((request, response) => { void handle(request, response); });
+  const pending = new Set<Promise<void>>();
+  const server = createServer((request, response) => {
+    const run = handle(request, response); pending.add(run);
+    void run.finally(() => pending.delete(run));
+  });
   async function handle(request: IncomingMessage, response: ServerResponse): Promise<void> {
     const send = (status: number, value: unknown): void => { response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); response.end(JSON.stringify(value)); };
     response.setHeader('Cache-Control', 'no-store'); response.setHeader('Referrer-Policy', 'no-referrer');
@@ -36,7 +41,11 @@ export async function startPanel(service: EvolveService): Promise<{ url: string;
       if (Buffer.byteLength(supplied) !== Buffer.byteLength(token) || !timingSafeEqual(Buffer.from(supplied), Buffer.from(token))) { send(401, { error: 'Local access token required' }); return; }
       if (request.method === 'POST' && (request.headers.origin !== origin || request.headers['content-type'] !== 'application/json')) { send(403, { error: 'Same-origin JSON required' }); return; }
       const value = request.method === 'POST' ? await body(request) : undefined;
-      const reply = await ownerInputRequest(service, path, request.method ?? 'GET', value) ?? panelRequest(service, path, request.method ?? 'GET', value); send(reply.status, reply.value);
+      const method = request.method ?? 'GET';
+      const abort = new AbortController();
+      response.once('close', () => abort.abort());
+      const reply = await memoryRevalidationRequest(service, path, method, value, abort.signal)
+        ?? await ownerInputRequest(service, path, method, value) ?? panelRequest(service, path, method, value); send(reply.status, reply.value);
     } catch (error) { send(error instanceof RevisionConflict ? 409 : 400, { error: error instanceof OwnerInputError
       ? ownerInputErrorMessage(error.code) : redact(error instanceof Error ? error.message : 'Invalid request', 1000),
       ...(error instanceof OwnerInputError ? { code: error.code } : {}) }); }
@@ -45,5 +54,8 @@ export async function startPanel(service: EvolveService): Promise<{ url: string;
   const address = server.address(); if (!address || typeof address === 'string') throw new Error('Missing local address');
   origin = `http://127.0.0.1:${address.port}`;
   return { origin, token, url: origin + '/#token=' + token,
-    close: () => new Promise<void>((resolveClose, reject) => { server.close((error) => error ? reject(error) : resolveClose()); server.closeAllConnections(); }) };
+    close: async () => {
+      await new Promise<void>((resolveClose, reject) => { server.close((error) => error ? reject(error) : resolveClose()); server.closeAllConnections(); });
+      await Promise.allSettled([...pending]);
+    } };
 }

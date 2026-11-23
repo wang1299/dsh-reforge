@@ -37,6 +37,8 @@ DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-veri
 
 开发分支T074新增[经验维护检查](docs/memory-maintenance.md)：显式只读检查来源、事实引用与当前代码/依赖条件，区分匹配、需要修订复验、未具资格和未知，提供分页建议。`npm run memory:demo`可运行真实合成来源的三个控制；不自动修订/执行测试、不调用模型，尚未合并或发行。
 
+T075 开发分支支持在经验详情预览并复验已提交的代码条件变化，保留原报告，按原验收与回归用例建立新的来源证明。只读报告也会标出同页共用一份测试报告的经验。[复验操作与可运行案例](docs/memory-maintenance.md#条件改变后如何复验)
+
 开发分支T073提供[验收驱动的修复 Agent 示例](examples/repair-agent/README.md)：结构化依赖计划、四个原生任务工具、有限重规划和独立测试，连接已有经验检索与预算上下文。响应为脚本模拟，工具与验收实际执行；尚未合并/发行，不代表真实模型规划或收益。
 
 开发分支T072提供[本地语义记忆规划与拒选对照](docs/evaluation/semantic-memory-v1.md)：复用固定本地模型，区分来源资格、语义分数和事实预算。36条单候选评测中，意图门槛相对纯余弦减少11次误供、牺牲2个正例；仍为离线候选，未接默认DSH或发行，不代表Agent成功率提升。

@@ -17,6 +17,16 @@ async function work() { await mkdir('.probe-work', { recursive: true }); return 
 test('owner review uses real verified sources, paginates current revisions and leaves database/config/files unchanged', { timeout: 60000 }, async () => {
   const home = await work(); const f = await verifiedRetrievalFixture(home); const data = join(home, 'data');
   const database = join(data, 'evolve.sqlite'); const b = f.createBank(3, 'reuse', database);
+  const audit = new DatabaseSync(database, { readOnly: true });
+  try {
+    const reader = memoryReviewReader(audit);
+    const groups = reviewMemory(reader, f.repo).pageProofs;
+    assert.equal(groups.distinctReports, 1); assert.equal(groups.shared.length, 1);
+    assert.equal(groups.shared[0]!.verificationId, f.experience.verificationId);
+    assert.deepEqual(groups.shared[0]!.experienceIds, b.experiences.map(e => e.id).sort());
+    assert.deepEqual(reviewMemory(reader, f.repo, { limit: 1 }).pageProofs, { distinctReports: 1, shared: [] });
+    assert.deepEqual(reviewMemory({ ...reader, citations: () => [] }, f.repo).pageProofs, { distinctReports: 0, shared: [] });
+  } finally { audit.close(); }
   const second = b.experiences[1]!;
   const revised = b.service.revise(second.id, second.revision, { ...f.input, title: 'PRIVATE_TITLE_not_for_report' }, 'PRIVATE_REASON_not_for_report');
   b.service.disable(b.experiences[2]!.id, 'Synthetic disabled control'); b.store.close();

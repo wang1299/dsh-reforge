@@ -16,6 +16,7 @@ import { EvidenceJobs } from './evidence-jobs.js';
 import { ExtractionJobs, extractionMaterial } from './extraction.js';
 import { modelFailureReasons, type ExtractionJob, type ExtractionPolicy } from './extraction-domain.js';
 import { OwnerTaskInput } from './owner-task-input.js';
+import { assertOrdinaryVerificationAllowed } from './memory-revalidation.js';
 
 function cleanCandidate(value: unknown): Candidate {
   const item = candidateSchema.parse(value);
@@ -179,6 +180,7 @@ export class EvolveService {
       const citations = validateCitations(this.store, old, input);
       const normalized = (items: typeof citations): string => JSON.stringify([...items].sort((a, b) => a.factIndex - b.factIndex || a.evidenceId.localeCompare(b.evidenceId)));
       if (normalized(citations) === normalized(this.store.citations(id, old.revision))) return old;
+      assertOrdinaryVerificationAllowed(old);
       if (old.status === 'source_verified' && this.provenance(old).complete) {
         throw new Error('Sources are locked for a verified experience with complete provenance; the owner must explicitly revise before changing sources');
       }
@@ -193,6 +195,7 @@ export class EvolveService {
     const task = this.requireTask(experience.sourceTaskId);
     this.store.assertLearningAllowed(task);
     if (experience.status === 'disabled') throw new Error('Disabled experience must be revised before verification');
+    assertOrdinaryVerificationAllowed(experience);
     const current = snapshot(this.root, Object.keys(experience.scope.requiredFiles));
     if (applicability(experience.scope, current.scope)) throw new Error('Candidate scope changed; revise before verification');
     const segment = this.store.automatic.forTask(task.id);

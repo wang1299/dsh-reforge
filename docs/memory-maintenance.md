@@ -49,8 +49,31 @@ node dist/src/cli.js memory-review --config C:\path\to\local-config.json --stopp
 
 设计：[ADR066](decisions/066-memory-maintenance-review.md)。实际检查：[T074](tasks/T074-memory-maintenance-review.md)。参考：[Anthropic文章](https://www.anthropic.com/research/components-of-agent-memory)及[官方Dreaming示例](https://github.com/anthropics/claude-cookbooks/blob/main/managed_agents/CMA_dreaming_with_a_dynamic_workflow.ipynb)。本功能独立实现于有界结构化证据，不采集完整会话。
 
+## 条件改变后如何复验
+
+在 T075 源码工作台打开一条“来源已验证”的经验，展开 **来源、版本与管理 → 修改、停用与恢复 → 检查能否复验**。检查会读取历史报告、独立验收文件和 Git 条件。符合条件时，面板显示经验版本和将要测试的提交。点 **运行本地 pytest 复验** 才会创建新候选并执行测试。原生 DSH 页面和独立面板使用同一流程。
+
+想先试一次，在源码目录运行 `npm run panel:demo -- --revalidation`。打开终端显示的本机入口，选择任一条合成经验。演示自建临时 Git 仓库并提交一次代码条件变化，无需 Key。保持终端打开，体验结束后按 Ctrl+C。
+
+例如，某次修复保证“转账失败会恢复余额”。后来有人修改了记录中的代码条件，但保留相同依赖和验收用例。此时可以在新提交上重新验证。原失败需要再次出现，修复后需通过同一独立验收，原来通过的回归用例也要继续通过。通过后，新版本关联新的测试报告。可在版本历史中分别检查旧证明和新证明。
+
+当前支持已结束的手工 Git 修复任务，需要已有的仓库执行授权、已提交的代码条件和原独立验收。依赖或验收变化、自动采集的私人快照、缺少来源的经验须单独核对。中断后先查看候选和历史记录。用户在复验期间停用了经验时，停用决定优先。历史引用仍指向当时的事实证据，绑定旧版本的用户规则需要重新核对。
+
+验证器在运行 Python 前核对即将使用的外部验收文件字节，并比对原修复与当前提交中整个回归入口的 Git 内容。增加、删除或修改入口内的测试都需要人工检查。入口以外的应用代码和导入的辅助模块可以变化；运行时还要比对用例标识以及通过、失败状态。常规模型验证工具不能提升本次维护留下的候选；需要另行显式修订后才能按新的验收条件验证。
+
+只读命令的 `pageProofs` 按当前页统计具有完整来源的不同报告。同一份报告被多条经验引用时，`shared` 列出对应 ID；分页间不能直接累加为独立修复数。各条建议、反馈、状态和历史继续单独保存。
+
+在开发分支运行以下合成案例，观察复验通过、原回归被替换、中途取消和并发修改。测试使用独立临时仓库，需按安装指南准备 Python 和 pytest。
+
+```powershell
+npm run build
+node --test dist/test/memory-revalidation.test.js
+```
+
 ## English
 
 Source-only, owner-invoked `memory-review --config <file> --stopped [--limit 1..50] [--after <uuid>]` inspects an existing stopped SQLite v9 store using a read-only transaction. It never creates/migrates a store, starts workers, executes tests/models, changes experience revisions or resets grants/unknown charges. Missing stores, unsupported schema, live sidecars/WAL and active work are rejected. Reports expose IDs, expected revisions, fixed reasons/actions and the checked commit, with per-page counts and a UUID cursor. Record JSON is bounded to1MiB. Malformed/oversized experience or verification rows abort review; evidence/citation errors retain the existing per-item incomplete_fact_sources result. Neither counts as a match.
 
 Source/scope matches are diagnostics, not semantic truth, current-test acceptance, new-task applicability or benefit. Drift recommends explicit revision to a new candidate followed by independent verification; unavailable conditions remain unknown. `npm run memory:demo` builds a real synthetic verified source, then checks matching/drift/unavailable conditions without modifying its database. No autonomous-model or future-task benefit is claimed.
+
+T075 adds an owner preview and explicit replay in both panels for committed code-condition drift in closed manual Git repairs. It binds the selected revision, original proof and commit, preserves historical citations and appends a candidate before running independent pytest. Successful replay requires the original failing cases and the previously passing acceptance and regression coverage. An interrupted replay leaves a candidate for inspection. The page-local proof groups expose repeated use of the same report. See [ADR067](decisions/067-owner-memory-revalidation.md).

@@ -1,5 +1,7 @@
 # 路线与实际状态
 
+T075 开发分支支持在原生和独立面板显式复验手工修复的代码条件变化，并在只读报告按来源证明分组。[设计及边界](decisions/067-owner-memory-revalidation.md) · [操作与合成案例](memory-maintenance.md#条件改变后如何复验)
+
 2026-11-23 T074开发分支：[只读经验维护检查](memory-maintenance.md)检查旧来源和当前条件，提供修订/复验建议及UUID分页。基于有界证据独立实现，无后台Dreaming、自动语义归并或付费调用；[任务](tasks/T074-memory-maintenance-review.md)记录实际验收，未合并/发行。
 
 2026-11-16开发分支T073：[验收驱动的受限修复Agent](tasks/T073-acceptance-agent-runner.md)将结构化计划、四个原生工具、预算上下文及有来源经验串联，提供可运行的零provider HTTP脚本演练。Draft PR159依赖未合并PR157/155；真实模型规划、全历史上下文、多候选语义接线及收益对照仍待后续，未发布或部署。

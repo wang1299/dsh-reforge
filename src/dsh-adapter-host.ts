@@ -36,6 +36,7 @@ const output = { schema: { type: 'json' as const }, render: (_args: unknown, val
 interface HostLifetime { lifetime: AbortController; pending: Set<Promise<unknown>>; setSharing(value: boolean): void }
 function startHost(ctx: Context, service: EvolveService): HostLifetime {
   let disposed = false; let sharing = false;
+  const lifetime = new AbortController(); const pending = new Set<Promise<unknown>>();
   try { service.ownerInput.recover(); } catch { /* The panel exposes unavailable metadata; no reset or task replay. */ }
   const carrier = (id: string): OwnerTaskCarrier | null => dshOwnerCarrier(ctx, service, id, () => !disposed && sharing);
   ctx.inject(['connection'], child => {
@@ -43,7 +44,7 @@ function startHost(ctx: Context, service: EvolveService): HostLifetime {
       const session = ctx.sessions.get(id as Parameters<typeof ctx.sessions.get>[0]);
       try { return !!session?.header.cwd && realpathSync.native(session.header.cwd) === realpathSync.native(service.root); }
       catch { return false; }
-    }, carrier));
+    }, carrier, { signal: lifetime.signal, pending }));
   });
   const stopAutomatic = service.automatic.start();
   const stopWorker = service.jobs.start();
@@ -53,7 +54,6 @@ function startHost(ctx: Context, service: EvolveService): HostLifetime {
     // only exposes active service fibers; never resolve a key or consume quota here.
     return llm && ctx.get('credentials') && policy && llm.listProviders().some(p => p.id === policy.provider) ? dshExtractionPort(llm) : null;
   });
-  const lifetime = new AbortController(); const pending = new Set<Promise<unknown>>();
   ctx.effect(() => async () => {
     disposed = true; lifetime.abort(); await Promise.allSettled([...pending, stopAutomatic(), stopWorker(), stopExtraction()]);
     try { service.ownerInput.dispose(); } finally { service.store.close(); }

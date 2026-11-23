@@ -15,21 +15,31 @@ export interface MemoryReviewItem {
   nextAction: 'none' | 'review_candidate' | 'review_disabled' | 'repair_sources' | 'revise_then_verify' | 'restore_environment_then_review';
 }
 
+export function historicalProof(reader: EvidenceReader, experience: Experience) {
+  const proof = experience.verificationId ? reader.verification(experience.verificationId) : null;
+  return proof?.verified && proof.id === experience.verificationId && proof.sourceTaskId === experience.sourceTaskId
+    && proof.repoId === experience.scope.repoId ? proof : null;
+}
+
 /** A diagnostic, never an eligibility grant or an execution/authorization plan. */
 export function reviewMemory(reader: MemoryReviewReader, root: string, input: z.input<typeof memoryReviewOptions> = {}) {
   const options = memoryReviewOptions.parse(input);
   const current = snapshot(root); const scopeReader = requestScopeReader(root, current);
   const page = reader.page(current.scope.repoId, options.after, options.limit);
+  const proofMembers = new Map<string, string[]>();
   const items = page.experiences.map((experience): MemoryReviewItem => {
     if (experience.scope.repoId !== current.scope.repoId) throw new Error('Invalid review repository binding');
     const item = { experienceId: experience.id, expectedRevision: experience.revision };
     if (experience.status !== 'source_verified') return { ...item, state: 'not_qualified', reason: experience.status,
       nextAction: experience.status === 'candidate' ? 'review_candidate' : 'review_disabled' };
-    const proof = experience.verificationId ? reader.verification(experience.verificationId) : null;
-    if (!proof?.verified || proof.id !== experience.verificationId || proof.sourceTaskId !== experience.sourceTaskId || proof.repoId !== experience.scope.repoId) {
+    const proof = historicalProof(reader, experience);
+    if (!proof) {
       return { ...item, state: 'not_qualified', reason: 'invalid_source_evidence', nextAction: 'repair_sources' };
     }
     if (!factProvenance(reader, experience).complete) return { ...item, state: 'not_qualified', reason: 'incomplete_fact_sources', nextAction: 'repair_sources' };
+    const members = proofMembers.get(proof.id);
+    if (members) members.push(experience.id);
+    else proofMembers.set(proof.id, [experience.id]);
     let condition;
     try { condition = scopeReader.read(Object.keys(experience.scope.requiredFiles)); }
     catch { return { ...item, state: 'unknown', reason: 'code_condition_unavailable', nextAction: 'restore_environment_then_review' }; }
@@ -39,6 +49,8 @@ export function reviewMemory(reader: MemoryReviewReader, root: string, input: z.
     return { ...item, state: 'source_scope_current', reason: 'source_and_scope_match', nextAction: 'none' };
   });
   return { format: 'dsh-reforge-memory-review-v1' as const, checkedAt: new Date().toISOString(), checkedCommit: current.commit,
+    pageProofs: { distinctReports: proofMembers.size, shared: [...proofMembers].filter(([, members]) => members.length > 1)
+      .map(([verificationId, experienceIds]) => ({ verificationId, experienceIds })) },
     readOnly: true as const, tasksExecuted: 0 as const, modelRequests: 0 as const, authorizationIncreased: false as const,
     total: page.total, reviewed: items.length, more: page.more, nextCursor: page.more ? items.at(-1)!.experienceId : null,
     counts: Object.fromEntries((['source_scope_current', 'needs_revalidation', 'not_qualified', 'unknown'] as const)

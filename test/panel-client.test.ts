@@ -63,6 +63,22 @@ function browser() {
     holdReads: () => { let release!: () => void; readHold = new Promise<void>(done => { release = done; }); return () => { readHold = null; release(); }; } };
 }
 
+test('memory replay preview needs a separate confirmation and a failed replay is shown as a warning', async () => {
+  const b = browser(); b.current.experiences[0]!.status = 'source_verified';
+  await b.run('refresh()'); await b.run("openExperience('experience-one')");
+  await b.run(`const baseApi=api;let replayCalls=[];
+    api=async (path,method,data)=>{if(!path.endsWith('/revalidation'))return baseApi(path,method,data);
+      replayCalls.push(method||'GET');return method==='POST'?{state:'failed',revision:3}:{state:'ready',
+        selection:{expectedRevision:1,expectedCommit:'a'.repeat(40),expectedProof:'proof'}};};`);
+  const control = () => b.descendants(b.get('detail')).find(e => e.textContent === '运行本地 pytest 复验')!;
+  assert.equal(control().hidden, true);
+  await b.click('检查能否复验'); assert.equal(control().hidden, false);
+  await b.run("if(replayCalls.join()!=='GET')throw Error('Preview executed a write')");
+  await b.click('运行本地 pytest 复验'); await b.run("if(replayCalls.join()!=='GET,POST')throw Error('Unexpected requests')");
+  assert.equal(b.get('message').getAttribute('data-tone'), 'warning');
+  assert.match(b.get('message').textContent, /复验未通过/);
+});
+
 test('report import, filter, polling and clear stay local and preserve all denominator rows', async () => {
   const b = browser(); await b.run('refresh()'); await b.run("showView('study')");
   const file = b.get('study-report-file'), text = JSON.stringify(studyReportFixture());
