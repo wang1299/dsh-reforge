@@ -32,6 +32,19 @@ export function safeFile(root: string, input: string): string {
   return full;
 }
 const dependencyFiles = ['pyproject.toml', 'requirements.txt', 'requirements-dev.txt', 'poetry.lock', 'uv.lock', 'Pipfile.lock'];
+/** Bind maintenance to the same raw blobs that the trusted pytest verifier materializes. */
+export function committedScopeMatches(root: string, commit: string, scope: Scope): boolean {
+  const paths = Object.keys(scope.requiredFiles);
+  const entries = gitBytes(root, ['--literal-pathspecs', 'ls-tree', '-rz', '--full-tree', shaSchema.parse(commit), '--', ...dependencyFiles, ...paths]);
+  const hashes = new Map<string, string>();
+  for (const entry of entries.toString('utf8').split('\0').filter(Boolean)) {
+    const match = /^(100644|100755) blob ([0-9a-f]{40})\t(.+)$/.exec(entry);
+    if (!match || !(paths.includes(match[3]!) || dependencyFiles.includes(match[3]!))) return false;
+    hashes.set(match[3]!, digest(gitBytes(root, ['cat-file', 'blob', match[2]!], 4 * 1024 * 1024)));
+  }
+  const dependencyDigest = digest(dependencyFiles.filter(p => hashes.has(p)).map(p => p + ':' + hashes.get(p)).join('\n'));
+  return scope.dependencyDigest === dependencyDigest && paths.every(p => hashes.get(p) === scope.requiredFiles[p]);
+}
 export function snapshot(root: string, requiredFiles: string[] = []): { scope: Scope; commit: string; root: string } {
   const actualRoot = realpathSync(git(root, ['rev-parse', '--show-toplevel']));
   // Windows' legacy realpath can retain an 8.3 alias while Git returns the long name.

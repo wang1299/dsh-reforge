@@ -6,6 +6,7 @@ import { assertSupportedDshVersion } from './dsh-adapter-policy.js';
 import type { EvolveService } from './service.js';
 import { RevisionConflict } from './domain.js';
 import { panelRequest } from './panel-api.js';
+import { memoryRevalidationRequest } from './memory-revalidation.js';
 import { ownerInputRequest } from './owner-input-api.js';
 import { OwnerInputError } from './owner-input-domain.js';
 import type { OwnerTaskCarrier } from './owner-task-input.js';
@@ -68,7 +69,8 @@ export function nativeHandler(service: EvolveService, operator: PeerScope, activ
       if (input.repositoryId !== service.repositoryId) return fail('scope', '仓库配置已变化，请重新打开经验界面。');
       if (input.sessionId && !matchesSession(input.sessionId)) return fail('scope', '此对话不属于插件配置的仓库。');
       const carrier = input.sessionId ? resolveCarrier(input.sessionId) : null;
-      const reply = await ownerInputRequest(service, input.path, input.method, input.data, carrier) ?? panelRequest(service, input.path, input.method, input.data);
+      const reply = await memoryRevalidationRequest(service, input.path, input.method, input.data, signal)
+        ?? await ownerInputRequest(service, input.path, input.method, input.data, carrier) ?? panelRequest(service, input.path, input.method, input.data);
       if (reply.status !== 200) return fail(reply.status === 409 ? 'conflict' : 'not_found', reply.status === 409 ? '经验版本已变化，请载入最新记录后再保存。' : '操作不可用。');
       return { ok: true, value: reply.value };
     } catch (error) {

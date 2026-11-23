@@ -50,7 +50,7 @@ if(!nativeBridge)history.replaceState(null,'',location.pathname);
 const nativePending=new Map();
 const applyNativeTheme=${applyNativeTheme.toString()};
 if(nativeBridge)window.addEventListener('message',event=>{if(event.source!==parent||event.origin!==nativeBridge.parentOrigin||event.data?.channel!==nativeBridge.channel)return;if(event.data.type==='theme'){if(Object.keys(event.data).length===3)applyNativeTheme(event.data.appearance);return;}const entry=nativePending.get(event.data.id);if(!entry)return;nativePending.delete(event.data.id);clearTimeout(entry.timer);if(event.data.ok)entry.resolve(event.data.value);else{const error=new Error(event.data.message||'DSH 连接暂不可用');if(typeof event.data.code==='string'&&/^[a-z0-9_]{1,100}$/.test(event.data.code))error.code=event.data.code;entry.reject(error);}});
-function nativeRequest(path,method,data){return new Promise((resolve,reject)=>{const id=crypto.randomUUID();const timer=setTimeout(()=>{nativePending.delete(id);reject(new Error('DSH 未及时返回；保存结果待核对，不会自动重试'));},12000);nativePending.set(id,{resolve,reject,timer});parent.postMessage({channel:nativeBridge.channel,id,path,method,...(data===undefined?{}:{data})},nativeBridge.parentOrigin);});}
+function nativeRequest(path,method,data){return new Promise((resolve,reject)=>{const id=crypto.randomUUID();const timer=setTimeout(()=>{nativePending.delete(id);reject(new Error('DSH 未及时返回；保存结果待核对，不会自动重试'));},method==='POST'&&path.endsWith('/revalidation')?420000:12000);nativePending.set(id,{resolve,reject,timer});parent.postMessage({channel:nativeBridge.channel,id,path,method,...(data===undefined?{}:{data})},nativeBridge.parentOrigin);});}
 let state=null,selected=null,activeView='home',dirty=false,reading=false,readRequest=null,writing=false,detailSnapshot='',listsSnapshot='',recordsSnapshot='',learningViewSeen=false;
 const $=id=>document.getElementById(id);
 const presentExperience=${experiencePresentation.toString()};
@@ -76,7 +76,30 @@ const ownerView=(${installOwnerInput.toString()})($('owner-input'),{request:api,
 const studyAdmissionContract=${studyAdmissionContract.toString()};
 const readStudyReport=${parseStudyReport.toString()};
 (${installStudyReport.toString()})($('study'),readStudyReport);
-async function action(path,data,control){if(waiting())return;writing=true;const locked=[...$('detail').querySelectorAll('button,input,select,textarea'),$('cleanup')].map(el=>[el,el.disabled]);for(const [el]of locked)el.disabled=true;const label=control?.textContent;if(control){control.setAttribute('aria-busy','true');control.textContent='正在保存…';control.append(icon('loader'));}message('正在保存，请等待本次操作结果。','busy');try{await api(path,'POST',data);if(reading)await readRequest;const synced=await refresh();if(!synced){message('保存请求已返回，但未能读取最新记录。当前编辑已保留，请先刷新核对，避免重复操作。','warning');return;}const editsDetail=path!=='/api/cleanup';if(editsDetail)dirty=false;if(selected&&editsDetail){renderDetail();$('detail-heading')?.focus();}message(path==='/api/cleanup'?'已清理未引用的过期记录。':'已保存，记录已更新。','success');}catch(error){message('保存结果待核对：'+error.message+'。当前编辑已保留，请核对后再操作；不会自动重试。','warning');}finally{for(const [el,disabled]of locked)el.disabled=disabled;if(control){control.textContent=label;control.setAttribute('aria-busy','false');}writing=false;}}
+async function action(path,data,control,outcome){
+ if(waiting())return;
+ writing=true;
+ const locked=[...$('detail').querySelectorAll('button,input,select,textarea'),$('cleanup')].map(el=>[el,el.disabled]);
+ for(const [el]of locked)el.disabled=true;
+ const label=control?.textContent;
+ if(control){control.setAttribute('aria-busy','true');control.textContent=outcome?'正在复验…':'正在保存…';control.append(icon('loader'));}
+ message(outcome?'正在运行本地 pytest，请等待复验结果。':'正在保存，请等待本次操作结果。','busy');
+ try{
+   const result=await api(path,'POST',data);
+   if(reading)await readRequest;
+   if(!await refresh()){message('保存请求已返回，但未能读取最新记录。当前编辑已保留，请先刷新核对，避免重复操作。','warning');return;}
+   const editsDetail=path!=='/api/cleanup';
+   if(editsDetail)dirty=false;
+   if(selected&&editsDetail){renderDetail();$('detail-heading')?.focus();}
+   if(outcome){const feedback=outcome(result);message(feedback.text,feedback.tone);}
+   else message(path==='/api/cleanup'?'已清理未引用的过期记录。':'已保存，记录已更新。','success');
+ }catch(error){message('保存结果待核对：'+error.message+'。当前编辑已保留，请核对后再操作；不会自动重试。','warning');}
+ finally{
+   for(const [el,disabled]of locked)el.disabled=disabled;
+   if(control){control.textContent=label;control.setAttribute('aria-busy','false');}
+   writing=false;
+ }
+}
 function showView(view){if(waiting())return;if(dirty){message('有尚未保存的编辑。请先保存，或选择“放弃未保存编辑”。');return;}activeView=view;selected=null;renderNavigation();if(view==='learning')$('learning-area').open=true;if(state)renderLists();message('');}
 function navigate(view,filter){if(dirty){showView(view);return;}if(filter)$('filter').value=filter;showView(view);}
 function renderNavigation(){document.body.dataset.view=activeView;$('view-title').textContent=activeView==='home'?'经验概览':viewNames[activeView];$('view-title').hidden=selected!==null;$('view-description').textContent=viewDescriptions[activeView];$('view-description').hidden=selected!==null;$('page-heading').classList.toggle('compact',selected!==null);for(const view of views){$(view).hidden=selected!==null||view!==activeView;const tab=$('nav-'+view);tab.setAttribute('aria-selected',String(view===activeView));tab.tabIndex=view===activeView?0:-1;tab.classList.toggle('active',view===activeView);}$('detail').hidden=selected===null;$('overview').hidden=selected!==null||activeView!=='home'||!state;}
@@ -187,7 +210,7 @@ function renderDetail(){
  const uses=state.applications.filter(a=>a.experienceId===e.id);if(uses.length){const feedback=fold('记录这次参考的结果');renderFeedback(feedback,e,uses);later.append(feedback);}later.append(node('p','提供参考不代表 Agent 已采用，也不等于这条经验改善了结果。','story-boundary'));
  const technical=fold('来源、版本与管理');technical.className+=' story-technical';
  const evidence=fold('查看依据与推断');showFactSources(evidence,e,false);section(evidence,'推断与建议',{inferences:e.inferences,recommendations:e.recommendations});technical.append(evidence);
- const manage=fold('修改、停用与恢复');renderManagement(manage,e);const sources=fold('高级：核对与编辑事实来源');showFactSources(sources,e,true);manage.append(sources);technical.append(manage);
+ const manage=fold('修改、停用与恢复');renderManagement(manage,e);if(e.status==='source_verified')renderReplay(manage,e);const sources=fold('高级：核对与编辑事实来源');showFactSources(sources,e,true);manage.append(sources);technical.append(manage);
  const history=fold('查看版本与技术记录');section(history,'版本历史',state.histories[e.id]);history.append(node('pre',JSON.stringify({experienceId:e.id,scope:e.scope,sourceTask:state.tasks.find(t=>t.id===e.sourceTaskId),applications:uses},null,2)));technical.append(history);root.append(technical);
 }
 function section(root,title,value){
@@ -213,6 +236,32 @@ if(source){if(source.kind==='correction')detail.append(node('p',source.note));el
 if(editable){const select=node('select');select.setAttribute('aria-label','事实'+(i+1)+'的来源');const empty=node('option','未选择来源');empty.value='';select.append(empty);for(const source of options){const option=node('option',source.kind==='correction'?'纠正：'+source.note.slice(0,70):'测试记录 '+source.verificationId.slice(0,8));option.value=source.id;select.append(option)}select.value=refs[0]?.evidenceId||'';choices.push(select);root.append(select)}}
 if(editable){root.append(node('p','来源变化时建立新版本，未变化时保留原版本与反馈。每条事实设为所选一个来源；未选择则保持来源缺失。','muted'));const save=node('button','保存事实来源','primary');save.onclick=()=>{const citations=[];for(let i=0;i<choices.length;i++){const source=options.find(s=>s.id===choices[i].value);if(source)citations.push({...p.facts[i],evidenceId:source.id,evidenceDigest:source.digest})}action('/api/experience/'+e.id+'/evidence',{revision:e.revision,citations},save)};root.append(save)}}
 
+function renderReplay(root,e){
+ const reasons={execution_untrusted:'此仓库尚未授权执行测试。',manual_source_required:'此入口仅支持已结束的手工 Git 修复任务。',source_incomplete:'历史测试或事实来源不完整。',dependencies_changed:'依赖条件已变，请先人工核对环境。',no_code_drift:'此经验的代码条件仍匹配。',committed_conditions_required:'请核对代码条件与已提交的 Git 文件。',test_contract_changed:'独立验收内容或回归入口已变化。',unavailable:'当前无法核对仓库或来源。'};
+ const path='/api/experience/'+e.id+'/revalidation';
+ const hint=node('p','','muted');hint.setAttribute('role','status');
+ const inspect=button('检查能否复验',async()=>{
+   if(waiting()||dirty){if(dirty)message('请先保存或放弃当前编辑，再检查来源。');return;}
+   inspect.disabled=true;confirm.hidden=true;hint.textContent='正在核对来源与当前代码…';
+   try{const result=await api(path);
+     if(result.state!=='ready'){hint.textContent=reasons[result.reason]||reasons.unavailable;return;}
+     const plan=result.selection;
+     if(plan.expectedRevision!==e.revision){hint.textContent='经验版本已变化，请刷新详情。';return;}
+     hint.textContent='将为 v'+e.revision+' 创建候选版本，在提交 '+plan.expectedCommit.slice(0,12)+' 上运行原失败、修复验收和回归测试。';
+     confirm.hidden=false;confirm.onclick=()=>{
+       if(dirty){message('请先保存或放弃当前编辑。');return;}
+       return action(path,plan,confirm,result=>{
+         if(result.state==='verified')return {text:'复验通过。v'+result.revision+' 已关联新测试报告。',tone:'success'};
+         if(result.state==='failed')return {text:'复验未通过。v'+result.revision+' 保留为候选，可在版本历史查看报告。',tone:'warning'};
+         if(result.state==='inconclusive')return {text:'复验结果未确定，请在版本历史核对候选 v'+result.candidateRevision+'。',tone:'warning'};
+         return {text:reasons[result.reason]||reasons.unavailable,tone:'warning'};
+       });
+     };
+   }catch{hint.textContent='读取失败，请刷新后再检查。';}finally{inspect.disabled=false;}
+ });
+ const confirm=node('button','运行本地 pytest 复验','primary');confirm.hidden=true;
+ root.append(inspect,hint,confirm);
+}
 function renderManagement(root,e){root.append(node('h3','修订经验'));const title=node('input');title.value=e.title;title.setAttribute('aria-label','经验标题');const strategy=node('textarea');strategy.value=e.strategy;strategy.setAttribute('aria-label','处理策略');const reason=node('input');reason.placeholder='修改或停用原因（必填）';reason.setAttribute('aria-label','修改原因');root.append(title,strategy,reason);const actions=node('div',undefined,'actions');const revise=node('button','保存为待验证版本','primary');revise.onclick=()=>action('/api/experience/'+e.id+'/revise',{revision:e.revision,reason:reason.value,citations:state.provenance[e.id][e.revision].citations,candidate:{title:title.value,strategy:strategy.value,observedFacts:e.observedFacts,inferences:e.inferences,recommendations:e.recommendations,requiredFiles:Object.keys(e.scope.requiredFiles)}},revise);const disable=node('button','停用经验','danger');disable.onclick=()=>action('/api/experience/'+e.id+'/disable',{revision:e.revision,reason:reason.value},disable);actions.append(revise,disable);const versions=node('select');for(const old of state.histories[e.id]){const op=node('option','v'+old.revision);op.value=old.revision;versions.append(op)}const restore=node('button','恢复为待验证版本');restore.onclick=()=>action('/api/experience/'+e.id+'/restore',{revision:e.revision,targetRevision:Number(versions.value),reason:reason.value},restore);actions.append(versions,restore);root.append(actions);
 }
 function renderFeedback(root,e,uses){if(uses.length){root.append(node('h3','记录应用反馈'),node('p','不相关只避免在相同任务表述中再次推荐。仅当所用版本仍为当前版本时，策略无效或反例反馈会停用这条经验。','muted'));const app=node('select');app.setAttribute('aria-label','应用任务');for(const use of uses){const option=node('option',taskName(use.taskId)+' · 第'+use.revision+'版');option.value=use.id;app.append(option)}const outcome=node('select');outcome.setAttribute('aria-label','应用结果');for(const [value,label]of [['unknown','尚未确认'],['accepted','通过验收'],['irrelevant','此任务不相关：保留经验'],['rejected','策略无效'],['counterexample','发现反例']]){const option=node('option',label);option.value=value;outcome.append(option)}const note=node('textarea');note.placeholder='验收依据或反例说明';note.setAttribute('aria-label','反馈依据');const optional=fold('补充成本与返工（可选）');const cost=node('input');cost.type='number';cost.min='0';cost.step='any';cost.placeholder='额外成本（USD，可留空）';cost.setAttribute('aria-label','额外成本');const rework=node('input');rework.type='number';rework.min='0';rework.step='1';rework.placeholder='人工返工次数（可留空）';rework.setAttribute('aria-label','人工返工次数');const feedbackId=crypto.randomUUID();const submit=node('button','保存反馈','primary');submit.onclick=()=>action('/api/feedback',{id:feedbackId,applicationId:app.value,outcome:outcome.value,note:note.value,extraCost:cost.value===''?null:Number(cost.value),humanRework:rework.value===''?null:Number(rework.value)},submit);optional.append(cost,rework);root.append(app,outcome,note,optional,submit)}}

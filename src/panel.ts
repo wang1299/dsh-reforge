@@ -4,6 +4,7 @@ import type { EvolveService } from './service.js';
 import { redact, RevisionConflict } from './domain.js';
 import { renderPanel } from './panel-view.js';
 import { panelRequest } from './panel-api.js';
+import { memoryRevalidationRequest } from './memory-revalidation.js';
 import { ownerInputRequest } from './owner-input-api.js';
 import { OwnerInputError } from './owner-input-domain.js';
 import { ownerInputErrorMessage } from './owner-input-copy.js';
@@ -36,7 +37,11 @@ export async function startPanel(service: EvolveService): Promise<{ url: string;
       if (Buffer.byteLength(supplied) !== Buffer.byteLength(token) || !timingSafeEqual(Buffer.from(supplied), Buffer.from(token))) { send(401, { error: 'Local access token required' }); return; }
       if (request.method === 'POST' && (request.headers.origin !== origin || request.headers['content-type'] !== 'application/json')) { send(403, { error: 'Same-origin JSON required' }); return; }
       const value = request.method === 'POST' ? await body(request) : undefined;
-      const reply = await ownerInputRequest(service, path, request.method ?? 'GET', value) ?? panelRequest(service, path, request.method ?? 'GET', value); send(reply.status, reply.value);
+      const method = request.method ?? 'GET';
+      const abort = new AbortController();
+      response.once('close', () => abort.abort());
+      const reply = await memoryRevalidationRequest(service, path, method, value, abort.signal)
+        ?? await ownerInputRequest(service, path, method, value) ?? panelRequest(service, path, method, value); send(reply.status, reply.value);
     } catch (error) { send(error instanceof RevisionConflict ? 409 : 400, { error: error instanceof OwnerInputError
       ? ownerInputErrorMessage(error.code) : redact(error instanceof Error ? error.message : 'Invalid request', 1000),
       ...(error instanceof OwnerInputError ? { code: error.code } : {}) }); }

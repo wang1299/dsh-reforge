@@ -22,6 +22,11 @@ test('native RPC shares experience state while fencing peers, repository, schema
     const task = service.begin('native', 'synthetic native task');
     const exp = service.propose(task.id, { title: 'Native candidate', strategy: 'Restore before raising', observedFacts: ['Source correction'], inferences: [], recommendations: [], requiredFiles: ['contract.py'] });
     assert.equal((await request('/api/state')).ok, true);
+    const repairPath = '/api/experience/' + exp.id + '/revalidation';
+    const preview = await request(repairPath);
+    assert.equal(preview.ok, true); if (preview.ok) assert.deepEqual(preview.value, { state: 'blocked', reason: 'execution_untrusted' });
+    assert.equal((await handler('request', { repositoryId: service.repositoryId, path: repairPath, method: 'POST', data: {} },
+      signal, { ...peer, dispose: () => peer.dispose() })).ok, false);
     assert.equal((await handler('info', {}, signal, { ...peer, dispose: () => peer.dispose() })).ok, false);
     assert.equal((await call('info', { sessionId: 'outside' })).ok, false);
     assert.equal((await call('request', { repositoryId: 'other', path: '/api/state', method: 'GET' })).ok, false);

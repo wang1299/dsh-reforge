@@ -18,7 +18,7 @@ export interface VerificationPolicy {
 /** Optional isolated source-study probes; environment values are never part of persisted verification. */
 export function verificationRuntime(policy: Pick<VerificationPolicy, 'python' | 'probeEnvironment'>) {
   const isolated = policy.probeEnvironment;
-  const options = { encoding: 'utf8' as const, windowsHide: true, ...(isolated ? {
+  const options = { encoding: 'utf8' as const, windowsHide: true, stdio: 'pipe' as const, ...(isolated ? {
     env: { ...isolated, PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1', PYTEST_ADDOPTS: '', PYTEST_PLUGINS: '' }, timeout: 5000, maxBuffer: 4096,
   } : {}) };
   const prefix = isolated ? ['-I', '-B'] : [];
