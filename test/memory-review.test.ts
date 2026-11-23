@@ -128,3 +128,14 @@ test('valid configuration with no store stays missing; malformed CLI cursors and
     assert.deepEqual(await readdir(home), before);
   }
 });
+
+test('broken Git metadata cannot bypass the CLI redaction boundary through subprocess stderr', async () => {
+  const home = await work(); const repo = join(home, 'broken-repository'); await mkdir(repo);
+  const marker = 'PRIVATE_GIT_TARGET_NOT_FOR_STDERR';
+  await writeFile(join(repo, '.git'), 'gitdir: ' + join(home, marker).replaceAll('\\', '/') + '\n');
+  const config = join(home, 'config.json'); await writeFile(config, JSON.stringify({ repoRoot: repo }));
+  const cli = spawnSync(process.execPath, ['dist/src/cli.js', 'memory-review', '--config', config, '--stopped'], { encoding: 'utf8', windowsHide: true });
+  assert.equal(cli.status, 1); assert(!cli.stderr.includes(marker)); assert(!cli.stderr.includes(home)); assert(!cli.stderr.includes('fatal:'));
+  assert.equal(JSON.parse(cli.stderr).changedAuthorization, false);
+  assert.deepEqual(await readdir(home), ['broken-repository', 'config.json']);
+});
