@@ -237,7 +237,7 @@ if(editable){const select=node('select');select.setAttribute('aria-label','事�
 if(editable){root.append(node('p','来源变化时建立新版本，未变化时保留原版本与反馈。每条事实设为所选一个来源；未选择则保持来源缺失。','muted'));const save=node('button','保存事实来源','primary');save.onclick=()=>{const citations=[];for(let i=0;i<choices.length;i++){const source=options.find(s=>s.id===choices[i].value);if(source)citations.push({...p.facts[i],evidenceId:source.id,evidenceDigest:source.digest})}action('/api/experience/'+e.id+'/evidence',{revision:e.revision,citations},save)};root.append(save)}}
 
 function renderReplay(root,e){
- const reasons={execution_untrusted:'此仓库尚未授权执行测试。',manual_source_required:'此入口仅支持已结束的手工 Git 修复任务。',source_incomplete:'历史测试或事实来源不完整。',dependencies_changed:'依赖条件已变，请先人工核对环境。',no_code_drift:'此经验的代码条件仍匹配。',committed_conditions_required:'请核对代码条件与已提交的 Git 文件。',test_contract_changed:'独立验收内容或回归入口已变化。',unavailable:'当前无法核对仓库或来源。'};
+ const reasons={execution_untrusted:'此仓库尚未授权执行测试。',manual_source_required:'此入口仅支持已结束的手工 Git 修复任务。',source_incomplete:'历史测试或事实来源不完整。',dependencies_changed:'依赖条件已变，请先人工核对环境。',no_code_drift:'此经验的代码条件仍匹配。',committed_conditions_required:'请核对代码条件与已提交的 Git 文件。',test_contract_changed:'独立验收内容、回归入口或其中的文件已变化。',unavailable:'当前无法核对仓库或来源。'};
  const path='/api/experience/'+e.id+'/revalidation';
  const hint=node('p','','muted');hint.setAttribute('role','status');
  const inspect=button('检查能否复验',async()=>{

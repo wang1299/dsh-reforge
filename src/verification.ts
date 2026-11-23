@@ -116,6 +116,7 @@ async function runPytest(python: string, args: string[], cwd: string, report: st
 }
 export async function verifyRepair(
   root: string, taskId: string, baseCommit: string, fixCommit: string, policy: VerificationPolicy, signal?: AbortSignal,
+  expectedAcceptanceDigest?: string,
 ): Promise<Verification> {
   signal?.throwIfAborted();
   if (!policy.trusted) throw new Error('Explicit repository execution trust is required');
@@ -128,7 +129,7 @@ export async function verifyRepair(
   if (current.commit !== fixCommit) throw new Error('Repair commit must be the current repository HEAD');
   return verifyPair(root, taskId, baseCommit, fixCommit, policy, current.scope.dependencyDigest,
     (commit, target) => materialize(root, commit, target),
-    redact(git(root, ['diff', '--no-ext-diff', '--no-textconv', baseCommit, fixCommit, '--', '*.py']), 8000), {}, () => {}, signal);
+    redact(git(root, ['diff', '--no-ext-diff', '--no-textconv', baseCommit, fixCommit, '--', '*.py']), 8000), {}, () => {}, signal, expectedAcceptanceDigest);
 }
 
 /** The version SHAs here refer to the private snapshot store, never the user's HEAD. */
@@ -153,7 +154,7 @@ export async function verifyWorkspaceRepair(root: string, taskId: string, base: 
 
 async function verifyPair(root: string, taskId: string, baseCommit: string, fixCommit: string, policy: VerificationPolicy,
   dependencyDigest: string, load: (commit: string, target: string) => Promise<void>, diff: string,
-  capture: Record<string, string>, check: () => void, signal?: AbortSignal): Promise<Verification> {
+  capture: Record<string, string>, check: () => void, signal?: AbortSignal, expectedAcceptanceDigest?: string): Promise<Verification> {
   const current = snapshot(root);
   const acceptanceRoot = await realpath(policy.acceptanceDir);
   const rel = relative(current.root, acceptanceRoot);
@@ -163,6 +164,9 @@ async function verifyPair(root: string, taskId: string, baseCommit: string, fixC
   const files = await acceptanceFiles(acceptanceRoot);
   if (!files.some((f) => /(?:^|\/)test_[^/]+\.py$/.test(f.path))) throw new Error('No independent acceptance tests');
   const acceptanceDigest = digest(files.map((f) => `${f.path}:${digest(f.bytes)}`).join('\n'));
+  if (expectedAcceptanceDigest !== undefined && acceptanceDigest !== expectedAcceptanceDigest) {
+    throw new Error('Independent acceptance no longer matches the selected source');
+  }
   const workspace = await mkdtemp(join(tmpdir(), 'dsh-reforge-verify-'));
   try {
     const baseDir = join(workspace, 'base'); const fixDir = join(workspace, 'fixed'); const testsDir = join(workspace, 'acceptance');

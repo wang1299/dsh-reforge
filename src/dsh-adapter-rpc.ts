@@ -52,8 +52,9 @@ export function mountNative(connection: HostConnectionHandle, handler: Connectio
 
 /** Connection owns authentication; only its actual operator object may use this channel. */
 export function nativeHandler(service: EvolveService, operator: PeerScope, active: () => boolean, matchesSession: (id: string) => boolean,
-  resolveCarrier: (id: string) => OwnerTaskCarrier | null = () => null): ConnectionRpcHandler {
-  return async (endpoint, payload, signal, peer) => {
+  resolveCarrier: (id: string) => OwnerTaskCarrier | null = () => null,
+  host?: { signal: AbortSignal; pending: Set<Promise<unknown>> }): ConnectionRpcHandler {
+  const handle: ConnectionRpcHandler = async (endpoint, payload, signal, peer) => {
     const fail = (code: string, message: string) => ({ ok: false as const, error: { code, message, details: {} } });
     if (!active() || signal.aborted) return fail('unavailable', '插件连接已结束，请重新打开。');
     if (peer !== operator) return fail('forbidden', '此操作需要 DSH 本机用户身份。');
@@ -77,5 +78,11 @@ export function nativeHandler(service: EvolveService, operator: PeerScope, activ
       if (error instanceof OwnerInputError) return fail(error.code, ownerInputErrorMessage(error.code));
       return fail(error instanceof RevisionConflict ? 'conflict' : 'invalid', error instanceof RevisionConflict ? '经验版本已变化，请载入最新记录后再保存。' : '未完成操作，请核对内容、来源与当前版本。');
     }
+  };
+  if (!host) return handle;
+  return async (endpoint, payload, signal, peer) => {
+    const request = Promise.resolve(handle(endpoint, payload, AbortSignal.any([host.signal, signal]), peer));
+    host.pending.add(request);
+    try { return await request; } finally { host.pending.delete(request); }
   };
 }

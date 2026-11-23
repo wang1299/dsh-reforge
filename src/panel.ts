@@ -20,7 +20,11 @@ async function body(request: IncomingMessage): Promise<unknown> {
 export async function startPanel(service: EvolveService): Promise<{ url: string; origin: string; token: string; close: () => Promise<void> }> {
   try { service.ownerInput.recover(); } catch { /* Keep the diagnostics page available without resetting owner metadata. */ }
   const token = randomBytes(32).toString('hex'); let origin = '';
-  const server = createServer((request, response) => { void handle(request, response); });
+  const pending = new Set<Promise<void>>();
+  const server = createServer((request, response) => {
+    const run = handle(request, response); pending.add(run);
+    void run.finally(() => pending.delete(run));
+  });
   async function handle(request: IncomingMessage, response: ServerResponse): Promise<void> {
     const send = (status: number, value: unknown): void => { response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); response.end(JSON.stringify(value)); };
     response.setHeader('Cache-Control', 'no-store'); response.setHeader('Referrer-Policy', 'no-referrer');
@@ -50,5 +54,8 @@ export async function startPanel(service: EvolveService): Promise<{ url: string;
   const address = server.address(); if (!address || typeof address === 'string') throw new Error('Missing local address');
   origin = `http://127.0.0.1:${address.port}`;
   return { origin, token, url: origin + '/#token=' + token,
-    close: () => new Promise<void>((resolveClose, reject) => { server.close((error) => error ? reject(error) : resolveClose()); server.closeAllConnections(); }) };
+    close: async () => {
+      await new Promise<void>((resolveClose, reject) => { server.close((error) => error ? reject(error) : resolveClose()); server.closeAllConnections(); });
+      await Promise.allSettled([...pending]);
+    } };
 }

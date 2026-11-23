@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { idSchema, RevisionConflict, shaSchema, type Experience, type TestRun } from './domain.js';
+import { idSchema, relativePath, RevisionConflict, shaSchema, type Experience, type TestRun } from './domain.js';
 import { verificationEvidence } from './evidence.js';
 import { historicalProof } from './memory-review.js';
-import { applicability, committedScopeMatches, git, snapshot } from './repository.js';
+import { applicability, committedScopeMatches, git, gitBytes, snapshot } from './repository.js';
 import type { EvolveService } from './service.js';
 import { acceptanceDigest, passes, verifiedCases, verifyRepair } from './verification.js';
 
@@ -10,6 +10,17 @@ const selection = z.object({ expectedRevision: z.number().int().positive(), expe
 type BlockReason = 'execution_untrusted' | 'manual_source_required' | 'source_incomplete' | 'dependencies_changed'
   | 'no_code_drift' | 'committed_conditions_required' | 'test_contract_changed' | 'unavailable';
 const blocked = (reason: BlockReason) => ({ state: 'blocked' as const, reason });
+
+// Fixed transition reasons fit the existing strict v9 records. They restrict generic
+// verification only; a reason string never grants eligibility or repository execution.
+const replayReasons = {
+  pending: 'Owner requested independent replay after committed code drift',
+  failed: 'Owner replay failed historical acceptance or regression requirements',
+  verified: 'Owner replay passed historical acceptance and regression requirements',
+};
+export function assertOrdinaryVerificationAllowed(experience: Experience): void {
+  if (Object.values(replayReasons).includes(experience.reason)) throw new Error('Owner must explicitly revise this maintenance version before ordinary verification or source changes');
+}
 
 function inspect(service: EvolveService, id: string) {
   if (!service.policy.trusted) return blocked('execution_untrusted');
@@ -32,6 +43,11 @@ function inspect(service: EvolveService, id: string) {
   if (git(service.root, ['status', '--porcelain', '--untracked-files=no'])
     || !committedScopeMatches(service.root, current.commit, current.scope)) return blocked('committed_conditions_required');
   git(service.root, ['merge-base', '--is-ancestor', proof.fixCommit, current.commit]);
+  // Tree IDs pin every tracked file under the regression path, including same-name assertions.
+  const regressionTree = (commit: string) => gitBytes(service.root, ['--literal-pathspecs', 'ls-tree', '-z', '--full-tree',
+    commit, '--', relativePath.parse(service.policy.regressionPath)]);
+  const previousTree = regressionTree(proof.fixCommit);
+  if (!previousTree.length || !previousTree.equals(regressionTree(current.commit))) return blocked('test_contract_changed');
   return { state: 'ready' as const, experience, proof, current, citations: provenance.citations,
     selection: { expectedRevision: experience.revision, expectedCommit: current.commit, expectedProof: proof.id } };
 }
@@ -63,14 +79,14 @@ export async function revalidateMemory(service: EvolveService, id: string, input
       || plan.current.commit !== selected.expectedCommit) throw new RevisionConflict();
     signal?.throwIfAborted();
     const candidate: Experience = { ...plan.experience, revision: plan.experience.revision + 1, status: 'candidate', verificationId: null,
-      scope: plan.current.scope, reason: 'Owner requested independent replay after committed code drift', createdAt: new Date().toISOString() };
+      scope: plan.current.scope, reason: replayReasons.pending, createdAt: new Date().toISOString() };
     service.store.putExperience(candidate, plan.citations);
     return { ...plan, candidate };
   });
   if (claimed.state === 'blocked') return claimed;
   const { proof, candidate } = claimed;
   try {
-    const report = await verifyRepair(service.root, candidate.sourceTaskId, proof.baseCommit, selected.expectedCommit, service.policy, signal);
+    const report = await verifyRepair(service.root, candidate.sourceTaskId, proof.baseCommit, selected.expectedCommit, service.policy, signal, proof.acceptanceDigest);
     return service.store.transaction(() => {
       signal?.throwIfAborted();
       const latest = service.requireExperience(id);
@@ -91,7 +107,7 @@ export async function revalidateMemory(service: EvolveService, id: string, input
       service.store.putEvidence(verificationEvidence(report));
       const revision = candidate.revision + 1;
       service.store.putExperience({ ...candidate, revision, status: report.verified ? 'source_verified' : 'candidate',
-        verificationId: report.id, reason: report.reason, createdAt: new Date().toISOString() }, provenance.citations);
+        verificationId: report.id, reason: report.verified ? replayReasons.verified : replayReasons.failed, createdAt: new Date().toISOString() }, provenance.citations);
       return { state: report.verified ? 'verified' as const : 'failed' as const, revision, verificationId: report.id };
     });
   } catch (error) {
