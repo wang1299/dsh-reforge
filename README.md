@@ -35,6 +35,8 @@ DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-veri
 
 ## 能做什么
 
+开发分支T073提供[验收驱动的修复 Agent 示例](examples/repair-agent/README.md)：结构化依赖计划、四个原生任务工具、有限重规划和独立测试，连接已有经验检索与预算上下文。响应为脚本模拟，工具与验收实际执行；尚未合并/发行，不代表真实模型规划或收益。
+
 开发分支T072提供[本地语义记忆规划与拒选对照](docs/evaluation/semantic-memory-v1.md)：复用固定本地模型，区分来源资格、语义分数和事实预算。36条单候选评测中，意图门槛相对纯余弦减少11次误供、牺牲2个正例；仍为离线候选，未接默认DSH或发行，不代表Agent成功率提升。
 
 开发分支T071新增[Agent经验上下文编译](docs/agent-context.md)：在真实DSH请求中按来源、相关性、去冗余和字节预算规划经验参考；不改变默认行为，尚未合并或发行。包含[公开求职项目研究](docs/research/agent-projects-20261115.md)与可重放的同预算算法对照，不以合成指标宣称Agent成功率提升。

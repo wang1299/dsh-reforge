@@ -1,5 +1,7 @@
 # DSH-Reforge documentation
 
+T073 source example: [acceptance-driven repair Agent](../examples/repair-agent/README.md#english). Structured dependency plans, native tools, bounded context and qualified memory, verified with a scripted adapter and real restricted acceptance. Zero provider HTTP; not autonomous-model or task-benefit evidence, not published.
+
 T072 development branch: [local semantic admission and full abstention trade-offs](evaluation/semantic-memory-v1.md#english). Single-candidate synthetic evaluation; intent gating removes11 false offers but loses2 positives versus cosine. Offline only; no Agent task-benefit claim.
 
 Development branch T071: [source-preserving Agent context planning](agent-context.md), [frozen comparison and limitations](evaluation/context-packing-v1.md#english). Source-only, opt-in, not merged or published. MMR did not beat source-order on synthetic facet coverage; byte-budget compliance is separate from Agent task benefit.

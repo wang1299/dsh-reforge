@@ -97,7 +97,8 @@
     "compat:matrix": "npm run build && node scripts/dsh-matrix.mjs",
     "context:evaluate": "tsc && node dist/scripts/context-evaluate.js",
     "memory:contracts": "tsc && node dist/scripts/semantic-memory-contracts.js",
-    "memory:evaluate": "tsc && node dist/scripts/semantic-memory-evaluate.js"
+    "memory:evaluate": "tsc && node dist/scripts/semantic-memory-evaluate.js",
+    "agent:demo": "tsc && node dist/scripts/repair-agent-demo.js"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.5",

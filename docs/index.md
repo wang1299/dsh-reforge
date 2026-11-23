@@ -1,5 +1,7 @@
 # DSH-Reforge 文档
 
+T073开发分支：[验收驱动的修复 Agent 示例](../examples/repair-agent/README.md)。原生 Tool Calling、结构化计划与重规划、经验上下文及独立验收；零 provider HTTP 脚本演练，不是模型效果评测，未发行。
+
 [English](index.en.md) · [版本与发行状态](release-status.md)
 
 开发分支T072：[本地语义准入/意图拒选与完整取舍](evaluation/semantic-memory-v1.md)。固定单候选合成评测，意图门槛相对余弦减少11次负例误供、丢2个正例；尚未接默认DSH或证明Agent收益。
