@@ -28,22 +28,24 @@
 
 DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-verified Python bug fixes, with scoped retrieval for later tasks.
 
-**本发行版本：`dsh-reforge@0.1.0-alpha.2`，实验性 alpha。** 包含新版工作台、完整示例、配置检查与备份恢复。公开 npm/Release 是否已完成核验，以[版本状态](docs/release-status.md)与 [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113) 为准。本项目由社区独立开发，不代表 DeepSeek 官方审核、推荐或安全认证。
+**公开版本为 `dsh-reforge@0.1.0-alpha.2`，实验性 alpha。** 工作台、配置检查与备份恢复的发行记录及下载摘要见[版本状态](docs/release-status.md)与 [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113)。本项目由社区独立开发，不代表 DeepSeek 官方审核、推荐或安全认证。
 
 
 精确兼容 DSH `0.2.0-rc.2` 和 `0.2.1-rc.5`，采用独立适配层与 Windows/Linux 四组合检查；范围见[版本矩阵](docs/dsh-version-matrix.md)。旧公开 alpha.1 仅支持前一个宿主；其他 DSH 版本需另行验证。
 
 ## 能做什么
 
-开发分支T074新增[经验维护检查](docs/memory-maintenance.md)：显式只读检查来源、事实引用与当前代码/依赖条件，区分匹配、需要修订复验、未具资格和未知，提供分页建议。`npm run memory:demo`可运行真实合成来源的三个控制；不自动修订/执行测试、不调用模型，尚未合并或发行。
+### 主分支中的新功能
 
-T075 开发分支支持在经验详情预览并复验已提交的代码条件变化，保留原报告，按原验收与回归用例建立新的来源证明。只读报告也会标出同页共用一份测试报告的经验。[复验操作与可运行案例](docs/memory-maintenance.md#条件改变后如何复验)
+以下五项均在公开安装包 `0.1.0-alpha.2` 之后加入，可从 `main` 源码运行。
 
-开发分支T073提供[验收驱动的修复 Agent 示例](examples/repair-agent/README.md)：结构化依赖计划、四个原生任务工具、有限重规划和独立测试，连接已有经验检索与预算上下文。响应为脚本模拟，工具与验收实际执行；尚未合并/发行，不代表真实模型规划或收益。
+- [经验维护检查](docs/memory-maintenance.md)帮助所有者只读核对经验来源、事实引用和当前代码条件。`npm run memory:demo` 使用合成数据演示三种检查结果，无需调用模型。
+- [代码变更后的复验](docs/memory-maintenance.md#条件改变后如何复验)可在经验详情中预览，并由所有者按原验收和回归用例重新验证。原报告保留，维护报告也会标出同页共享测试证据的经验。
+- [验收驱动的修复 Agent 示例](examples/repair-agent/README.md)用脚本模拟模型响应，实际执行四种原生工具和独立测试，演示任务依赖、失败后的有限重规划，以及如何把合格经验放入上下文。
+- [本地语义记忆评测](docs/evaluation/semantic-memory-v1.md)比较何时提供经验、何时拒选。在 36 条单候选合成样例中，比起单用余弦相似度，加入意图门槛少了 11 次误供，也少选了 2 个正例。该策略仅用于离线评测。
+- [Agent 经验上下文编译](docs/agent-context.md)可在 DSH 请求中按字节预算选择事实并保留来源。该功能需显式启用。[同预算对照](docs/evaluation/context-packing-v1.md)记录了去冗余策略与简单源顺序的结果。另见[公开项目研究](docs/research/agent-projects-20261115.md)。
 
-开发分支T072提供[本地语义记忆规划与拒选对照](docs/evaluation/semantic-memory-v1.md)：复用固定本地模型，区分来源资格、语义分数和事实预算。36条单候选评测中，意图门槛相对纯余弦减少11次误供、牺牲2个正例；仍为离线候选，未接默认DSH或发行，不代表Agent成功率提升。
-
-开发分支T071新增[Agent经验上下文编译](docs/agent-context.md)：在真实DSH请求中按来源、相关性、去冗余和字节预算规划经验参考；不改变默认行为，尚未合并或发行。包含[公开求职项目研究](docs/research/agent-projects-20261115.md)与可重放的同预算算法对照，不以合成指标宣称Agent成功率提升。
+### 公开版本的经验学习流程
 
 - **自动记录**：首次由仓库所有者开启后，正常对话中的直接用户请求形成执行片段；保存有限摘要与受限 Python 代码快照。
 - **验证来源**：在临时工作区重放原始失败、修复后的独立验收和回归测试。回合结束只触发检查，不能证明任务正确。

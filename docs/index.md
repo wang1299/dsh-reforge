@@ -1,14 +1,13 @@
 # DSH-Reforge 文档
 
-T074开发分支：[经验维护检查与复验建议](memory-maintenance.md)。只读所有者命令、来源/条件核对和零模型调用演练；不自动修订、复验或增加授权，尚未发行。
-
-T073开发分支：[验收驱动的修复 Agent 示例](../examples/repair-agent/README.md)。原生 Tool Calling、结构化计划与重规划、经验上下文及独立验收；零 provider HTTP 脚本演练，不是模型效果评测，未发行。
-
 [English](index.en.md) · [版本与发行状态](release-status.md)
 
-开发分支T072：[本地语义准入/意图拒选与完整取舍](evaluation/semantic-memory-v1.md)。固定单候选合成评测，意图门槛相对余弦减少11次负例误供、丢2个正例；尚未接默认DSH或证明Agent收益。
+以下工具和示例随 `main` 源码提供。公开安装包 `0.1.0-alpha.2` 尚未包含这些功能。
 
-开发分支T071：[有来源与预算的Agent经验上下文编译](agent-context.md)，包含实际宿主请求接入和零费用算法对照；尚未合并/发行，默认行为不变。
+- [检查经验与复验代码变更](memory-maintenance.md)涵盖只读检查、共享来源提示，以及由所有者确认后按原用例复验。
+- [验收驱动的修复 Agent 示例](../examples/repair-agent/README.md)用脚本响应演练原生工具、任务重规划和独立验收，全程无需模型 API。
+- [本地语义准入与拒选评测](evaluation/semantic-memory-v1.md)记录了单候选离线对照。与余弦相似度相比，意图门槛少了 11 次误供，也少选了 2 个正例。
+- [Agent 经验上下文编译](agent-context.md)说明如何在真实 DSH 请求中启用带来源和字节预算的经验参考，并复现同预算对照。
 
 最新真实研究：[三组均10/12，42次实际请求，未观察到通过率提升](evaluation/benefit-live-20261109.md)。源码工作台的“效果对照”可只读导入本机报告；使用和边界见[研究报告阅读指南](evaluation/study-report-view.md)。
 

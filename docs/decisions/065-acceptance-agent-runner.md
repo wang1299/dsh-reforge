@@ -1,6 +1,6 @@
 # ADR065：验收驱动的受限修复 Agent 与任务工具契约
 
-2026-11-16，T073 / [Issue #158](https://github.com/wang1299/dsh-reforge/issues/158)。先于实现；从未合并 PR157 的 9c2e24f 分支。保留插件定位，在显式开发演练入口连接规划、原生 Tool Calling、上下文与已有来源验证检索，不改默认 DSH、SQLite v9、旧授权或费用账本。
+2026-11-16，T073 / [Issue #158](https://github.com/wang1299/dsh-reforge/issues/158)。设计基于 T072 的 `9c2e24f`，先于实现。保留插件定位，在显式开发演练入口连接规划、原生 Tool Calling、上下文与已有来源验证检索，不改默认 DSH、SQLite v9、旧授权或费用账本。
 
 ## 决策与范围
 
@@ -15,6 +15,6 @@
 - 先实现纯核心与严格失败控制，再通过官方 AgentLoop + 原生工具调用的脚本 adapter 验证完整数据流。脚本按实际工具回执推进、从真实读取获取版本；参考修复只属于明确标注的演练，不能证明模型规划或任务收益。
 - 新建源库使用已有独立原始失败/修复/回归验证；演练目标执行真实受限 pytest。happy、已知失败后重规划、自称完成、未知执行、过期调用、ID冲突、并发/预算及来源漂移均要有控制。
 - 本轮无真实 provider、Key 读取或付费请求。安装既有仓库所带固定 Python wheels 不联网；保留旧研究/授权/unknown，不默认启动任何学习任务。
-- 目标检查、typecheck/lint/build、完整测试/compat、两平台两精确宿主版本矩阵、稳定 SHA 独立只读审查及 Draft PR；不会合并父 PR、发布包/Release或部署。设计/演练通过不等于实际 Agent 效果。
+- 目标检查、typecheck/lint/build、完整测试/compat、两平台两精确宿主版本矩阵、稳定 SHA 独立只读审查。设计/演练通过不等于实际 Agent 效果。
 
 后续真实模型入口必须另立冻结任务和预算/安全审查；本入口不能接收 endpoint、Key 或任意 provider 参数。
