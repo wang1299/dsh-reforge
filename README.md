@@ -7,7 +7,7 @@
 <p align="center"><strong>修复有据，经验可循。</strong></p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.2"><img src="https://img.shields.io/npm/v/dsh-reforge/alpha?label=npm%20alpha" alt="npm alpha" /></a>
+  <a href="https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.3"><img src="https://img.shields.io/npm/v/dsh-reforge/alpha?label=npm%20alpha" alt="npm alpha" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/dsh-version-matrix.md"><img src="https://img.shields.io/badge/DSH-0.2.0--rc.2%20%7C%200.2.1--rc.5-39424e" alt="DSH 0.2.0-rc.2 / 0.2.1-rc.5" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/actions/workflows/check.yml"><img src="https://github.com/wang1299/dsh-reforge/actions/workflows/check.yml/badge.svg?branch=main" alt="CI" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" /></a>
@@ -28,24 +28,24 @@
 
 DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-verified Python bug fixes, with scoped retrieval for later tasks.
 
-**公开版本为 `dsh-reforge@0.1.0-alpha.2`，实验性 alpha。** 工作台、配置检查与备份恢复的发行记录及下载摘要见[版本状态](docs/release-status.md)与 [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113)。本项目由社区独立开发，不代表 DeepSeek 官方审核、推荐或安全认证。
+**本版本为 `dsh-reforge@0.1.0-alpha.3`，实验性 alpha。** [发行说明](docs/releases/v0.1.0-alpha.3.md)列出功能入口和安装包内的可运行示例。[版本状态](docs/release-status.md)记录公开制品。本项目由社区独立开发。
 
 
 精确兼容 DSH `0.2.0-rc.2` 和 `0.2.1-rc.5`，采用独立适配层与 Windows/Linux 四组合检查；范围见[版本矩阵](docs/dsh-version-matrix.md)。旧公开 alpha.1 仅支持前一个宿主；其他 DSH 版本需另行验证。
 
 ## 能做什么
 
-### 主分支中的新功能
+### alpha.3 的新功能
 
-以下五项均在公开安装包 `0.1.0-alpha.2` 之后加入，可从 `main` 源码运行。
+安装包包含以下五项功能。修复 Agent 和语义评测可在独立目录按[发行说明](docs/releases/v0.1.0-alpha.3.md)运行。
 
-- [经验维护检查](docs/memory-maintenance.md)帮助所有者只读核对经验来源、事实引用和当前代码条件。`npm run memory:demo` 使用合成数据演示三种检查结果，无需调用模型。
+- [经验维护检查](docs/memory-maintenance.md)帮助所有者通过 `memory-review` 只读核对经验来源、事实引用和当前代码条件。在源码目录运行 `npm run memory:demo` 可用合成数据演示三种检查结果。
 - [代码变更后的复验](docs/memory-maintenance.md#条件改变后如何复验)可在经验详情中预览，并由所有者按原验收和回归用例重新验证。原报告保留，维护报告也会标出同页共享测试证据的经验。
 - [验收驱动的修复 Agent 示例](examples/repair-agent/README.md)用脚本模拟模型响应，实际执行四种原生工具和独立测试，演示任务依赖、失败后的有限重规划，以及如何把合格经验放入上下文。
 - [本地语义记忆评测](docs/evaluation/semantic-memory-v1.md)比较何时提供经验、何时拒选。在 36 条单候选合成样例中，比起单用余弦相似度，加入意图门槛少了 11 次误供，也少选了 2 个正例。该策略仅用于离线评测。
 - [Agent 经验上下文编译](docs/agent-context.md)可在 DSH 请求中按字节预算选择事实并保留来源。该功能需显式启用。[同预算对照](docs/evaluation/context-packing-v1.md)记录了去冗余策略与简单源顺序的结果。另见[公开项目研究](docs/research/agent-projects-20261115.md)。
 
-### 公开版本的经验学习流程
+### 经验学习流程
 
 - **自动记录**：首次由仓库所有者开启后，正常对话中的直接用户请求形成执行片段；保存有限摘要与受限 Python 代码快照。
 - **验证来源**：在临时工作区重放原始失败、修复后的独立验收和回归测试。回合结束只触发检查，不能证明任务正确。
@@ -86,7 +86,7 @@ DSH-Reforge is a DeepSeek Harness plugin for traceable experience from test-veri
 在自己的 DSH 环境安装准确版本：
 
 ```sh
-dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2
+dsh plugin --profile web add dsh-reforge@0.1.0-alpha.3
 ```
 
 停止原 DSH 进程，再使用同一 profile 启动 Web，打开启动器打印的完整认证地址。**左侧「插件」→「dsh-reforge」→ 详情操作页**即可查看；配置仓库中的已有会话，可从与「对话／轨迹」并列的「经验」标签进入。打开页面不调用模型。

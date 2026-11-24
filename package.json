@@ -1,6 +1,6 @@
 {
   "name": "dsh-reforge",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Evidence-based experience learning for DeepSeek Harness",
   "type": "module",
   "license": "MIT",
@@ -34,12 +34,40 @@
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
-    "docs/installation.md"
+    "docs/installation.md",
+    "docs/releases/v0.1.0-alpha.3.md",
+    "examples/repair-agent/README.md",
+    "examples/semantic-memory/replay.mjs",
+    "scripts/study-python-worker.py",
+    "compat/study-runtime/requirements.txt",
+    "compat/retrieval-embedding/model.json",
+    "compat/retrieval-embedding/README.md",
+    "compat/semantic-memory/calibration.json",
+    "compat/semantic-memory/README.md",
+    "test/fixtures/semantic-memory-v1.json",
+    "test/fixtures/semantic-memory-v1-holdout-vectors.json",
+    "docs/evaluation/semantic-memory-v1-holdout.json",
+    "dist/test/context-fixture.js",
+    "dist/scripts/repair-agent-demo.js",
+    "dist/scripts/benefit-study-preflight.js",
+    "dist/scripts/pilot-fixtures.js",
+    "dist/scripts/benefit-study-cases.js",
+    "dist/scripts/study-admission.js",
+    "dist/scripts/study-bounded-python.js",
+    "dist/scripts/study-owned-path.js",
+    "dist/scripts/study-python-vendor.js",
+    "dist/scripts/repair-agent-workspace.js",
+    "dist/scripts/benefit-study-files.js",
+    "dist/scripts/semantic-memory-data.js",
+    "dist/scripts/semantic-memory-evaluation.js"
   ],
   "exports": {
     ".": "./dist/src/dsh.js",
     "./core": "./dist/src/service.js",
-    "./client": "./dist/src/client.js"
+    "./client": "./dist/src/client.js",
+    "./semantic-memory": "./dist/src/semantic-memory.js",
+    "./repair-agent": "./dist/src/repair-agent.js",
+    "./repair-tools": "./dist/src/dsh-adapter-repair.js"
   },
   "bin": {
     "dsh-reforge": "./dist/src/cli.js"
@@ -99,7 +127,9 @@
     "memory:contracts": "tsc && node dist/scripts/semantic-memory-contracts.js",
     "memory:evaluate": "tsc && node dist/scripts/semantic-memory-evaluate.js",
     "agent:demo": "tsc && node dist/scripts/repair-agent-demo.js",
-    "memory:demo": "tsc && node dist/scripts/memory-review-demo.js"
+    "memory:demo": "tsc && node dist/scripts/memory-review-demo.js",
+    "example:repair-agent": "node dist/scripts/repair-agent-demo.js",
+    "example:semantic-memory": "node examples/semantic-memory/replay.mjs"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.5",

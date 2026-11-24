@@ -2,22 +2,22 @@
 
 首次阅读建议先看[快速开始](getting-started/quickstart.md)与[版本状态](release-status.md)。零模型费用的[完整客户表单案例](../examples/customer-form/README.md)可先体验修复与来源验证；排障见[FAQ](faq.md)，升级、恢复、卸载前看[数据运维](maintenance.md)。本页保留详细配置及历史升级步骤。
 
-可选的 `memoryContext` 字段可用于从 `main` 构建的插件，公开安装包 `0.1.0-alpha.2` 不支持该字段；[启用范围与负结果](agent-context.md)单独列出。未启用时保持原行为，不需要更改现有配置。
+`0.1.0-alpha.3` 支持可选 `memoryContext` 配置。所有者可按[上下文指南](agent-context.md)启用。首次使用可保留默认设置。
 
-包名 `dsh-reforge`，品牌 DSH-Reforge。本发行版本 `0.1.0-alpha.2`；公开制品核验见[版本状态](release-status.md)和 [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113)。首发alpha.1保留为历史制品，源码、本机tgz与实际公开结果分别核验。
+本发行版本为 `dsh-reforge@0.1.0-alpha.3`。包内示例、下载核对入口和历史版本见[发行说明](releases/v0.1.0-alpha.3.md)与[版本状态](release-status.md)。
 
 ## 版本选择
 
 | 安装包 | 宿主范围 | 状态 |
 |---|---|---|
 | npm `0.1.0-alpha.1` | 仅 DSH `0.2.0-rc.2` | 原公开版本，不改写 |
-| 本发行 `0.1.0-alpha.2` | 精确 `0.2.0-rc.2` / `0.2.1-rc.5`，双平台矩阵通过 | npm/Release公开核验状态见上方链接 |
+| `0.1.0-alpha.2` 与 `0.1.0-alpha.3` | 精确 `0.2.0-rc.2` / `0.2.1-rc.5`，双平台矩阵通过 | npm/Release公开核验状态见上方链接 |
 
 若在 `0.2.1-rc.5` 中搜索到 alpha.1，安装器拒绝是正确的兼容边界，重试或关闭离线保护不能解决。不要强装、扩大版本例外或直接降级原数据库。后续兼容策略见[矩阵指南](dsh-version-matrix.md)。
 
 ## 1. 准备环境和配置
 
-alpha.2按上表选择精确宿主。Node.js ≥24.10。需要运行来源验证时，准备 Git、Python ≥3.10、pytest（CI 9.1.1），以及你信任的 Python 仓库。矩阵之外的 DSH 版本暂未验证；不要用版本例外绕过本项目的兼容声明。
+按上表选择精确宿主。Node.js ≥24.10。需要运行来源验证时，准备 Git、Python ≥3.10、pytest（CI 9.1.1），以及你信任的 Python 仓库。矩阵之外的 DSH 版本暂未验证；不要用版本例外绕过本项目的兼容声明。
 
 创建一个不会提交到 Git 的本机 JSON 文件，例如只读体验：
 
@@ -44,7 +44,7 @@ $env:DSH_REFORGE_CONFIG = 'D:\my-local-config\reforge.json'
 在已安装固定版本 DSH 的终端执行：
 
 ```sh
-dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2
+dsh plugin --profile web add dsh-reforge@0.1.0-alpha.3
 ```
 
 从源码试装时，可运行 `npm ci --ignore-scripts`、`npm run build`、`npm pack`，将上面的包规格替换为生成 tgz 的绝对路径。本机重建包不能代替已发布版本的完整性证明。不要安装名为 `dsh-evolve` 的 registry 包，它属于其他项目。
@@ -111,7 +111,7 @@ dsh web --profile web
 
    ```sh
    dsh plugin --profile web remove dsh-evolve
-   dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2
+   dsh plugin --profile web add dsh-reforge@0.1.0-alpha.3
    ```
 
 4. 使用原配置和 dataDir 重启。旧环境变量仍可用。检查经验、来源、版本和使用次数保持。
@@ -132,7 +132,7 @@ dsh web --profile web
 
 ## 排查
 
-- 找不到入口：确认启动 DSH 的 profile 与安装 profile 相同，alpha.2宿主为精确0.2.0-rc.2或0.2.1-rc.5，且安装后已重启。
+- 找不到入口：确认启动 DSH 的 profile 与安装 profile 相同，受支持宿主为精确0.2.0-rc.2或0.2.1-rc.5，且安装后已重启。
 - 页面要求认证：重开 `dsh web` 打印的完整地址。
 - 模式关闭/次数不足：按页面原因检查本机配置；Agent和面板不能替你开启共享或增加次数。
 - Windows权限错误：按 DSH 官方诊断流程，仅对明确授权目录修复；本插件不扩大系统权限。

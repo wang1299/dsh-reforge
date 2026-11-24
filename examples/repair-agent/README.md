@@ -1,8 +1,10 @@
 # 验收驱动的修复 Agent 演练
 
-这个源码示例把结构化计划、原生 Tool Calling、上下文投影和来源验证后的经验参考连接起来。**模型响应由脚本生成，工具实际执行，pytest 实际验收**；不能当作模型自主规划、真实任务成功率或记忆收益的实验。DSH 负责模型循环，本项目负责计划与工具准入、状态和验收。
+这个示例把结构化计划、原生 Tool Calling、上下文投影和来源验证后的经验参考连接起来。**模型响应由脚本生成，工具实际执行，pytest 实际验收**；不能当作模型自主规划、真实任务成功率或记忆收益的实验。DSH 负责模型循环，本项目负责计划与工具准入、状态和验收。
 
 ## 运行
+
+安装包用户可在独立空目录按[alpha.3 发行说明](https://github.com/wang1299/dsh-reforge/blob/v0.1.0-alpha.3/docs/releases/v0.1.0-alpha.3.md)运行同一演练，无需克隆仓库。下方命令用于源码目录。
 
 在仓库根目录准备 Node 24.19.0、Python 3.10 和已安装的项目依赖。Python 需可运行 pytest 9.1.1；文件操作与验收仅发生在仓库忽略的 `.probe-work/t073-repair-agent/run-*` 新目录。
 
@@ -36,7 +38,7 @@ npm run agent:demo -- unknown
 
 ## 当前边界与后续
 
-未接入默认 DSH UI/插件行为，未发行新 npm 包；旧 SQLite v9、私人经验、费用占额、授权和提炼次数不读取或修改。多候选语义扩展、反例学习、全历史上下文压缩和真实模型收益仍待后续任务。
+此示例在 alpha.3 中显式运行。旧 SQLite v9、私人经验、费用占额、授权和提炼次数不读取或修改。多候选语义扩展、反例学习、全历史上下文压缩和真实模型收益仍待后续任务。
 
 后续应冻结未见任务、验收与预算，再用真实模型比较无记忆/普通检索/条件检索，并消融规划与上下文机制。现在只能使用报告中的工程验证计数，不能编造成功率、Token节约或费用收益。
 
@@ -44,4 +46,4 @@ npm run agent:demo -- unknown
 
 ## English
 
-This source-only example combines host-validated plans, four native tools, bounded context projections and source-qualified memory. Responses are scripted; the official DSH AgentLoop and restricted Python acceptance actually run. It is not an autonomous-model or task-benefit benchmark. Run the four commands above from the repository root; no model API key, endpoint or paid provider is accepted. The 8192-byte limit covers only the context projection, not the SDK conversation or model tokens. No production data, grants, budgets or published artifacts change.
+This example in the alpha.3 package and source tree combines host-validated plans, four native tools, bounded context projections and source-qualified memory. Responses are scripted; the official DSH AgentLoop and restricted Python acceptance actually run. It is not an autonomous-model or task-benefit benchmark. Run the four commands above from the repository root; no model API key, endpoint or paid provider is accepted. The 8192-byte limit covers only the context projection, not the SDK conversation or model tokens. No production data, grants, budgets or published artifacts change.

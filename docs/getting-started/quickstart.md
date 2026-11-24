@@ -10,7 +10,7 @@
 
 ## 2. 选择能安装的版本
 
-先看[发行状态](../release-status.md)和[精确矩阵](../dsh-version-matrix.md)。本发行alpha.2支持 DSH 0.2.0-rc.2 / 0.2.1-rc.5；旧alpha.1只支持前者。公开状态未确认时可先跑第一步，勿用旧包代替或降级业务环境。
+先看[发行状态](../release-status.md)和[精确矩阵](../dsh-version-matrix.md)。本发行 alpha.3 支持 DSH 0.2.0-rc.2 / 0.2.1-rc.5；旧alpha.1只支持前者。公开状态未确认时可先跑第一步，勿用旧包代替或降级业务环境。
 
 ## 3. 只读绑定自己的仓库
 

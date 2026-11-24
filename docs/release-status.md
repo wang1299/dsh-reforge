@@ -1,8 +1,10 @@
 # 版本、兼容与证据 / Version, compatibility and evidence
 
-公开元数据与下载摘要核对 / Metadata and downloaded hashes checked: **2026-11-09**。下方安装/模块验证保留2026-11-05的原验收日期，不改标为本次重跑。发行状态以 npm 注册表和 GitHub Release 的实际制品为准，源码或本机 tgz 不能代替公开发行。
+alpha.2 历史元数据与下载摘要核对 / Historical alpha.2 metadata and downloaded hashes checked: **2026-11-09**。下方安装/模块验证保留2026-11-05的原验收日期，不改标为本次重跑。发行状态以 npm 注册表和 GitHub Release 的实际制品为准，源码或本机 tgz 不能代替公开发行。
 
-主分支源码 / Available from `main`: [T061–T067 研究与报告工具](tasks/T068-source-integration.md)、[经验上下文编译](agent-context.md)、[离线语义评测](evaluation/semantic-memory-v1.md)、[修复 Agent 示例](../examples/repair-agent/README.md)和[经验维护与复验](memory-maintenance.md)。这些增量均在公开 npm 包 `0.1.0-alpha.2` 之后合并。The published alpha.2 package predates these source features.
+`0.1.0-alpha.3` 收录上下文编译、离线语义准入、修复 Agent、只读维护和所有者复验，精确支持 DSH `0.2.0-rc.2` 与 `0.2.1-rc.5`。[安装与示例 / Install and examples](releases/v0.1.0-alpha.3.md) · [npm 元数据 / Registry metadata](https://registry.npmjs.org/dsh-reforge/0.1.0-alpha.3) · [GitHub prerelease](https://github.com/wang1299/dsh-reforge/releases/tag/v0.1.0-alpha.3) · [公开下载核验记录 / Publication receipts](https://github.com/wang1299/dsh-reforge/issues/167)。
+
+以下保留 alpha.2 及更早版本的历史核验结果。The following dated checks describe earlier artifacts.
 
 | 制品 / Artifact | 宿主 / Host | 状态 / Status |
 |---|---|---|
@@ -21,7 +23,7 @@ Alpha.2 includes the Tabler-style workbench and conservative owner tools. Run th
 d77ed34815109823e41ffd89a6e91306105061ded9fb0b6e47b7387320516610
 ```
 
-`alpha`和`latest`是可变安装入口，实际值以[注册表实时响应](https://registry.npmjs.org/-/package/dsh-reforge/dist-tags)和[本轮迁移回执#113](https://github.com/wang1299/dsh-reforge/issues/113)为准。复现本发行请锁定 `dsh-reforge@0.1.0-alpha.2`；不能将一个标签视为永久兼容保证。本页代码/制品证明不替代下方真实效果证据或外部试用。
+`alpha`和`latest`是可变安装入口，实际值以[注册表实时响应](https://registry.npmjs.org/-/package/dsh-reforge/dist-tags)和[本轮迁移回执#113](https://github.com/wang1299/dsh-reforge/issues/113)为准。复现此历史发行请锁定 `dsh-reforge@0.1.0-alpha.2`；不能将一个标签视为永久兼容保证。本页代码/制品证明不替代下方真实效果证据或外部试用。
 
 2026-11-09重新查询时，两个标签均为alpha.2；npm与GitHub API附件实际下载均177879字节、SHA256均为上方d77ed348摘要，npm SHA1/integrity及GitHub的SHA256SUMS/release.json摘要也一致，release.json仍指向adfee576源码。最初浏览器下载URL超时未计为通过，改经公开API附件下载后完成。没有执行公开包中的代码、改标签或发布新制品；旧安装证明的范围保持原记录。
 

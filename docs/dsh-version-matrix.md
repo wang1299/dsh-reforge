@@ -1,6 +1,6 @@
 # DSH 多版本兼容与适配维护
 
-本页说明 `dsh-reforge@0.1.0-alpha.2` 的精确验收范围。历史 npm alpha.1 仅支持0.2.0-rc.2；本发行的公开核验见[版本状态](release-status.md)，源码、安装验证和公开发行分别记录。
+本页说明 `dsh-reforge@0.1.0-alpha.3` 的宿主矩阵与验证流程（alpha.2 的历史回执另列）。历史 npm alpha.1 仅支持0.2.0-rc.2；本发行的公开核验见[版本状态](release-status.md)，源码、安装验证和公开发行分别记录。
 
 ## 版本矩阵
 

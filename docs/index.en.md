@@ -1,6 +1,6 @@
 # DSH-Reforge documentation
 
-These tools and examples are available in the `main` source tree. The published npm package `0.1.0-alpha.2` predates them.
+These features ship in `0.1.0-alpha.3`. [Run the repair Agent and semantic replay from the tarball](releases/v0.1.0-alpha.3.md).
 
 - [Review and revalidate repair memories](memory-maintenance.md#english). Inspect sources and shared evidence in a read-only report. After a committed code change, the owner can request a replay of the original tests.
 - [Run the acceptance-driven repair Agent](../examples/repair-agent/README.md#english). Scripted model responses drive real tools, bounded replanning and independent tests without provider calls.

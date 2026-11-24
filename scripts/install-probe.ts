@@ -16,9 +16,10 @@ import { installedScenarios } from './installed-learning-report.js';
 import { rehearseAutomatic } from './automatic-rehearsal.js';
 import { assertSupportedDshVersion } from '../src/dsh-adapter-policy.js';
 import { packageName } from '../src/identity.js';
+import { release } from './release-helpers.js';
 
 // Explicit, optional package verification. Uses synthetic data and never opens an owner's DSH profile.
-const archive = resolve(process.argv[2] ?? '.probe-work/dsh-reforge-0.1.0-alpha.2.tgz');
+const archive = resolve(process.argv[2] ?? `.probe-work/${packageName}-${release.version}.tgz`);
 const archiveDigest = createHash('sha256').update(await readFile(archive)).digest('hex');
 const learning = process.argv.includes('--learning');
 const workRoot = resolve('.probe-work'); await mkdir(workRoot, { recursive: true });

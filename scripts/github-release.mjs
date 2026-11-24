@@ -1,4 +1,4 @@
-// Runs only for the reviewed, authorized alpha.2 tag (ADR044).
+// Runs only for the reviewed, authorized alpha.3 tag (ADR068).
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
