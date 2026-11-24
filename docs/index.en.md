@@ -1,10 +1,11 @@
 # DSH-Reforge documentation
 
-T073 source example: [acceptance-driven repair Agent](../examples/repair-agent/README.md#english). Structured dependency plans, native tools, bounded context and qualified memory, verified with a scripted adapter and real restricted acceptance. Zero provider HTTP; not autonomous-model or task-benefit evidence, not published.
+These tools and examples are available in the `main` source tree. The published npm package `0.1.0-alpha.2` predates them.
 
-T072 development branch: [local semantic admission and full abstention trade-offs](evaluation/semantic-memory-v1.md#english). Single-candidate synthetic evaluation; intent gating removes11 false offers but loses2 positives versus cosine. Offline only; no Agent task-benefit claim.
-
-Development branch T071: [source-preserving Agent context planning](agent-context.md), [frozen comparison and limitations](evaluation/context-packing-v1.md#english). Source-only, opt-in, not merged or published. MMR did not beat source-order on synthetic facet coverage; byte-budget compliance is separate from Agent task benefit.
+- [Review and revalidate repair memories](memory-maintenance.md#english). Inspect sources and shared evidence in a read-only report. After a committed code change, the owner can request a replay of the original tests.
+- [Run the acceptance-driven repair Agent](../examples/repair-agent/README.md#english). Scripted model responses drive real tools, bounded replanning and independent tests without provider calls.
+- [Compare local semantic admission policies](evaluation/semantic-memory-v1.md#english). On the offline single-candidate evaluation, intent gating removed 11 false offers and lost two positives compared with cosine alone.
+- [Enable source-preserving context planning](agent-context.md) to fit cited facts within a byte budget. In the [frozen comparison](evaluation/context-packing-v1.md#english), MMR covered fewer relevant facets than source order.
 
 Latest real study: [all arms10/12;42 actual requests; no observed acceptance benefit](evaluation/benefit-live-20261109.md#english). The unpublished workbench can inspect a local report without uploads or model calls: [report reader](evaluation/study-report-view.md#english).
 

@@ -1,6 +1,6 @@
 # 语义记忆规划：首次冻结对照、拒选与代价
 
-2026-11-16 / T072 / [Issue156](https://github.com/wang1299/dsh-reforge/issues/156)。这是依赖未合并PR155的离线候选，**没有接入默认DSH，没有真实Agent解题、API费用或生产误用率结论**。[设计](../decisions/064-semantic-memory-admission.md) · [方法](semantic-memory-v1-method.md) · [复现](../../compat/semantic-memory/README.md)。
+2026-11-16 / T072 / [Issue156](https://github.com/wang1299/dsh-reforge/issues/156)。这是对单候选语义准入策略的离线评测，**没有接入默认DSH，没有真实Agent解题、API费用或生产误用率结论**。[设计](../decisions/064-semantic-memory-admission.md) · [方法](semantic-memory-v1-method.md) · [复现](../../compat/semantic-memory/README.md)。
 
 ## 数据、冻结和实际执行
 

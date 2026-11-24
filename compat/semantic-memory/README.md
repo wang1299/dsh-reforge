@@ -1,6 +1,6 @@
 # Local semantic memory experiment
 
-T072 is stacked on unmerged PR155. This is an offline single-experience admission/fact-planning candidate, not a default DSH policy, a qualified Store source bank or an Agent success claim. [Design](../../docs/decisions/064-semantic-memory-admission.md) and [fixed method](../../docs/evaluation/semantic-memory-v1-method.md).
+This is an offline single-experience admission/fact-planning candidate, not a default DSH policy, a qualified Store source bank or an Agent success claim. [Design](../../docs/decisions/064-semantic-memory-admission.md) and [fixed method](../../docs/evaluation/semantic-memory-v1-method.md).
 
 Corpus:12 author-visible families,6 development/6 evaluation;72 queries, balanced by English/Chinese and repair/documentation/contradictory request. Common programming primitives can overlap across families. Fact order is deterministically rotated before any inference. Thirty-six executable Python controls verify authored contracts, not semantic labels or model performance.
 

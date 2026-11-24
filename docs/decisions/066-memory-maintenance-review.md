@@ -1,6 +1,6 @@
 # ADR066：经验维护检查与复验建议
 
-2026-11-23，T074 / [Issue #160](https://github.com/wang1299/dsh-reforge/issues/160)。在实现前确定契约；从未合并 PR159 的 `64eb0bf` 创建增量分支，不合并父成果或部署。
+2026-11-23，T074 / [Issue #160](https://github.com/wang1299/dsh-reforge/issues/160)。以 T073 的 `64eb0bf` 为基线，在实现前确定契约。
 
 ## 问题与决定
 

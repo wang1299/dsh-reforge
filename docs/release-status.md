@@ -2,7 +2,7 @@
 
 公开元数据与下载摘要核对 / Metadata and downloaded hashes checked: **2026-11-09**。下方安装/模块验证保留2026-11-05的原验收日期，不改标为本次重跑。发行状态以 npm 注册表和 GitHub Release 的实际制品为准，源码或本机 tgz 不能代替公开发行。
 
-源码集成范围 / Source integration scope: [T068](tasks/T068-source-integration.md)覆盖T061–T067研究入口、只读结果页与运行检查改进；main/官网的实际交付状态见关联集成PR。官网更新不发布npm包；公开alpha.2不会自动获得这些源码功能。
+主分支源码 / Available from `main`: [T061–T067 研究与报告工具](tasks/T068-source-integration.md)、[经验上下文编译](agent-context.md)、[离线语义评测](evaluation/semantic-memory-v1.md)、[修复 Agent 示例](../examples/repair-agent/README.md)和[经验维护与复验](memory-maintenance.md)。这些增量均在公开 npm 包 `0.1.0-alpha.2` 之后合并。The published alpha.2 package predates these source features.
 
 | 制品 / Artifact | 宿主 / Host | 状态 / Status |
 |---|---|---|
