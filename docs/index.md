@@ -2,7 +2,7 @@
 
 [English](index.en.md) · [版本与发行状态](release-status.md)
 
-以下工具和示例随 `main` 源码提供。公开安装包 `0.1.0-alpha.2` 尚未包含这些功能。
+`0.1.0-alpha.3` 包含以下功能与示例。[从安装包运行两个示例](releases/v0.1.0-alpha.3.md)。
 
 - [检查经验与复验代码变更](memory-maintenance.md)涵盖只读检查、共享来源提示，以及由所有者确认后按原用例复验。
 - [验收驱动的修复 Agent 示例](../examples/repair-agent/README.md)用脚本响应演练原生工具、任务重规划和独立验收，全程无需模型 API。

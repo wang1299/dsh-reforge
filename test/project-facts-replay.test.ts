@@ -13,6 +13,11 @@ test('current-graph comparison rejects legacy package or root-range drift rather
   const original = JSON.parse(await readFile(fileURLToPath(new URL('../../compat/project-facts/locks/dsh-0.2.1-rc.5.lock.json', import.meta.url)), 'utf8'));
   const current = JSON.parse(await readFile(fileURLToPath(new URL('../../compat/dsh-0.2.1-rc.5.lock.json', import.meta.url)), 'utf8'));
   assertLegacyGraphPreserved(original, current);
+  const mismatched = structuredClone(current);
+  mismatched.packages[''].version = original.version;
+  assert.throws(() => assertLegacyGraphPreserved(original, mismatched));
+  mismatched.version = original.version;
+  assert.throws(() => assertLegacyGraphPreserved(original, mismatched));
   for (const change of ['integrity', 'dependencies', 'range']) {
     const altered = structuredClone(current);
     if (change === 'range') altered.packages[''].devDependencies.ajv = '*';

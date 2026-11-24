@@ -1,17 +1,17 @@
-name: alpha.2 prerelease
+name: alpha.3 prerelease
 on:
   push:
-    tags: ['v0.1.0-alpha.2']
+    tags: ['v0.1.0-alpha.3']
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: alpha2-prerelease
+  group: alpha3-prerelease
   cancel-in-progress: false
 jobs:
   release:
-    # ADR044: one exact authorized version, after main CI and registry publication.
-    if: ${{ github.repository == 'wang1299/dsh-reforge' && github.ref == 'refs/tags/v0.1.0-alpha.2' }}
+    # ADR068: one exact authorized version, after main CI and registry publication.
+    if: ${{ github.repository == 'wang1299/dsh-reforge' && github.ref == 'refs/tags/v0.1.0-alpha.3' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -20,10 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: refs/tags/v0.1.0-alpha.2
+          ref: refs/tags/v0.1.0-alpha.3
           fetch-depth: 0
       - name: Restore annotated release tag
-        run: git fetch --no-tags origin +refs/tags/v0.1.0-alpha.2:refs/tags/v0.1.0-alpha.2
+        run: git fetch --no-tags origin +refs/tags/v0.1.0-alpha.3:refs/tags/v0.1.0-alpha.3
       - uses: actions/setup-node@v4
         with:
           node-version: '24.19.0'

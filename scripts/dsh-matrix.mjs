@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync, copyFileSync, mkdtempSync, exis
 import { dirname, join, resolve, isAbsolute } from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { extract } from 'tar';
 import { supportedDshVersions } from '../dist/src/dsh-adapter-policy.js';
 import { auditArchive, release } from '../dist/scripts/release-helpers.js';
 
@@ -91,6 +92,18 @@ try {
       run(stage, ['run', 'compat']); run(stage, ['run', 'demo']);
       run(stage, ['run', 'install-probe', '--', archive]);
       run(stage, ['run', 'install-probe', '--', archive, '--learning']);
+      // Exercise the published examples without the source tree or a build step.
+      const exampleRoot = mkdtempSync(join(stage, '.probe-work', 'packed-examples-'));
+      await extract({ file: archive, cwd: exampleRoot, strict: true });
+      const example = join(exampleRoot, 'package');
+      execFileSync(process.execPath, ['--input-type=module', '--eval', [
+        "import { planSemanticMemory } from 'dsh-reforge/semantic-memory';",
+        "import { RepairAgent } from 'dsh-reforge/repair-agent';",
+        "import { bindRepairTools } from 'dsh-reforge/repair-tools';",
+        "if (![planSemanticMemory, RepairAgent, bindRepairTools].every(f => typeof f === 'function')) process.exit(1);"
+      ].join('\n')], { cwd: example, stdio: 'inherit', windowsHide: true });
+      run(example, ['run', 'example:semantic-memory']);
+      run(example, ['run', 'example:repair-agent', '--', 'happy']);
     }
     report.versions.push({ version, lockSha256: hash(readFileSync(join(stage, 'package-lock.json'))), sdk: family,
       passed: !typecheckOnly, typecheckPassed: true, learning: typecheckOnly ? [] : learningEvidence(stage) });

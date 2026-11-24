@@ -1,6 +1,6 @@
 # 路线与实际状态
 
-`main` 已包含下列源码功能。公开安装版本及兼容范围见[版本状态](release-status.md)。
+这些功能随 alpha.3 发行。安装入口及兼容范围见[版本状态](release-status.md)。
 
 - [复验代码条件变化](memory-maintenance.md#条件改变后如何复验)支持所有者从原生或独立面板按原用例复验，在只读维护报告中查看共享来源。[设计边界](decisions/067-owner-memory-revalidation.md)
 - [只读维护检查](memory-maintenance.md)按页核对经验来源和当前条件，给出修订或复验建议。[验收记录](tasks/T074-memory-maintenance-review.md)

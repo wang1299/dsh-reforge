@@ -1,6 +1,6 @@
 # 检查经验是否需要维护 / Memory maintenance review
 
-从 `main` 源码运行只读检查，可核对经验来源和当前条件，查看修订或复验建议。检查本身不会执行 pytest、调用模型或修改经验授权。公开安装包 `0.1.0-alpha.2` 尚未包含维护与复验功能。
+使用 `0.1.0-alpha.3` 的 `memory-review` 只读检查，可核对经验来源和当前条件，查看修订或复验建议。检查本身不会执行 pytest、调用模型或修改经验授权。维护与复验功能始于 `0.1.0-alpha.3`。
 
 ## 先体验实际控制
 
@@ -14,7 +14,7 @@ npm run memory:demo
 
 ## 检查自己的现有数据
 
-停止使用该数据目录的DSH、面板和后台学习工作。使用包含本功能的源码构建及原配置：
+停止使用该数据目录的DSH、面板和后台学习工作。使用 alpha.3 的 CLI 及原配置：
 
 ```powershell
 npm run build
@@ -72,7 +72,7 @@ node --test dist/test/memory-revalidation.test.js
 
 ## English
 
-Source-only, owner-invoked `memory-review --config <file> --stopped [--limit 1..50] [--after <uuid>]` inspects an existing stopped SQLite v9 store using a read-only transaction. It never creates/migrates a store, starts workers, executes tests/models, changes experience revisions or resets grants/unknown charges. Missing stores, unsupported schema, live sidecars/WAL and active work are rejected. Reports expose IDs, expected revisions, fixed reasons/actions and the checked commit, with per-page counts and a UUID cursor. Record JSON is bounded to1MiB. Malformed/oversized experience or verification rows abort review; evidence/citation errors retain the existing per-item incomplete_fact_sources result. Neither counts as a match.
+In alpha.3, the owner-invoked `memory-review --config <file> --stopped [--limit 1..50] [--after <uuid>]` inspects an existing stopped SQLite v9 store using a read-only transaction. It never creates/migrates a store, starts workers, executes tests/models, changes experience revisions or resets grants/unknown charges. Missing stores, unsupported schema, live sidecars/WAL and active work are rejected. Reports expose IDs, expected revisions, fixed reasons/actions and the checked commit, with per-page counts and a UUID cursor. Record JSON is bounded to1MiB. Malformed/oversized experience or verification rows abort review; evidence/citation errors retain the existing per-item incomplete_fact_sources result. Neither counts as a match.
 
 Source/scope matches are diagnostics, not semantic truth, current-test acceptance, new-task applicability or benefit. Drift recommends explicit revision to a new candidate followed by independent verification; unavailable conditions remain unknown. `npm run memory:demo` builds a real synthetic verified source, then checks matching/drift/unavailable conditions without modifying its database. No autonomous-model or future-task benefit is claimed.
 

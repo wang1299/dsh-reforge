@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { create } from 'tar';
-import { auditArchive, parseReleaseTag, release, validateManifest, validateRegistry, validateReleaseChecks } from '../scripts/release-helpers.js';
+import { auditArchive, parseReleaseTag, release, requiredReleaseFiles, validateManifest, validateRegistry, validateReleaseChecks } from '../scripts/release-helpers.js';
 import { environmentConfig } from '../src/config.js';
 import { packageName } from '../src/identity.js';
 import { firstPublishedArtifact, legacyConfigEnvironment } from '../src/legacy.js';
@@ -36,10 +36,16 @@ test('publication audit accepts required files and rejects unintended private da
   const work = await workDir('archive-audit-'); const root = join(work, 'package');
   await mkdir(join(root, 'dist/src'), { recursive: true }); await mkdir(join(root, 'docs'));
   await writeFile(join(root, 'package.json'), await readFile('package.json'));
-  for (const file of ['README.md', 'LICENSE', 'CHANGELOG.md', 'docs/installation.md', 'cordis.patch.yml', 'dist/src/cli.js', 'dist/src/dsh.js', 'dist/src/client.js', 'dist/src/service.js']) await writeFile(join(root, file), 'synthetic release fixture\n');
-  const contents = ['package.json', 'README.md', 'LICENSE', 'CHANGELOG.md', 'docs/installation.md', 'cordis.patch.yml', 'dist/src/cli.js', 'dist/src/dsh.js', 'dist/src/client.js', 'dist/src/service.js'].map(p => 'package/' + p);
+  for (const file of requiredReleaseFiles.filter(name => name !== 'package.json')) {
+    await mkdir(dirname(join(root, file)), { recursive: true });
+    await writeFile(join(root, file), 'synthetic release fixture\n');
+  }
+  const contents = requiredReleaseFiles.map(p => 'package/' + p);
   const good = join(work, 'good.tgz'); await create({ file: good, cwd: work, gzip: true }, contents);
-  const result = await auditArchive(good); assert.equal(result.files.length, 10); assert.match(result.integrity, /^sha512-/);
+  const result = await auditArchive(good); assert.deepEqual(result.files, [...requiredReleaseFiles].sort()); assert.match(result.integrity, /^sha512-/);
+  const incomplete = join(work, 'incomplete.tgz');
+  await create({ file: incomplete, cwd: work, gzip: true }, contents.filter(p => p !== 'package/dist/scripts/repair-agent-demo.js'));
+  await assert.rejects(auditArchive(incomplete), /Missing published file/);
   await assert.rejects(auditArchive(good, true), /exact frozen first artifact/);
   await mkdir(join(root, '.probe-work')); await writeFile(join(root, '.probe-work', 'private.json'), '{}');
   const bad = join(work, 'bad.tgz'); await create({ file: bad, cwd: work, gzip: true }, [...contents, 'package/.probe-work/private.json']);

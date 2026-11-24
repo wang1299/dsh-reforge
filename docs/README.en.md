@@ -15,7 +15,7 @@ New offline research: [120-query multilingual retrieval comparison](evaluation/r
 <p align="center"><strong>修复有据，经验可循。</strong></p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.2"><img src="https://img.shields.io/npm/v/dsh-reforge/alpha?label=npm%20alpha" alt="npm alpha" /></a>
+  <a href="https://www.npmjs.com/package/dsh-reforge/v/0.1.0-alpha.3"><img src="https://img.shields.io/npm/v/dsh-reforge/alpha?label=npm%20alpha" alt="npm alpha" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/docs/dsh-version-matrix.md"><img src="https://img.shields.io/badge/DSH-0.2.0--rc.2%20%7C%200.2.1--rc.5-39424e" alt="DSH 0.2.0-rc.2 / 0.2.1-rc.5" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/actions/workflows/check.yml"><img src="https://github.com/wang1299/dsh-reforge/actions/workflows/check.yml/badge.svg?branch=main" alt="CI" /></a>
   <a href="https://github.com/wang1299/dsh-reforge/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT" /></a>
@@ -32,7 +32,7 @@ New offline research: [120-query multilingual retrieval comparison](evaluation/r
 
 **DSH-Reforge (`dsh-reforge` on npm) is a community plugin for DeepSeek Harness. It builds traceable experience from test-verified Python bug fixes and selects applicable experience as context for later tasks.**
 
-**This release: `dsh-reforge@0.1.0-alpha.2`, experimental alpha.** It includes the new workbench, runnable example, conservative setup, diagnostics, backup and restore. Check [publication status](release-status.md) and [Issue #113](https://github.com/wang1299/dsh-reforge/issues/113) for actual npm/Release verification. This independent community project is not officially reviewed, endorsed, or security certified by DeepSeek.
+**This release is `dsh-reforge@0.1.0-alpha.3`, an experimental alpha.** It includes opt-in context planning, semantic admission, a scripted repair Agent, read-only memory review and owner-confirmed revalidation. [Install and run the packaged examples](releases/v0.1.0-alpha.3.md).
 
 
 Supports exactly DSH `0.2.0-rc.2` and `0.2.1-rc.5`, through an independent adapter and four Windows/Linux combinations; see the [version matrix](dsh-version-matrix.md). Historical alpha.1 supports only the older host. Other DSH versions require separate verification.
@@ -66,7 +66,7 @@ Requires **Node.js ≥24.10 and DSH 0.2.0-rc.2 or 0.2.1-rc.5**. Repair verificat
 Install the exact version in your DSH environment:
 
 ```sh
-dsh plugin --profile web add dsh-reforge@0.1.0-alpha.2
+dsh plugin --profile web add dsh-reforge@0.1.0-alpha.3
 ```
 
 Before starting DSH, set `DSH_REFORGE_CONFIG` to the absolute path of a private JSON configuration file. A minimal read-only configuration is:

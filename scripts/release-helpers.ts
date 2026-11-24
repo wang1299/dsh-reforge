@@ -4,11 +4,42 @@ import { readFile, stat } from 'node:fs/promises';
 import { list } from 'tar';
 import { firstPublishedArtifact } from '../src/legacy.js';
 
-export const release = { name: 'dsh-reforge', version: '0.1.0-alpha.2', tag: 'v0.1.0-alpha.2',
+export const release = { name: 'dsh-reforge', version: '0.1.0-alpha.3', tag: 'v0.1.0-alpha.3',
   repository: 'wang1299/dsh-reforge', publisher: 'wang129', registry: 'https://registry.npmjs.org' } as const;
-const required = ['package.json', 'README.md', 'LICENSE', 'CHANGELOG.md', 'docs/installation.md', 'cordis.patch.yml',
+const baseFiles = ['dist/src', 'cordis.patch.yml', 'README.md', 'LICENSE', 'CHANGELOG.md', 'docs/installation.md'];
+const exampleFiles = [
+  'docs/releases/v0.1.0-alpha.3.md',
+  'examples/repair-agent/README.md',
+  'examples/semantic-memory/replay.mjs',
+  'scripts/study-python-worker.py',
+  'compat/study-runtime/requirements.txt',
+  'compat/retrieval-embedding/model.json',
+  'compat/retrieval-embedding/README.md',
+  'compat/semantic-memory/calibration.json',
+  'compat/semantic-memory/README.md',
+  'test/fixtures/semantic-memory-v1.json',
+  'test/fixtures/semantic-memory-v1-holdout-vectors.json',
+  'docs/evaluation/semantic-memory-v1-holdout.json',
+  'dist/test/context-fixture.js',
+  'dist/scripts/repair-agent-demo.js',
+  'dist/scripts/benefit-study-preflight.js',
+  'dist/scripts/pilot-fixtures.js',
+  'dist/scripts/benefit-study-cases.js',
+  'dist/scripts/study-admission.js',
+  'dist/scripts/study-bounded-python.js',
+  'dist/scripts/study-owned-path.js',
+  'dist/scripts/study-python-vendor.js',
+  'dist/scripts/repair-agent-workspace.js',
+  'dist/scripts/benefit-study-files.js',
+  'dist/scripts/semantic-memory-data.js',
+  'dist/scripts/semantic-memory-evaluation.js',
+];
+const originalRequired = ['package.json', 'README.md', 'LICENSE', 'CHANGELOG.md', 'docs/installation.md', 'cordis.patch.yml',
   'dist/src/cli.js', 'dist/src/dsh.js', 'dist/src/client.js', 'dist/src/service.js'];
-const allowed = (p: string): boolean => required.includes(p) || /^dist\/src\/[a-z][a-z0-9-]*\.(?:js|d\.ts)$/.test(p);
+export const requiredReleaseFiles = [...originalRequired, ...exampleFiles,
+  'dist/src/agent-context.js', 'dist/src/semantic-memory.js', 'dist/src/repair-agent.js', 'dist/src/dsh-adapter-repair.js',
+  'dist/src/memory-review.js', 'dist/src/memory-revalidation.js'];
+const allowed = (p: string): boolean => requiredReleaseFiles.includes(p) || /^dist\/src\/[a-z][a-z0-9-]*\.(?:js|d\.ts)$/.test(p);
 type RecordValue = Record<string, unknown>;
 
 export function validateReleaseChecks(checks: { name: string; head_sha: string; status: string; conclusion: string | null; id: number; app?: { slug?: string } }[], commit: string): void {
@@ -19,15 +50,20 @@ export function validateReleaseChecks(checks: { name: string; head_sha: string; 
   }
 }
 
-export function validateManifest(input: unknown): void {
+export function validateManifest(input: unknown, historicalFirstRelease = false): void {
   const p = input as RecordValue;
   assert.equal(p.name, release.name); assert.equal(p.version, release.version); assert.equal(p.license, 'MIT');
   assert.deepEqual(p.bin, { 'dsh-reforge': './dist/src/cli.js' });
   assert.deepEqual(p.repository, { type: 'git', url: 'git+https://github.com/' + release.repository + '.git' });
-  assert.deepEqual(p.files, ['dist/src', 'cordis.patch.yml', 'README.md', 'LICENSE', 'CHANGELOG.md', 'docs/installation.md']);
+  assert.deepEqual(p.files, historicalFirstRelease ? baseFiles : [...baseFiles, ...exampleFiles]);
   assert.deepEqual(p.publishConfig, { registry: release.registry + '/', access: 'public', tag: 'alpha' });
   assert.equal((p.exports as RecordValue)['.'], './dist/src/dsh.js');
   assert.equal((p.exports as RecordValue)['./client'], './dist/src/client.js');
+  if (!historicalFirstRelease) {
+    assert.equal((p.exports as RecordValue)['./semantic-memory'], './dist/src/semantic-memory.js');
+    assert.equal((p.exports as RecordValue)['./repair-agent'], './dist/src/repair-agent.js');
+    assert.equal((p.exports as RecordValue)['./repair-tools'], './dist/src/dsh-adapter-repair.js');
+  }
 }
 
 /** Audit only; never extracts an archive or executes its scripts. */
@@ -51,14 +87,14 @@ export async function auditArchive(file: string, historicalFirstRelease = false)
     } catch (error) { invalid ??= error; }
   } });
   if (invalid) throw invalid;
-  for (const p of required) assert.ok(files.has(p), 'Missing published file: ' + p);
+  for (const p of historicalFirstRelease ? originalRequired : requiredReleaseFiles) assert.ok(files.has(p), 'Missing published file: ' + p);
   const buffer = await readFile(file);
   assert.ok(manifest); const metadata = JSON.parse(manifest.toString('utf8')) as RecordValue;
   if (historicalFirstRelease) {
     assert.equal(createHash('sha256').update(buffer).digest('hex'), firstPublishedArtifact.sha256, 'Historical exception requires the exact frozen first artifact');
     assert.equal(metadata.version, firstPublishedArtifact.version);
     assert.deepEqual(metadata.repository, { type: 'git', url: 'git+https://github.com/' + firstPublishedArtifact.repository + '.git' });
-    validateManifest({ ...metadata, version: release.version, repository: { type: 'git', url: 'git+https://github.com/' + release.repository + '.git' } });
+    validateManifest({ ...metadata, version: release.version, repository: { type: 'git', url: 'git+https://github.com/' + release.repository + '.git' } }, true);
   } else validateManifest(metadata);
   return { files: [...files].sort(), sha256: createHash('sha256').update(buffer).digest('hex'),
     integrity: 'sha512-' + createHash('sha512').update(buffer).digest('base64'), shasum: createHash('sha1').update(buffer).digest('hex'), bytes: buffer.length };
