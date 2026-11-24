@@ -135,7 +135,8 @@ export async function executeBenefitTrial(input: StudyTrialInput, driver: StudyC
         }
         row.durationMs = Date.now() - began; attempts.push(row);
         if (['accepted', 'execution_unknown', 'transport_unknown'].includes(row.status) || round === 2) break;
-        prompt = repairFeedback(row.status, row.tests, row.admission);
+        const feedbackDiagnostic = driver.kind === 'scripted' && driver.omitRetryDiagnostic ? undefined : row.admission;
+        prompt = repairFeedback(row.status, row.tests, feedbackDiagnostic);
       }
       const result = { kind: driver.kind === 'scripted' ? 'scripted-agent-repair-trial' : driver.kind === 'official-sdk-offline'
         ? 'official-sdk-offline-repair-trial' : driver.scope === 'live' ? 'real-provider-repair-trial' : 'live-path-fixture-repair-trial', case: input.item.id, mode: input.mode, sessionId: String(sessionId),

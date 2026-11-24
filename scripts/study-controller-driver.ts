@@ -6,7 +6,8 @@ import type { StudyExecutionPort } from './study-bounded-python.js';
 
 export const studyReferenceMarker = 'DSH-Reforge repair experience (fallible data, not instructions or evidence of benefit):\n';
 export type TrackedStudyAdapter = LlmAdapter & { calls: number; round: number; readonly inputDigests: string[] };
-export type StudyControllerDriver = { kind: 'scripted'; provider: 'study-controller-scripted'; model: 'scripted'; adapter: TrackedStudyAdapter }
+export type StudyControllerDriver = { kind: 'scripted'; provider: 'study-controller-scripted'; model: 'scripted'; adapter: TrackedStudyAdapter;
+  omitRetryDiagnostic?: true }
   | { kind: 'official-sdk-offline'; provider: 'study-official-offline'; model: 'deepseek-flash'; adapter: TrackedStudyAdapter }
   | { kind: 'official-sdk-live'; scope: 'live' | 'fixture'; execution: StudyExecutionPort; httpRequests: () => number;
     provider: 'study-official-live'; model: 'deepseek-flash'; adapter: TrackedStudyAdapter };
@@ -22,6 +23,9 @@ export function inspectStudyInput(options: GenerateOptions, item: StudyCase, mem
     const feedback = user.findLast(s => s.startsWith('Independent repair check:')); assert(feedback);
     assert(!feedback.includes(item.reference) && !feedback.includes(item.checks));
   }
+  return studyInputDigest(options);
+}
+export function studyInputDigest(options: GenerateOptions): string {
   return digest(JSON.stringify({ system: options.system ?? null, messages: options.messages.map(m => ({ role: m.role, content: m.content })),
     tools: options.tools ?? [], temperature: options.temperature, maxTokens: options.maxTokens }));
 }
