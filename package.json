@@ -111,6 +111,7 @@
     "retrieval:applicability": "tsc && node dist/scripts/applicability-evaluate.js",
     "retrieval:project-facts": "tsc && node dist/scripts/project-facts-evaluate.js",
     "study:rehearse": "tsc && node dist/scripts/benefit-study-runner.js rehearse",
+    "study:feedback": "tsc && node dist/scripts/study-feedback-comparison.js",
     "study:wire": "tsc && node dist/scripts/study-official-runner.js offline-wire",
     "study:prepare": "npm run build && node dist/scripts/study-live-runner.js prepare",
     "study:inspect": "node dist/scripts/study-live-runner.js inspect",
