@@ -9,15 +9,21 @@ import { snapshotEmbeddingPort, vectorSnapshotSchema } from '../src/embedding.js
 import { evaluateProjectFacts, parseProjectFactCorpus, projectQueryBinding, projectFactEvaluationPolicyDigest } from '../src/project-facts-evaluation.js';
 import { projectFilePort } from '../src/project-facts.js';
 import { schemaFactOracle } from './project-facts-oracle.js';
+import { release } from './release-helpers.js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url)); const read = (path: string) => readFile(join(root, path));
-interface LockGraph { lockfileVersion: number; packages: Record<string, Record<string, unknown>> }
+interface LockGraph { version: string; lockfileVersion: number; packages: Record<string, Record<string, unknown>> }
 const installingFlags = new Set(['dev', 'devOptional', 'peer']);
 export function assertLegacyGraphPreserved(original: LockGraph, current: LockGraph) {
   assert.equal(original.lockfileVersion, 3); assert.equal(current.lockfileVersion, 3);
   const legacyRoot = original.packages['']!; const nextRoot = current.packages['']!;
   assert.deepEqual(Object.keys(nextRoot).sort(), Object.keys(legacyRoot).sort());
-  for (const [field, value] of Object.entries(legacyRoot)) if (field !== 'devDependencies') assert.deepEqual(nextRoot[field], value, 'Root graph metadata drift: ' + field);
+  // The experiment's lock and the shipping lock identify different releases of this same project.
+  assert.equal(original.version, '0.1.0-alpha.2'); assert.equal(legacyRoot.version, original.version);
+  assert.equal(current.version, release.version); assert.equal(nextRoot.version, current.version);
+  for (const [field, value] of Object.entries(legacyRoot)) {
+    if (field !== 'devDependencies' && field !== 'version') assert.deepEqual(nextRoot[field], value, 'Root graph metadata drift: ' + field);
+  }
   const before = legacyRoot.devDependencies as Record<string, string>; const after = nextRoot.devDependencies as Record<string, string>;
   for (const [name, version] of Object.entries(before)) assert.equal(after[name], version, 'Existing root dependency drift: ' + name);
   assert.deepEqual(Object.keys(after).filter(name => !(name in before)), ['@deepseek-ai/dsh-llm-deepseek']);
